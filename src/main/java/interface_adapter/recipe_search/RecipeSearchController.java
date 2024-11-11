@@ -21,6 +21,7 @@ public class RecipeSearchController {
     public void execute(String query, int maxFat, int number) {
 
         RecipeSearchInteractor.searchRecipes(query, maxFat, number);
+        // The method executed and parameters taken are based on the use case
     }
 }
 
