@@ -1,5 +1,9 @@
 package view;
 
+import interface_adapter.recipe_search.RecipeSearchController;
+import interface_adapter.recipe_search.RecipeSearchState;
+import interface_adapter.recipe_search.RecipeSearchViewModel;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -17,6 +21,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -47,19 +52,26 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private final JList<String> recipeResults;
     private final List<String> ingredients;
 
+    private final RecipeSearchViewModel recipeSearchViewModel;
+    private RecipeSearchController recipeSearchController;
+
     /**
      * Constructs a new RecipeSearchView.
+     * @param viewModel The view model for recipe search
      */
-    public RecipeSearchView() {
+    public RecipeSearchView(RecipeSearchViewModel viewModel) {
+        this.recipeSearchViewModel = viewModel;
+        this.recipeSearchViewModel.addPropertyChangeListener(this);
+
         // Initialize components
-        title = new JLabel("Recipe Search by Ingredients");
+        title = new JLabel(RecipeSearchViewModel.TITLE_LABEL);
         inputPanel = new JPanel();
         ingredientField = new JTextField(TEXTFIELD_WIDTH);
-        addIngredientButton = new JButton("Add Ingredient");
+        addIngredientButton = new JButton(RecipeSearchViewModel.ADD_INGREDIENT_BUTTON_LABEL);
         ingredientListModel = new DefaultListModel<>();
         ingredientList = new JList<>(ingredientListModel);
-        removeIngredientButton = new JButton("Remove Selected");
-        searchButton = new JButton("Search Recipes");
+        removeIngredientButton = new JButton(RecipeSearchViewModel.REMOVE_INGREDIENT_BUTTON_LABEL);
+        searchButton = new JButton(RecipeSearchViewModel.SEARCH_BUTTON_LABEL);
         resultsPanel = new JPanel();
         recipeListModel = new DefaultListModel<>();
         recipeResults = new JList<>(recipeListModel);
@@ -94,6 +106,52 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         mainPanel.add(resultsPanel);
 
         this.add(mainPanel, BorderLayout.CENTER);
+    }
+
+    /**
+     * Sets the controller for this view.
+     * @param controller The controller to set
+     */
+    public void setRecipeSearchController(RecipeSearchController controller) {
+        this.recipeSearchController = controller;
+    }
+
+    // ... (keep existing panel setup methods the same) ...
+
+    @Override
+    public void actionPerformed(ActionEvent evt) {
+        if (evt.getSource().equals(addIngredientButton)) {
+            final String ingredient = ingredientField.getText().trim();
+            if (!ingredient.isEmpty()) {
+                ingredients.add(ingredient);
+                ingredientListModel.addElement(ingredient);
+                ingredientField.setText("");
+            }
+        }
+        else if (evt.getSource().equals(removeIngredientButton)) {
+            final int selectedIndex = ingredientList.getSelectedIndex();
+            if (selectedIndex != -1) {
+                ingredients.remove(selectedIndex);
+                ingredientListModel.remove(selectedIndex);
+            }
+        }
+        else if (evt.getSource().equals(searchButton)) {
+            if (recipeSearchController != null) {
+                recipeSearchController.executeSearch(new ArrayList<>(ingredients));
+            }
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        RecipeSearchState state = (RecipeSearchState) evt.getNewValue();
+        if (state != null) {
+            if (state.getError() != null) {
+                JOptionPane.showMessageDialog(this, state.getError());
+            } else {
+                updateRecipeResults(state.getRecipeResults());
+            }
+        }
     }
 
     private void setupInputPanel() {
@@ -132,49 +190,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         resultsPanel.add(resultsScrollPane);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent evt) {
-        if (evt.getSource().equals(addIngredientButton)) {
-            final String ingredient = ingredientField.getText().trim();
-            if (!ingredient.isEmpty()) {
-                ingredients.add(ingredient);
-                ingredientListModel.addElement(ingredient);
-                ingredientField.setText("");
-            }
-        }
-        else if (evt.getSource().equals(removeIngredientButton)) {
-            final int selectedIndex = ingredientList.getSelectedIndex();
-            if (selectedIndex != -1) {
-                ingredients.remove(selectedIndex);
-                ingredientListModel.remove(selectedIndex);
-            }
-        }
-        else if (evt.getSource().equals(searchButton)) {
-            // TODO: Implement search functionality
-            // This will be connected to the controller
-            System.out.println("Searching for recipes with ingredients: " + ingredients);
-        }
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        // TODO: Handle property changes from the view model
-        // This will update the recipe results when the search is complete
-    }
-
-    /**
-     * Returns a copy of the current list of ingredients.
-     * @return List of ingredients
-     */
-    public List<String> getIngredients() {
-        return new ArrayList<>(ingredients);
-    }
-
-    /**
-     * Updates the recipe results display.
-     * @param recipes List of recipe names to display
-     */
-    public void updateRecipeResults(List<String> recipes) {
+    private void updateRecipeResults(List<String> recipes) {
         recipeListModel.clear();
         for (String recipe : recipes) {
             recipeListModel.addElement(recipe);
