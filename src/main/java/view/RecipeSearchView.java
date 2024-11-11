@@ -148,7 +148,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         if (state != null) {
             if (state.getError() != null) {
                 JOptionPane.showMessageDialog(this, state.getError());
-            } else {
+            }
+            else {
                 updateRecipeResults(state.getRecipeResults());
             }
         }
