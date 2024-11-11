@@ -1,25 +1,16 @@
 package use_case.recipe_search;
 
+import entity.Recipe;
 import java.util.List;
 
-import entity.Recipe;
-
 /**
- * Interface for the use case that handles searching for recipes based on
- * various filters such as ingredients, cuisines, and nutritional information.
- * This use case allows the application to fetch recipes by making calls to
- * external APIs or services.
+ * Interface for the recipe search use case.
  */
 public interface RecipeSearch {
-
     /**
-     * Searches for recipes based on the provided query and filters.
-     *
-     * @param query The search query (e.g., recipe name, dish type).
-     * @param maxFat The maximum amount of fat in grams the recipe can have per serving.
-     * @param number The number of results to return.
-     * @return A list of recipes that match the search criteria.
-     * @throws RecipeSearchException if an error occurs while fetching the recipes.
+     * Searches for recipes based on a list of ingredients.
+     * @param ingredients List of ingredients to search with
+     * @throws RecipeSearchException if search fails
      */
-    List<Recipe> searchRecipes(String query, int maxFat, int number) throws RecipeSearchException;
+    void searchRecipes(List<String> ingredients) throws RecipeSearchException;
 }
