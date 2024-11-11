@@ -1,27 +1,29 @@
 package interface_adapter.recipe_search;
 
 import use_case.recipe_search.RecipeSearch;
+import java.util.List;
 
 /**
- * Controller for the RecipeSearch system.
+ * Controller for the recipe search functionality.
  */
 public class RecipeSearchController {
-    private final RecipeSearch RecipeSearchInteractor;
+    private final RecipeSearch recipeSearchUseCase;
 
-    public RecipeSearchController(RecipeSearch RecipeSearchInteractor) {
-        this.RecipeSearchInteractor = RecipeSearchInteractor;
+    public RecipeSearchController(RecipeSearch recipeSearchUseCase) {
+        this.recipeSearchUseCase = recipeSearchUseCase;
     }
 
     /**
-     * Executes the RecipeSearch Use Case.
-     * @param query The search query (e.g., recipe name, dish type).
-     * @param maxFat The maximum amount of fat in grams the recipe can have per serving.
-     * @param number The number of results to return.
+     * Execute a recipe search with the given ingredients.
+     * @param ingredients List of ingredients to search for
      */
-    public void execute(String query, int maxFat, int number) {
-
-        RecipeSearchInteractor.searchRecipes(query, maxFat, number);
-        // The method executed and parameters taken are based on the use case
+    public void executeSearch(List<String> ingredients) {
+        try {
+            recipeSearchUseCase.searchRecipes(ingredients);
+        }
+        catch (Exception e) {
+            // Error will be handled by the presenter through output boundary
+        }
     }
 }
 
