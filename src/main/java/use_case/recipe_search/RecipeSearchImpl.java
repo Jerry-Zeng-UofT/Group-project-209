@@ -1,47 +1,78 @@
 package use_case.recipe_search;
 
-import java.util.List;
 import entity.Recipe;
-import repository.RecipeRepository;
-import exception.RecipeSearchException;
+import entity.RecipeForSearch;
+import entity.Ingredient;
+import entity.Nutrition;
+import data_access.RecipeSearchEdamam;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
- * Implementation of the RecipeSearchUseCase interface. This class is responsible
- * for searching recipes using external APIs or data sources. It delegates the actual
- * search operation to the RecipeApiGateway.
+ * Implementation of the recipe search use case.
  */
 public class RecipeSearchImpl implements RecipeSearch {
+    private final RecipeSearchEdamam recipeSearchEdamam;
+    private final RecipeSearchOutputBoundary outputBoundary;
 
-    private final RecipeRepository recipeRepository;
-
-    /**
-     * Constructor for the RecipeSearchUseCaseImpl.
-     * Initializes the RecipeApiGateway which is used to fetch recipe data.
-     *
-     * @param recipeRepository The gateway for accessing the external API or service.
-     */
-    public RecipeSearchImpl(RecipeRepository recipeRepository) {
-        this.recipeRepository = recipeRepository;
+    public RecipeSearchImpl(RecipeSearchEdamam recipeSearchEdamam,
+                            RecipeSearchOutputBoundary outputBoundary) {
+        this.recipeSearchEdamam = recipeSearchEdamam;
+        this.outputBoundary = outputBoundary;
     }
 
-    /**
-     * Searches for recipes based on the provided search parameters.
-     * This method calls the RecipeApiGateway to fetch recipe data and returns
-     * the result as a list of Recipe objects.
-     *
-     * @param query The search query (e.g., recipe name, dish type).
-     * @param maxFat The maximum amount of fat in grams the recipe can have per serving.
-     * @param number The number of results to return.
-     * @return A list of recipes that match the search criteria.
-     * @throws RecipeSearchException if an error occurs while searching for recipes.
-     */
-    public List<Recipe> searchRecipes(String query, int maxFat, int number) throws RecipeSearchException {
+    @Override
+    public void searchRecipes(List<String> ingredients) throws RecipeSearchException {
         try {
-            // Use the recipeApiGateway to fetch recipes based on the parameters
-            return recipeRepository.fetchRecipes(query, maxFat, number);
-        } catch (Exception e) {
-            // Wrap any errors into a custom exception
-            throw new RecipeSearchException("Failed to search recipes", e);
+            // Join ingredients with commas for the API search
+            String searchQuery = String.join(",", ingredients);
+
+            // Get recipes from Edamam API
+            List<RecipeForSearch> searchResults = recipeSearchEdamam.searchRecipesByFoodName(searchQuery);
+
+            // Convert API results to Recipe entities
+            List<Recipe> recipes = convertToRecipes(searchResults);
+
+            // Present success
+            outputBoundary.presentRecipes(recipes);
         }
+        catch (Exception e) {
+            // Present error
+            outputBoundary.presentError("Failed to search recipes: " + e.getMessage());
+            throw new RecipeSearchException("Recipe search failed", e);
+        }
+    }
+
+    private List<Recipe> convertToRecipes(List<RecipeForSearch> searchResults) {
+        List<Recipe> recipes = new ArrayList<>();
+        int recipeId = 1;
+
+        for (RecipeForSearch result : searchResults) {
+            // Convert ingredients to Ingredient entities
+            List<Ingredient> ingredients = new ArrayList<>();
+            int ingredientId = 1;
+            for (String ingredientStr : result.getIngredients()) {
+                ingredients.add(new Ingredient(
+                        ingredientId++,
+                        ingredientStr,
+                        0.0,  // Default quantity
+                        ""    // Default unit
+                ));
+            }
+
+            // Create Recipe entity
+            Recipe recipe = new Recipe(
+                    recipeId++,
+                    result.getTitle(),
+                    ingredients,
+                    result.getInstructions(),
+                    new Nutrition(0, 0, 0, 0, 0, 0),  // Default nutrition
+                    new ArrayList<>()  // Empty food list
+            );
+
+            recipes.add(recipe);
+        }
+
+        return recipes;
     }
 }
