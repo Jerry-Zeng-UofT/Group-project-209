@@ -15,13 +15,14 @@ import org.json.JSONObject;
 public class RecipeSearchEdamam {
     private static final String APP_ID = "35f28703";
     private static final String APP_KEY = "acb2a3e8e5cd69c1e0bcacefd85ea880";
-    private static final String BASE_URL = "https://api.edamam.com/search";
+    private static final String BASE_URL = "https://api.edamam.com/api/recipes/v2";
     private final OkHttpClient httpClient = new OkHttpClient();
 
     public List<RecipeForSearch> searchRecipesByFoodName(String foodName) {
         List<RecipeForSearch> recipes = new ArrayList<>();
 
         HttpUrl.Builder urlBuilder = HttpUrl.parse(BASE_URL).newBuilder();
+        urlBuilder.addQueryParameter("type", "public");
         urlBuilder.addQueryParameter("q", foodName);
         urlBuilder.addQueryParameter("app_id", APP_ID);
         urlBuilder.addQueryParameter("app_key", APP_KEY);
