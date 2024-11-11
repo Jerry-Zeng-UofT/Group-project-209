@@ -55,7 +55,8 @@ public class RecipeSearchEdamam {
                     recipes.add(recipeForSearch);
                 }
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
         return recipes;

@@ -1,35 +1,38 @@
 package app;
 
-import javax.swing.*;
 import data_access.RecipeSearchEdamam;
-import interface_adapter.recipe_search.*;
-import use_case.recipe_search.*;
-import view.RecipeSearchView;
 
 /**
- * Main application class for the recipe search functionality.
+ * An application where users can search for recipes based on ingredients.
+ * <p>
+ * This application allows users to input ingredients and search for matching recipes
+ * using the Edamam Recipe Search API. Users can view recipe details including
+ * ingredients and instructions.
+ * </p>
  */
 public class MainRecipeApplication {
+
+    /**
+     * The main entry point of the application.
+     * <p>
+     * The program will show a search interface where users can:
+     * - Add ingredients to their search
+     * - Remove ingredients from their search
+     * - Search for recipes matching their ingredients
+     * - View recipe results including ingredients and basic instructions
+     * </p>
+     * @param args commandline arguments are ignored
+     */
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            // Create components
-            RecipeSearchViewModel viewModel = new RecipeSearchViewModel();
-            RecipeSearchView view = new RecipeSearchView(viewModel);
-            RecipeSearchPresenter presenter = new RecipeSearchPresenter(viewModel);
-            RecipeSearchEdamam edamamAPI = new RecipeSearchEdamam();
-            RecipeSearch recipeSearchUseCase = new RecipeSearchImpl(edamamAPI, presenter);
-            RecipeSearchController controller = new RecipeSearchController(recipeSearchUseCase);
+        // Create the data access object for recipe search
+        final RecipeSearchEdamam recipeSearchEdamam = new RecipeSearchEdamam();
 
-            // Connect view to controller
-            view.setRecipeSearchController(controller);
-
-            // Create and show the frame
-            JFrame frame = new JFrame("Recipe Search");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.getContentPane().add(view);
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        });
+        // Create and configure the application using the builder
+        final RecipeAppBuilder builder = new RecipeAppBuilder();
+        builder.addRecipeSearchAPI(recipeSearchEdamam)
+                .addRecipeSearchView()
+                .addRecipeSearchUseCase()
+                .build()
+                .setVisible(true);
     }
 }
