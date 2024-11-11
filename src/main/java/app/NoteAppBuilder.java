@@ -9,7 +9,7 @@ import interface_adapter.note.NoteViewModel;
 import use_case.note.NoteDataAccessInterface;
 import use_case.note.NoteInteractor;
 import use_case.note.NoteOutputBoundary;
-import view.NoteView;
+import view.RecipeSearchView;
 
 /**
  * Builder for the Note Application.
@@ -19,7 +19,7 @@ public class NoteAppBuilder {
     public static final int WIDTH = 400;
     private NoteDataAccessInterface noteDAO;
     private NoteViewModel noteViewModel = new NoteViewModel();
-    private NoteView noteView;
+    private RecipeSearchView recipeSearchView;
     private NoteInteractor noteInteractor;
 
     /**
@@ -33,7 +33,7 @@ public class NoteAppBuilder {
     }
 
     /**
-     * Creates the objects for the Note Use Case and connects the NoteView to its
+     * Creates the objects for the Note Use Case and connects the RecipeSearchView to its
      * controller.
      * <p>This method must be called after addNoteView!</p>
      * @return this builder
@@ -45,20 +45,20 @@ public class NoteAppBuilder {
                 noteDAO, noteOutputBoundary);
 
         final NoteController controller = new NoteController(noteInteractor);
-        if (noteView == null) {
+        if (recipeSearchView == null) {
             throw new RuntimeException("addNoteView must be called before addNoteUseCase");
         }
-        noteView.setNoteController(controller);
+        recipeSearchView.setNoteController(controller);
         return this;
     }
 
     /**
-     * Creates the NoteView and underlying NoteViewModel.
+     * Creates the RecipeSearchView and underlying NoteViewModel.
      * @return this builder
      */
     public NoteAppBuilder addNoteView() {
         noteViewModel = new NoteViewModel();
-        noteView = new NoteView(noteViewModel);
+        recipeSearchView = new RecipeSearchView(noteViewModel);
         return this;
     }
 
@@ -72,7 +72,7 @@ public class NoteAppBuilder {
         frame.setTitle("Note Application");
         frame.setSize(WIDTH, HEIGHT);
 
-        frame.add(noteView);
+        frame.add(recipeSearchView);
 
         // refresh so that the note will be visible when we start the program
         noteInteractor.executeRefresh();
