@@ -44,7 +44,7 @@ public class FilterFrameView extends JFrame {
         panel.add(label, BorderLayout.NORTH);
 
         JPanel checkBoxPanel = new JPanel();
-        checkBoxPanel.setLayout(new GridLayout(3, 1, 10, 10)); // 3行布局
+        checkBoxPanel.setLayout(new GridLayout(3, 1, 10, 10));
 
         dietPanel = createScrollableCheckBoxPanel("Diet Label", DIET_TYPES);
         healthPanel = createScrollableCheckBoxPanel("Health Label", DIET_RESTRICTIONS);
