@@ -11,6 +11,7 @@ public class RecipeSearchViewModel extends ViewModel {
     public static final String ADD_INGREDIENT_BUTTON_LABEL = "Add Ingredient";
     public static final String REMOVE_INGREDIENT_BUTTON_LABEL = "Remove Ingredient";
     public static final String SEARCH_BUTTON_LABEL = "Search";
+    public static final String ADD_RESTRICTION_LABEL = "Add Restriction";
 
     public RecipeSearchViewModel() {
         // RecipeSearchViewModel is currently a subclass of ViewModel base on the implementation
