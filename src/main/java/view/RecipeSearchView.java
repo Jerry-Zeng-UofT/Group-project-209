@@ -13,7 +13,9 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -51,12 +53,19 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private final DefaultListModel<String> recipeListModel;
     private final JList<String> recipeResults;
     private final List<String> ingredients;
+    private final JPanel restrictionPanel;
+    private final JButton addRestrictionButton;
+    private final DefaultListModel<String> restrictionListModel;
+    private final JList<String> restrictionList;
+    private final List<String> restrictions;
+    private Map<String, List<String>> restrictionMap;
 
     private final RecipeSearchViewModel recipeSearchViewModel;
     private RecipeSearchController recipeSearchController;
 
     /**
      * Constructs a new RecipeSearchView.
+     *
      * @param viewModel The view model for recipe search
      */
     public RecipeSearchView(RecipeSearchViewModel viewModel) {
@@ -64,18 +73,35 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         this.recipeSearchViewModel.addPropertyChangeListener(this);
 
         // Initialize components
+        // Labels
         title = new JLabel(RecipeSearchViewModel.TITLE_LABEL);
+
+        // Panels
         inputPanel = new JPanel();
+        restrictionPanel = new JPanel();
+        resultsPanel = new JPanel();
+
+        // Text Field
         ingredientField = new JTextField(TEXTFIELD_WIDTH);
+
+        // Buttons
         addIngredientButton = new JButton(RecipeSearchViewModel.ADD_INGREDIENT_BUTTON_LABEL);
-        ingredientListModel = new DefaultListModel<>();
-        ingredientList = new JList<>(ingredientListModel);
         removeIngredientButton = new JButton(RecipeSearchViewModel.REMOVE_INGREDIENT_BUTTON_LABEL);
         searchButton = new JButton(RecipeSearchViewModel.SEARCH_BUTTON_LABEL);
-        resultsPanel = new JPanel();
+        addRestrictionButton = new JButton(RecipeSearchViewModel.ADD_RESTRICTION_LABEL);
+
+        // Lists and Models
+        ingredientListModel = new DefaultListModel<>();
+        ingredientList = new JList<>(ingredientListModel);
+        restrictionListModel = new DefaultListModel<>();
+        restrictionList = new JList<>(restrictionListModel);
         recipeListModel = new DefaultListModel<>();
         recipeResults = new JList<>(recipeListModel);
+
+        // Data Structures
         ingredients = new ArrayList<>();
+        restrictions = new ArrayList<>();
+        restrictionMap = new HashMap<>();
 
         // Set up the main layout
         this.setLayout(new BorderLayout());
@@ -92,6 +118,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         addIngredientButton.addActionListener(this);
         removeIngredientButton.addActionListener(this);
         searchButton.addActionListener(this);
+        addRestrictionButton.addActionListener(this);
 
         // Main panel assembly
         final JPanel mainPanel = new JPanel();
@@ -100,6 +127,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         mainPanel.add(title);
         mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         mainPanel.add(inputPanel);
+        mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        mainPanel.add(restrictionPanel);
         mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         mainPanel.add(searchButton);
         mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
@@ -110,6 +139,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     /**
      * Sets the controller for this view.
+     *
      * @param controller The controller to set
      */
     public void setRecipeSearchController(RecipeSearchController controller) {
@@ -124,20 +154,32 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
             final String ingredient = ingredientField.getText().trim();
             if (!ingredient.isEmpty()) {
                 ingredients.add(ingredient);
+                addValueToKey(restrictionMap, "Food Name", ingredient);
                 ingredientListModel.addElement(ingredient);
                 ingredientField.setText("");
             }
-        }
-        else if (evt.getSource().equals(removeIngredientButton)) {
+        } else if (evt.getSource().equals(addRestrictionButton)) {
+            FilterFrameView filterFrame = new FilterFrameView(this);
+            final String restriction = filterFrame.getSelectedFilters().trim();
+            restrictionMap = filterFrame.getSelectedFiltersMap();
+
+            if (!restrictions.isEmpty()) {
+                restrictions.add(restriction);
+                restrictionListModel.addElement(restriction);
+            }
+        } else if (evt.getSource().equals(removeIngredientButton)) {
             final int selectedIndex = ingredientList.getSelectedIndex();
             if (selectedIndex != -1) {
                 ingredients.remove(selectedIndex);
                 ingredientListModel.remove(selectedIndex);
             }
-        }
-        else if (evt.getSource().equals(searchButton)) {
+        } else if (evt.getSource().equals(searchButton)) {
             if (recipeSearchController != null) {
-                recipeSearchController.executeSearch(new ArrayList<>(ingredients));
+                if (restrictions.isEmpty()) {
+                    recipeSearchController.executeSearch(new ArrayList<>(ingredients));
+                } else {
+                    recipeSearchController.executeRestrictionSearch(restrictionMap);
+                }
             }
         }
     }
@@ -148,11 +190,14 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         if (state != null) {
             if (state.getError() != null) {
                 JOptionPane.showMessageDialog(this, state.getError());
-            }
-            else {
+            } else {
                 updateRecipeResults(state.getRecipeResults());
             }
         }
+    }
+
+    public void updateSelection(String selectionText) {
+        restrictionListModel.addElement(selectionText);
     }
 
     private void setupInputPanel() {
@@ -162,8 +207,13 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         addIngredientPanel.add(new JLabel("Enter Ingredient:"));
         addIngredientPanel.add(ingredientField);
         addIngredientPanel.add(addIngredientButton);
+        addIngredientPanel.add(addRestrictionButton);
 
         final JScrollPane ingredientScrollPane = new JScrollPane(ingredientList);
+        ingredientScrollPane.setPreferredSize(
+                new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
+
+        final JScrollPane restrictionScrollPane = new JScrollPane(restrictionList);
         ingredientScrollPane.setPreferredSize(
                 new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
 
@@ -173,6 +223,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         inputPanel.add(addIngredientPanel);
         inputPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         inputPanel.add(ingredientScrollPane);
+        inputPanel.add(restrictionScrollPane);
         inputPanel.add(removeButtonPanel);
     }
 
@@ -196,5 +247,9 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         for (String recipe : recipes) {
             recipeListModel.addElement(recipe);
         }
+    }
+
+    private static void addValueToKey(Map<String, List<String>> map, String key, String value) {
+        map.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
     }
 }
