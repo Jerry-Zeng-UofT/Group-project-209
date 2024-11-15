@@ -7,6 +7,7 @@ import entity.Nutrition;
 import data_access.RecipeSearchEdamam;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Implementation of the recipe search use case.
@@ -29,6 +30,31 @@ public class RecipeSearchImpl implements RecipeSearch {
 
             // Get recipes from Edamam API
             List<RecipeForSearch> searchResults = recipeSearchEdamam.searchRecipesByFoodName(searchQuery);
+
+            // Convert API results to Recipe entities
+            List<Recipe> recipes = convertToRecipes(searchResults);
+
+            // Present success
+            outputBoundary.presentRecipes(recipes);
+        }
+        catch (Exception e) {
+            // Present error
+            outputBoundary.presentError("Failed to search recipes: " + e.getMessage());
+            throw new RecipeSearchException("Recipe search failed", e);
+        }
+    }
+
+    @Override
+    public void searchRestrictionRecipes(Map<String, List<String>> restrictions) throws RecipeSearchException {
+        try {
+            // Join ingredients with commas for the API search
+            String searchFoodQuery = String.join(",", restrictions.get("Food Name"));
+            String searchDietQuery = String.join(",", restrictions.get("Diet Label"));
+            String searchHealthQuery = String.join(",", restrictions.get("Health Label"));
+            String searchCuisineQuery = String.join(",", restrictions.get("Cuisine Type"));
+
+            // Get recipes from Edamam API
+            List<RecipeForSearch> searchResults = recipeSearchEdamam.searchRecipesByRestriction(searchFoodQuery, searchDietQuery, searchHealthQuery, searchCuisineQuery);
 
             // Convert API results to Recipe entities
             List<Recipe> recipes = convertToRecipes(searchResults);
