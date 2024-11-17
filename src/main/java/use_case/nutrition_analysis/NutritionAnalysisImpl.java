@@ -4,6 +4,8 @@ import data_access.RecipeSearchEdamam;
 import use_case.recipe_search.RecipeSearchException;
 import entity.Nutrient;
 
+import java.util.List;
+
 /**
  * Implementation of the Nutrition Analysis use case.
  */
@@ -19,13 +21,13 @@ public class NutritionAnalysisImpl implements NutritionAnalysis {
     }
 
     @Override
-    public void analyzeNutrition(String RecipeName) throws NutritionAnalysisException {
+    public void analyzeNutrition(String RecipeName, List<String> ingredients) throws NutritionAnalysisException {
         try {
             // Get NutritionInfo from Edamam API by the RecipeName.
-            Nutrient NutritionInfo = recipeSearchEdamam.AnalyzeNutritionByRecipeName(RecipeName);
+            List<Nutrient> nutritionInfo = recipeSearchEdamam.analyzeNutrition(RecipeName, ingredients);
 
             // Present success
-            outputBoundary.presentNutritionInfo(NutritionInfo);
+            outputBoundary.presentNutritionInfo(nutritionInfo);
         }
         catch (Exception e) {
             // Present error
