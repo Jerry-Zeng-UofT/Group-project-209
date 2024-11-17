@@ -3,6 +3,7 @@ package view;
 import interface_adapter.recipe_search.RecipeSearchController;
 import interface_adapter.recipe_search.RecipeSearchState;
 import interface_adapter.recipe_search.RecipeSearchViewModel;
+import interface_adapter.recipe_search.ServingsViewModel;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -17,16 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 /**
  * A view for searching recipes by ingredients.
@@ -52,6 +44,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private final JPanel resultsPanel;
     private final DefaultListModel<String> recipeListModel;
     private final JList<String> recipeResults;
+    private final JComboBox<Integer> servingsDropdown;
     private final List<String> ingredients;
     private final JPanel restrictionPanel;
     private final JButton addRestrictionButton;
@@ -61,15 +54,20 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private Map<String, List<String>> restrictionMap;
 
     private final RecipeSearchViewModel recipeSearchViewModel;
+    private final ServingsViewModel servingsViewModel;
     private RecipeSearchController recipeSearchController;
 
     /**
      * Constructs a new RecipeSearchView.
      *
      * @param viewModel The view model for recipe search
+     * @param servingsViewModel The view model for servings
      */
-    public RecipeSearchView(RecipeSearchViewModel viewModel) {
+    public RecipeSearchView(RecipeSearchViewModel viewModel, ServingsViewModel servingsViewModel) {
         this.recipeSearchViewModel = viewModel;
+        this.servingsViewModel = servingsViewModel;
+
+        this.servingsViewModel.addPropertyChangeListener(this);
         this.recipeSearchViewModel.addPropertyChangeListener(this);
 
         // Initialize components
@@ -102,6 +100,10 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         ingredients = new ArrayList<>();
         restrictions = new ArrayList<>();
         restrictionMap = new HashMap<>();
+
+        servingsDropdown = new JComboBox<>(servingsViewModel.getAvailableServings().toArray(new Integer[0]));
+        servingsDropdown.setSelectedItem(servingsViewModel.getServings());
+        servingsDropdown.addActionListener(this);
 
         // Set up the main layout
         this.setLayout(new BorderLayout());
@@ -150,7 +152,11 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     @Override
     public void actionPerformed(ActionEvent evt) {
-        if (evt.getSource().equals(addIngredientButton)) {
+        if (evt.getSource().equals(servingsDropdown)) {
+            int selectedServings = (int) servingsDropdown.getSelectedItem();
+            servingsViewModel.setServings(selectedServings);
+        }
+        else if (evt.getSource().equals(addIngredientButton)) {
             final String ingredient = ingredientField.getText().trim();
             if (!ingredient.isEmpty()) {
                 ingredients.add(ingredient);
@@ -176,9 +182,9 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         } else if (evt.getSource().equals(searchButton)) {
             if (recipeSearchController != null) {
                 if (restrictions.isEmpty()) {
-                    recipeSearchController.executeSearch(new ArrayList<>(ingredients));
+                    recipeSearchController.executeSearch(new ArrayList<>(ingredients), servingsViewModel.getServings());
                 } else {
-                    recipeSearchController.executeRestrictionSearch(restrictionMap);
+                    recipeSearchController.executeRestrictionSearch(restrictionMap, servingsViewModel.getServings());
                 }
             }
         }
@@ -186,6 +192,9 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+        if ("servings".equals(evt.getPropertyName())) {
+            servingsDropdown.setSelectedItem(evt.getNewValue());
+        }
         RecipeSearchState state = (RecipeSearchState) evt.getNewValue();
         if (state != null) {
             if (state.getError() != null) {
@@ -194,10 +203,6 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                 updateRecipeResults(state.getRecipeResults());
             }
         }
-    }
-
-    public void updateSelection(String selectionText) {
-        restrictionListModel.addElement(selectionText);
     }
 
     private void setupInputPanel() {
@@ -209,11 +214,11 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         addIngredientPanel.add(addIngredientButton);
         addIngredientPanel.add(addRestrictionButton);
 
-        final JScrollPane ingredientScrollPane = new JScrollPane(ingredientList);
-        ingredientScrollPane.setPreferredSize(
-                new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
+        final JPanel servingsPanel = new JPanel();
+        servingsPanel.add(new JLabel("Select Servings:"));
+        servingsPanel.add(servingsDropdown);
 
-        final JScrollPane restrictionScrollPane = new JScrollPane(restrictionList);
+        final JScrollPane ingredientScrollPane = new JScrollPane(ingredientList);
         ingredientScrollPane.setPreferredSize(
                 new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
 
@@ -221,9 +226,9 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         removeButtonPanel.add(removeIngredientButton);
 
         inputPanel.add(addIngredientPanel);
+        inputPanel.add(servingsPanel);
         inputPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         inputPanel.add(ingredientScrollPane);
-        inputPanel.add(restrictionScrollPane);
         inputPanel.add(removeButtonPanel);
     }
 
