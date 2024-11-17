@@ -9,7 +9,7 @@ public interface NutritionAnalysisoutputBoundary {
      * Present the Nutrition information to the user.
      * @param NutritionInfo List of recipes to present
      */
-    void presentNutritionInfo(List<Nutrients> NutritionInfo);
+    void presentNutritionInfo(Nutrients NutritionInfo);
 
     /**
      * Present an error message to the user.
