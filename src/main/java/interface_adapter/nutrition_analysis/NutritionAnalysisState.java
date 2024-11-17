@@ -21,6 +21,13 @@ public class NutritionAnalysisState {
         this.error = copy.getError();
     }
 
+    /**
+     * Default constructor for NutritionAnalysisState.
+     */
+    public NutritionAnalysisState() {
+
+    }
+
     public String getRecipeName() {
         return recipeName;
     }

@@ -6,6 +6,7 @@ import java.util.List;
  * The class represents the NutritionInfo for food, in form of the details of each Nutrient.
  */
 public class Nutrient {
+
     private List<String> nutrients;
 
     public Nutrient(List<String> nutrients) {

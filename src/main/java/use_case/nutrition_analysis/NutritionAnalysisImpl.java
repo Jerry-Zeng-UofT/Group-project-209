@@ -10,10 +10,10 @@ import entity.Nutrient;
 public class NutritionAnalysisImpl implements NutritionAnalysis {
 
     private final RecipeSearchEdamam recipeSearchEdamam;
-    private final NutritionAnalysisoutputBoundary outputBoundary;
+    private final NutritionAnalysisOutputBoundary outputBoundary;
 
     public NutritionAnalysisImpl(RecipeSearchEdamam recipeSearchEdamam,
-                                 NutritionAnalysisoutputBoundary outputBoundary) {
+                                 NutritionAnalysisOutputBoundary outputBoundary) {
         this.recipeSearchEdamam = recipeSearchEdamam;
         this.outputBoundary = outputBoundary;
     }
