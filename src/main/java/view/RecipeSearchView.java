@@ -161,7 +161,10 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         } else if (evt.getSource().equals(addRestrictionButton)) {
             FilterFrameView filterFrame = new FilterFrameView(this);
             final String restriction = filterFrame.getSelectedFilters().trim();
-            restrictionMap = filterFrame.getSelectedFiltersMap();
+//            restrictionMap = filterFrame.getSelectedFiltersMap();
+            restrictionMap.put("Diet Types", filterFrame.getDietType());
+            restrictionMap.put("Health Types", filterFrame.getHealthType());
+            restrictionMap.put("Cuisine Types", filterFrame.getCuisineType());
 
             if (!restrictions.isEmpty()) {
                 restrictions.add(restriction);
