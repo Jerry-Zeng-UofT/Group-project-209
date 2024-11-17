@@ -2,6 +2,7 @@ package use_case.nutrition_analysis;
 
 import data_access.RecipeSearchEdamam;
 import use_case.recipe_search.RecipeSearchException;
+import entity.Nutrient;
 
 /**
  * Implementation of the Nutrition Analysis use case.
