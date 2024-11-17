@@ -68,7 +68,7 @@ public class RecipeSearchEdamam {
     /**
      * Get recipes by selecting restrictions.
      */
-    public List<RecipeForSearch> searchRecipesByRestriction(String foodName, String diet, String health, String cuisineType) {
+    public List<RecipeForSearch> searchRecipesByRestriction(String foodName, String[] diet, String[] health, String[] cuisineType) {
         List<RecipeForSearch> recipes = new ArrayList<>();
 
         HttpUrl.Builder urlBuilder = HttpUrl.parse(BASE_URL).newBuilder();
@@ -78,14 +78,20 @@ public class RecipeSearchEdamam {
         urlBuilder.addQueryParameter("app_key", APP_KEY);
 
         // Add optional filters if provided
-        if (diet != null && !diet.isEmpty()) {
-            urlBuilder.addQueryParameter("diet", diet);
+        if (diet != null) {
+            for (String d : diet) {
+                urlBuilder.addQueryParameter("diet", d);
+            }
         }
-        if (health != null && !health.isEmpty()) {
-            urlBuilder.addQueryParameter("health", health);
+        if (health != null) {
+            for (String h : health) {
+                urlBuilder.addQueryParameter("health", h);
+            }
         }
-        if (cuisineType != null && !cuisineType.isEmpty()) {
-            urlBuilder.addQueryParameter("cuisineType", cuisineType);
+        if (cuisineType != null && cuisineType.length != 0) {
+            for (String c : cuisineType) {
+                urlBuilder.addQueryParameter("cuisineType", c);
+            }
         }
 
         Request request = new Request.Builder()

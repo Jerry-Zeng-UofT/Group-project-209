@@ -146,31 +146,61 @@ public class FilterFrameView extends JFrame {
         return resultText.toString();
     }
 
-    public Map<String, List<String>> getSelectedFiltersMap() {
-        final Map<String, List<String>> filtersMap = new HashMap<>();
+//    public Map<String, List<String>> getSelectedFiltersMap() {
+//        final Map<String, List<String>> filtersMap = new HashMap<>();
+//
+//        // Diet Label
+//        for (JCheckBox checkBox : getCheckBoxes(dietPanel)) {
+//            if (checkBox.isSelected()) {
+//                addValueToKey(filtersMap, "Diet Types", checkBox.getText());
+//            }
+//        }
+//
+//        // Health Label
+//        for (JCheckBox checkBox : getCheckBoxes(healthPanel)) {
+//            if (checkBox.isSelected()) {
+//                addValueToKey(filtersMap, "Health Types", checkBox.getText());
+//            }
+//        }
+//
+//        // Cuisine Type
+//        for (JCheckBox checkBox : getCheckBoxes(cuisinePanel)) {
+//            if (checkBox.isSelected()) {
+//                addValueToKey(filtersMap, "Cuisine Types", checkBox.getText());
+//            }
+//        }
+//
+//        return filtersMap;
+//    }
 
-        // Diet Label
+    public List<String> getDietType() {
+        ArrayList<String> dietList = new ArrayList<>();
         for (JCheckBox checkBox : getCheckBoxes(dietPanel)) {
             if (checkBox.isSelected()) {
-                addValueToKey(filtersMap, "Diet Types", checkBox.getText());
+                dietList.add(checkBox.getText());
             }
         }
+        return dietList;
+    }
 
-        // Health Label
+    public List<String> getHealthType() {
+        ArrayList<String> healthList = new ArrayList<>();
         for (JCheckBox checkBox : getCheckBoxes(healthPanel)) {
             if (checkBox.isSelected()) {
-                addValueToKey(filtersMap, "Health Labels", checkBox.getText());
+                healthList.add(checkBox.getText());
             }
         }
+        return healthList;
+    }
 
-        // Cuisine Type
+    public List<String> getCuisineType() {
+        ArrayList<String> cuisineList = new ArrayList<>();
         for (JCheckBox checkBox : getCheckBoxes(cuisinePanel)) {
             if (checkBox.isSelected()) {
-                addValueToKey(filtersMap, "Cuisine Types", checkBox.getText());
+                cuisineList.add(checkBox.getText());
             }
         }
-
-        return filtersMap;
+        return cuisineList;
     }
 
     private static void addValueToKey(Map<String, List<String>> map, String key, String value) {

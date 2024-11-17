@@ -49,9 +49,9 @@ public class RecipeSearchImpl implements RecipeSearch {
         try {
             // Join ingredients with commas for the API search
             String searchFoodQuery = String.join(",", restrictions.get("Food Name"));
-            String searchDietQuery = String.join(",", restrictions.get("Diet Label"));
-            String searchHealthQuery = String.join(",", restrictions.get("Health Label"));
-            String searchCuisineQuery = String.join(",", restrictions.get("Cuisine Type"));
+            String[] searchDietQuery = restrictions.get("Diet Label").toArray(new String[0]);
+            String[] searchHealthQuery = restrictions.get("Health Label").toArray(new String[0]);
+            String[] searchCuisineQuery = restrictions.get("Cuisine Label").toArray(new String[0]);
 
             // Get recipes from Edamam API
             List<RecipeForSearch> searchResults = recipeSearchEdamam.searchRecipesByRestriction(searchFoodQuery, searchDietQuery, searchHealthQuery, searchCuisineQuery);
