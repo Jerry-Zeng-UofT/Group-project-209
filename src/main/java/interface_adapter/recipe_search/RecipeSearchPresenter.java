@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Presenter for the recipe search functionality.
+ * Presenter for the recipe search use case.
  */
 public class RecipeSearchPresenter implements RecipeSearchOutputBoundary {
     private final RecipeSearchViewModel viewModel;
@@ -21,6 +21,10 @@ public class RecipeSearchPresenter implements RecipeSearchOutputBoundary {
         RecipeSearchState state = new RecipeSearchState();
         List<String> recipeResults = new ArrayList<>();
 
+        // Store the actual Recipe objects
+        state.setRecipes(recipes);
+
+        // Create string representations for display
         for (Recipe recipe : recipes) {
             StringBuilder description = new StringBuilder();
             description.append(recipe.getTitle()).append("\n");
@@ -40,6 +44,14 @@ public class RecipeSearchPresenter implements RecipeSearchOutputBoundary {
     public void presentError(String error) {
         RecipeSearchState state = new RecipeSearchState();
         state.setError(error);
+        viewModel.setState(state);
+        viewModel.firePropertyChanged();
+    }
+
+    @Override
+    public void presentSaveSuccess(Recipe recipe) {
+        RecipeSearchState state = new RecipeSearchState();
+        state.setMessage("Recipe '" + recipe.getTitle() + "' saved successfully!");
         viewModel.setState(state);
         viewModel.firePropertyChanged();
     }
