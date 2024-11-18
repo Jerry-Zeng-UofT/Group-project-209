@@ -3,9 +3,7 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class FilterFrameView extends JFrame {
     private static final int WINDOW_WIDTH = 500;
@@ -146,33 +144,6 @@ public class FilterFrameView extends JFrame {
         return resultText.toString();
     }
 
-//    public Map<String, List<String>> getSelectedFiltersMap() {
-//        final Map<String, List<String>> filtersMap = new HashMap<>();
-//
-//        // Diet Label
-//        for (JCheckBox checkBox : getCheckBoxes(dietPanel)) {
-//            if (checkBox.isSelected()) {
-//                addValueToKey(filtersMap, "Diet Types", checkBox.getText());
-//            }
-//        }
-//
-//        // Health Label
-//        for (JCheckBox checkBox : getCheckBoxes(healthPanel)) {
-//            if (checkBox.isSelected()) {
-//                addValueToKey(filtersMap, "Health Types", checkBox.getText());
-//            }
-//        }
-//
-//        // Cuisine Type
-//        for (JCheckBox checkBox : getCheckBoxes(cuisinePanel)) {
-//            if (checkBox.isSelected()) {
-//                addValueToKey(filtersMap, "Cuisine Types", checkBox.getText());
-//            }
-//        }
-//
-//        return filtersMap;
-//    }
-
     public List<String> getDietType() {
         ArrayList<String> dietList = new ArrayList<>();
         for (JCheckBox checkBox : getCheckBoxes(dietPanel)) {
@@ -203,10 +174,6 @@ public class FilterFrameView extends JFrame {
         return cuisineList;
     }
 
-    private static void addValueToKey(Map<String, List<String>> map, String key, String value) {
-        map.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
-    }
-
     private void cancelAction() {
         mainFrame.setVisible(true);
         this.setVisible(false);
@@ -218,4 +185,3 @@ public class FilterFrameView extends JFrame {
         this.setVisible(false);
     }
 }
-
