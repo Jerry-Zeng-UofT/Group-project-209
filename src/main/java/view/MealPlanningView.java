@@ -416,6 +416,7 @@ public class MealPlanningView extends JPanel implements ActionListener, Property
             } else if (command.startsWith("REMOVE_")) {
                 int entryId = Integer.parseInt(command.substring(7));
                 controller.removeFromCalendar(getCurrentUserId(), entryId);
+                controller.viewCalendarWeek(getCurrentUserId(), state.getCurrentWeekStart());
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this),
