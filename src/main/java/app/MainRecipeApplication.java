@@ -11,17 +11,9 @@ import data_access.RecipeSearchEdamam;
  * </p>
  */
 public class MainRecipeApplication {
-
     /**
-     * The main entry point of the application.
-     * <p>
-     * The program will show a search interface where users can:
-     * - Add ingredients to their search
-     * - Remove ingredients from their search
-     * - Search for recipes matching their ingredients
-     * - View recipe results including ingredients and basic instructions
-     * </p>
-     * @param args commandline arguments are ignored
+     * Main method for the Recipe Application.
+     * @param args The command line arguments
      */
     public static void main(String[] args) {
         // Create the data access object for recipe search
@@ -29,10 +21,15 @@ public class MainRecipeApplication {
 
         // Create and configure the application using the builder
         final RecipeAppBuilder builder = new RecipeAppBuilder();
+
+        // Build the application with correct order
         builder.addRecipeSearchAPI(recipeSearchEdamam)
+                .addMealPlanningView()
+                .addMealPlanningUseCase()
                 .addRecipeSearchView()
-                .addRecipeSearchUseCase()
-                .build()
-                .setVisible(true);
+                .addRecipeSearchUseCase();
+
+        // Build and show the frame
+        builder.build().setVisible(true);
     }
 }
