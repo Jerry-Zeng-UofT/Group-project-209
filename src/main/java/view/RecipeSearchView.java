@@ -3,10 +3,12 @@ package view;
 import interface_adapter.recipe_search.RecipeSearchController;
 import interface_adapter.recipe_search.RecipeSearchState;
 import interface_adapter.recipe_search.RecipeSearchViewModel;
-import entity.Recipe;
+import interface_adapter.recipe_search.ServingsViewModel;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -16,6 +18,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.*;
+
+/**
+ * A view for searching recipes by ingredients.
+ */
 public class RecipeSearchView extends JPanel implements ActionListener, PropertyChangeListener {
 
     private static final int TEXTFIELD_WIDTH = 20;
@@ -37,6 +44,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private final JPanel resultsPanel;
     private final DefaultListModel<String> recipeListModel;
     private final JList<String> recipeResults;
+    private final JComboBox<Integer> servingsDropdown;
     private final List<String> ingredients;
     private final JPanel restrictionPanel;
     private final JButton addRestrictionButton;
@@ -44,30 +52,43 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private final JList<String> restrictionList;
     private final List<String> restrictions;
     private Map<String, List<String>> restrictionMap;
-    private final JButton saveRecipeButton;
 
     private final RecipeSearchViewModel recipeSearchViewModel;
+    private final ServingsViewModel servingsViewModel;
     private RecipeSearchController recipeSearchController;
 
-    // Optional reference to meal planning view for updates
-    private MealPlanningView mealPlanningView;
-
-    public RecipeSearchView(RecipeSearchViewModel viewModel) {
+    /**
+     * Constructs a new RecipeSearchView.
+     *
+     * @param viewModel The view model for recipe search
+     * @param servingsViewModel The view model for servings
+     */
+    public RecipeSearchView(RecipeSearchViewModel viewModel, ServingsViewModel servingsViewModel) {
         this.recipeSearchViewModel = viewModel;
+        this.servingsViewModel = servingsViewModel;
+
+        this.servingsViewModel.addPropertyChangeListener(this);
         this.recipeSearchViewModel.addPropertyChangeListener(this);
 
         // Initialize components
+        // Labels
         title = new JLabel(RecipeSearchViewModel.TITLE_LABEL);
+
+        // Panels
         inputPanel = new JPanel();
         restrictionPanel = new JPanel();
         resultsPanel = new JPanel();
+
+        // Text Field
         ingredientField = new JTextField(TEXTFIELD_WIDTH);
+
+        // Buttons
         addIngredientButton = new JButton(RecipeSearchViewModel.ADD_INGREDIENT_BUTTON_LABEL);
         removeIngredientButton = new JButton(RecipeSearchViewModel.REMOVE_INGREDIENT_BUTTON_LABEL);
         searchButton = new JButton(RecipeSearchViewModel.SEARCH_BUTTON_LABEL);
         addRestrictionButton = new JButton(RecipeSearchViewModel.ADD_RESTRICTION_LABEL);
-        saveRecipeButton = new JButton("Save Recipe");
 
+        // Lists and Models
         ingredientListModel = new DefaultListModel<>();
         ingredientList = new JList<>(ingredientListModel);
         restrictionListModel = new DefaultListModel<>();
@@ -75,24 +96,33 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         recipeListModel = new DefaultListModel<>();
         recipeResults = new JList<>(recipeListModel);
 
+        // Data Structures
         ingredients = new ArrayList<>();
         restrictions = new ArrayList<>();
         restrictionMap = new HashMap<>();
 
+        servingsDropdown = new JComboBox<>(servingsViewModel.getAvailableServings().toArray(new Integer[0]));
+        servingsDropdown.setSelectedItem(servingsViewModel.getServings());
+        servingsDropdown.addActionListener(this);
+
+        // Set up the main layout
         this.setLayout(new BorderLayout());
 
+        // Configure the title
         title.setFont(new Font(title.getFont().getName(), Font.BOLD, TITLE_FONT_SIZE));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // Set up panels
         setupInputPanel();
         setupResultsPanel();
 
+        // Add action listeners
         addIngredientButton.addActionListener(this);
         removeIngredientButton.addActionListener(this);
         searchButton.addActionListener(this);
         addRestrictionButton.addActionListener(this);
-        saveRecipeButton.addActionListener(this);
 
+        // Main panel assembly
         final JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
@@ -109,18 +139,24 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         this.add(mainPanel, BorderLayout.CENTER);
     }
 
+    /**
+     * Sets the controller for this view.
+     *
+     * @param controller The controller to set
+     */
     public void setRecipeSearchController(RecipeSearchController controller) {
         this.recipeSearchController = controller;
     }
 
-    // Method to set reference to meal planning view
-    public void setMealPlanningView(MealPlanningView mealPlanningView) {
-        this.mealPlanningView = mealPlanningView;
-    }
+    // ... (keep existing panel setup methods the same) ...
 
     @Override
     public void actionPerformed(ActionEvent evt) {
-        if (evt.getSource().equals(addIngredientButton)) {
+        if (evt.getSource().equals(servingsDropdown)) {
+            int selectedServings = (int) servingsDropdown.getSelectedItem();
+            servingsViewModel.setServings(selectedServings);
+        }
+        else if (evt.getSource().equals(addIngredientButton)) {
             final String ingredient = ingredientField.getText().trim();
             if (!ingredient.isEmpty()) {
                 ingredients.add(ingredient);
@@ -128,61 +164,45 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                 ingredientListModel.addElement(ingredient);
                 ingredientField.setText("");
             }
-        }
-        else if (evt.getSource().equals(addRestrictionButton)) {
+        } else if (evt.getSource().equals(addRestrictionButton)) {
             FilterFrameView filterFrame = new FilterFrameView(this);
             final String restriction = filterFrame.getSelectedFilters().trim();
             restrictionMap = filterFrame.getSelectedFiltersMap();
 
-            if (!restriction.isEmpty()) {
+            if (!restrictions.isEmpty()) {
                 restrictions.add(restriction);
                 restrictionListModel.addElement(restriction);
             }
-        }
-        else if (evt.getSource().equals(saveRecipeButton)) {
-            int selectedIndex = recipeResults.getSelectedIndex();
-            if (selectedIndex != -1 && recipeSearchController != null) {
-                RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
-                if (state != null) {
-                    List<Recipe> recipes = state.getRecipes();
-                    if (selectedIndex < recipes.size()) {
-                        Recipe selectedRecipe = recipes.get(selectedIndex);
-                        recipeSearchController.saveRecipe(getCurrentUserId(), selectedRecipe);
-
-                        // Refresh meal planning view if available
-                        if (mealPlanningView != null && mealPlanningView.getController() != null) {
-                            mealPlanningView.refreshSavedRecipes();
-                        }
-                    }
-                }
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Please select a recipe to save first.",
-                        "No Recipe Selected",
-                        JOptionPane.WARNING_MESSAGE);
-            }
-        }
-        else if (evt.getSource().equals(removeIngredientButton)) {
+        } else if (evt.getSource().equals(removeIngredientButton)) {
             final int selectedIndex = ingredientList.getSelectedIndex();
             if (selectedIndex != -1) {
                 ingredients.remove(selectedIndex);
                 ingredientListModel.remove(selectedIndex);
             }
-        }
-        else if (evt.getSource().equals(searchButton)) {
+        } else if (evt.getSource().equals(searchButton)) {
             if (recipeSearchController != null) {
                 if (restrictions.isEmpty()) {
-                    recipeSearchController.executeSearch(new ArrayList<>(ingredients));
-                }
-                else {
-                    recipeSearchController.executeRestrictionSearch(restrictionMap);
+                    recipeSearchController.executeSearch(new ArrayList<>(ingredients), servingsViewModel.getServings());
+                } else {
+                    recipeSearchController.executeRestrictionSearch(restrictionMap, servingsViewModel.getServings());
                 }
             }
         }
     }
 
-    private int getCurrentUserId() {
-        return 1; // For testing purposes
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("servings".equals(evt.getPropertyName())) {
+            servingsDropdown.setSelectedItem(evt.getNewValue());
+        }
+        RecipeSearchState state = (RecipeSearchState) evt.getNewValue();
+        if (state != null) {
+            if (state.getError() != null) {
+                JOptionPane.showMessageDialog(this, state.getError());
+            } else {
+                updateRecipeResults(state.getRecipeResults());
+            }
+        }
     }
 
     private void setupInputPanel() {
@@ -194,21 +214,21 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         addIngredientPanel.add(addIngredientButton);
         addIngredientPanel.add(addRestrictionButton);
 
+        final JPanel servingsPanel = new JPanel();
+        servingsPanel.add(new JLabel("Select Servings:"));
+        servingsPanel.add(servingsDropdown);
+
         final JScrollPane ingredientScrollPane = new JScrollPane(ingredientList);
         ingredientScrollPane.setPreferredSize(
-                new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
-
-        final JScrollPane restrictionScrollPane = new JScrollPane(restrictionList);
-        restrictionScrollPane.setPreferredSize(
                 new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
 
         final JPanel removeButtonPanel = new JPanel();
         removeButtonPanel.add(removeIngredientButton);
 
         inputPanel.add(addIngredientPanel);
+        inputPanel.add(servingsPanel);
         inputPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         inputPanel.add(ingredientScrollPane);
-        inputPanel.add(restrictionScrollPane);
         inputPanel.add(removeButtonPanel);
     }
 
@@ -222,37 +242,9 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         resultsScrollPane.setPreferredSize(
                 new Dimension(RESULTS_LIST_WIDTH, RESULTS_LIST_HEIGHT));
 
-        saveRecipeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
         resultsPanel.add(resultsLabel);
         resultsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         resultsPanel.add(resultsScrollPane);
-        resultsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
-        resultsPanel.add(saveRecipeButton);
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        RecipeSearchState state = (RecipeSearchState) evt.getNewValue();
-        if (state != null) {
-            if (state.getError() != null) {
-                JOptionPane.showMessageDialog(this,
-                        state.getError(),
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            } else if (state.getMessage() != null) {
-                JOptionPane.showMessageDialog(this,
-                        state.getMessage(),
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                updateRecipeResults(state.getRecipeResults());
-            }
-        }
-    }
-
-    public void updateSelection(String selectionText) {
-        restrictionListModel.addElement(selectionText);
     }
 
     private void updateRecipeResults(List<String> recipes) {
