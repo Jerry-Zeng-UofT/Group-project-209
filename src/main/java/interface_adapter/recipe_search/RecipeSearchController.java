@@ -1,5 +1,6 @@
 package interface_adapter.recipe_search;
 
+import entity.Recipe;
 import use_case.recipe_search.RecipeSearch;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,15 @@ public class RecipeSearchController {
         }
         catch (Exception e) {
             // Error will be handled by the presenter through output boundary
+        }
+    }
+
+    public void saveRecipe(int userId, Recipe recipe) {
+        try {
+            recipeSearchUseCase.saveRecipe(userId, recipe);
+        }
+        catch (Exception e) {
+            // Error will be handled by the presenter
         }
     }
 }
