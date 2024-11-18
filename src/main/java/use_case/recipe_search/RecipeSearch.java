@@ -21,4 +21,6 @@ public interface RecipeSearch {
      * @throws RecipeSearchException if search fails
      */
     void searchRestrictionRecipes(Map<String, List<String>> restrictions) throws RecipeSearchException;
+
+    void saveRecipe(int userId, Recipe recipe) throws RecipeSearchException;
 }

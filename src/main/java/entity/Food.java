@@ -70,4 +70,3 @@ public class Food {
         this.nutrition = nutrition;
     }
 }
-
