@@ -3,9 +3,6 @@ package use_case.recipe_search;
 import entity.Recipe;
 import java.util.List;
 
-/**
- * Output boundary for the recipe search use case.
- */
 public interface RecipeSearchOutputBoundary {
     /**
      * Present the recipes to the user.
@@ -18,4 +15,10 @@ public interface RecipeSearchOutputBoundary {
      * @param error Error message to present
      */
     void presentError(String error);
+
+    /**
+     * Present a success message when a recipe is saved.
+     * @param recipe The recipe that was successfully saved
+     */
+    void presentSaveSuccess(Recipe recipe);
 }
