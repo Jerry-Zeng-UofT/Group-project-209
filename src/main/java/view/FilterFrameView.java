@@ -188,3 +188,4 @@ public class FilterFrameView extends JFrame {
         this.setVisible(false);
     }
 }
+

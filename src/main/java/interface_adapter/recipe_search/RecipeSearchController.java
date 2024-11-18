@@ -19,9 +19,9 @@ public class RecipeSearchController {
      * Execute a recipe search with the given ingredients.
      * @param ingredients List of ingredients to search for
      */
-    public void executeSearch(List<String> ingredients, int servings) {
+    public void executeSearch(List<String> ingredients) {
         try {
-            recipeSearchUseCase.searchRecipes(ingredients, servings);
+            recipeSearchUseCase.searchRecipes(ingredients);
         }
         catch (Exception e) {
             // Error will be handled by the presenter through output boundary
@@ -32,9 +32,9 @@ public class RecipeSearchController {
      * Execute a recipe search with the given restrictions.
      * @param ingredients Map of ingredients to search for
      */
-    public void executeRestrictionSearch(Map<String, List<String>> ingredients, int servings) {
+    public void executeRestrictionSearch(Map<String, List<String>> ingredients) {
         try {
-            recipeSearchUseCase.searchRestrictionRecipes(ingredients, servings);
+            recipeSearchUseCase.searchRestrictionRecipes(ingredients);
         }
         catch (Exception e) {
             // Error will be handled by the presenter through output boundary
@@ -50,3 +50,4 @@ public class RecipeSearchController {
         }
     }
 }
+

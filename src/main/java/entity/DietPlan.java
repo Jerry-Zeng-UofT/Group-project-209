@@ -62,3 +62,4 @@ public class DietPlan {
         this.goals = goals;
     }
 }
+
