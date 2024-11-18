@@ -1,7 +1,6 @@
 package view;
 
 import interface_adapter.nutrition_analysis.NutritionAnalysisController;
-import interface_adapter.recipe_search.RecipeSearchController;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -26,12 +25,10 @@ public class NutritionAnalysisView extends JFrame {
 
         // Set the layout manager for the frame
         setLayout(new BorderLayout(10, 10));
-        // Add gaps between components
 
         // Create a JPanel for the input fields and button
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new GridLayout(3, 2, 5, 5));
-        // 3 rows, 2 columns, with gaps
 
         // Labels and text fields
         JLabel label1 = new JLabel("Enter The recipe Name:");
@@ -41,8 +38,6 @@ public class NutritionAnalysisView extends JFrame {
         textField2 = new JTextField(15);
 
         JButton analyzeButton = new JButton("Analyze");
-
-
 
         // Add components to the input panel
         inputPanel.add(label1);
