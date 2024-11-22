@@ -1,53 +1,72 @@
 package entity;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The Recipe entity which contains ingredients and other details.
  */
-public class RecipeForSearch {
+public final class RecipeForSearch {
 
-    private String title;
-    private String description;
-    private List<String> ingredients;
-    private String instructions;
+    private final String title;
+    private final String description;
+    private final List<Ingredient> ingredients;
+    private final String instructions;
 
-    public RecipeForSearch(String title, String description, List<String> ingredients) {
+    /**
+     * Constructor for RecipeForSearch.
+     *
+     * @param title       The title of the recipe.
+     * @param description The description of the recipe.
+     * @param ingredients The list of ingredients for the recipe.
+     */
+    public RecipeForSearch(String title, String description, List<Ingredient> ingredients) {
         this.title = title;
         this.description = description;
-        this.ingredients = ingredients;
+        this.ingredients = Collections.unmodifiableList(ingredients);
         this.instructions = "Instructions not available";
+    }
+
+    /**
+     * Overloaded constructor for RecipeForSearch with instructions.
+     */
+    public RecipeForSearch(String title, String description, List<Ingredient> ingredients, String instructions) {
+        this(title, description, ingredients);
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<String> getIngredients() {
+    public List<Ingredient> getIngredients() {
         return ingredients;
-    }
-
-    public void setIngredients(List<String> ingredients) {
-        this.ingredients = ingredients;
     }
 
     public String getInstructions() {
         return instructions;
     }
 
-    public void setInstructions(String instructions) {
-        this.instructions = instructions;
+    /**
+     * Scale the quantities of all ingredients by the given factor.
+     *
+     * @param factor The scaling factor (e.g., 2.0 for doubling).
+     * @return A new RecipeForSearch with scaled ingredient quantities.
+     * @throws IllegalArgumentException if the scaling factor is negative.
+     */
+    public RecipeForSearch scaleIngredients(double factor) {
+        if (factor < 0) {
+            throw new IllegalArgumentException("Scaling factor cannot be negative.");
+        }
+
+        List<Ingredient> scaledIngredients = ingredients.stream()
+                .map(ingredient -> ingredient.scaleQuantity(factor))
+                .toList();
+
+        return new RecipeForSearch(title, description, scaledIngredients, instructions);
     }
 }
