@@ -3,9 +3,7 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class FilterFrameView extends JFrame {
     private static final int WINDOW_WIDTH = 500;
@@ -146,35 +144,34 @@ public class FilterFrameView extends JFrame {
         return resultText.toString();
     }
 
-    public Map<String, List<String>> getSelectedFiltersMap() {
-        final Map<String, List<String>> filtersMap = new HashMap<>();
-
-        // Diet Label
+    public List<String> getDietType() {
+        ArrayList<String> dietList = new ArrayList<>();
         for (JCheckBox checkBox : getCheckBoxes(dietPanel)) {
             if (checkBox.isSelected()) {
-                addValueToKey(filtersMap, "Diet Types", checkBox.getText());
+                dietList.add(checkBox.getText());
             }
         }
-
-        // Health Label
-        for (JCheckBox checkBox : getCheckBoxes(healthPanel)) {
-            if (checkBox.isSelected()) {
-                addValueToKey(filtersMap, "Health Labels", checkBox.getText());
-            }
-        }
-
-        // Cuisine Type
-        for (JCheckBox checkBox : getCheckBoxes(cuisinePanel)) {
-            if (checkBox.isSelected()) {
-                addValueToKey(filtersMap, "Cuisine Types", checkBox.getText());
-            }
-        }
-
-        return filtersMap;
+        return dietList;
     }
 
-    private static void addValueToKey(Map<String, List<String>> map, String key, String value) {
-        map.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+    public List<String> getHealthType() {
+        ArrayList<String> healthList = new ArrayList<>();
+        for (JCheckBox checkBox : getCheckBoxes(healthPanel)) {
+            if (checkBox.isSelected()) {
+                healthList.add(checkBox.getText());
+            }
+        }
+        return healthList;
+    }
+
+    public List<String> getCuisineType() {
+        ArrayList<String> cuisineList = new ArrayList<>();
+        for (JCheckBox checkBox : getCheckBoxes(cuisinePanel)) {
+            if (checkBox.isSelected()) {
+                cuisineList.add(checkBox.getText());
+            }
+        }
+        return cuisineList;
     }
 
     private void cancelAction() {
@@ -188,4 +185,3 @@ public class FilterFrameView extends JFrame {
         this.setVisible(false);
     }
 }
-

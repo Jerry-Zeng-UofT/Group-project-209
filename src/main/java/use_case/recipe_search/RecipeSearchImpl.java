@@ -1,5 +1,6 @@
 package use_case.recipe_search;
 
+import data_access.SavedRecipesDataAccess;
 import entity.Recipe;
 import entity.RecipeForSearch;
 import entity.Ingredient;
@@ -9,17 +10,33 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- * Implementation of the recipe search use case.
- */
 public class RecipeSearchImpl implements RecipeSearch {
     private final RecipeSearchEdamam recipeSearchEdamam;
     private final RecipeSearchOutputBoundary outputBoundary;
+    private final SavedRecipesDataAccess savedRecipesDataAccess;
 
     public RecipeSearchImpl(RecipeSearchEdamam recipeSearchEdamam,
+                            SavedRecipesDataAccess savedRecipesDataAccess,
                             RecipeSearchOutputBoundary outputBoundary) {
         this.recipeSearchEdamam = recipeSearchEdamam;
+        this.savedRecipesDataAccess = savedRecipesDataAccess;
         this.outputBoundary = outputBoundary;
+    }
+
+    @Override
+    public void saveRecipe(int userId, Recipe recipe) throws RecipeSearchException {
+        try {
+            // Save the recipe
+            savedRecipesDataAccess.saveRecipe(userId, recipe);
+
+            // Present success
+            outputBoundary.presentSaveSuccess(recipe);
+        }
+        catch (Exception e) {
+            // Present error
+            outputBoundary.presentError("Failed to save recipe: " + e.getMessage());
+            throw new RecipeSearchException("Failed to save recipe", e);
+        }
     }
 
     @Override
@@ -54,12 +71,13 @@ public class RecipeSearchImpl implements RecipeSearch {
             String searchCuisineQuery = String.join(",", restrictions.get("Cuisine Type"));
 
             // Get recipes from Edamam API
-            List<RecipeForSearch> searchResults = recipeSearchEdamam.searchRecipesByRestriction(searchFoodQuery, searchDietQuery, searchHealthQuery, searchCuisineQuery);
+            List<RecipeForSearch> searchResults = recipeSearchEdamam.searchRecipesByRestriction(
+                    searchFoodQuery, searchDietQuery, searchHealthQuery, searchCuisineQuery);
 
             // Convert API results to Recipe entities
             List<Recipe> recipes = convertToRecipes(searchResults);
 
-            // Present success
+            // // Present success
             outputBoundary.presentRecipes(recipes);
         }
         catch (Exception e) {
@@ -81,8 +99,8 @@ public class RecipeSearchImpl implements RecipeSearch {
                 ingredients.add(new Ingredient(
                         ingredientId++,
                         ingredientStr,
-                        0.0,  // Default quantity
-                        ""    // Default unit
+                        0.0,
+                        ""
                 ));
             }
 
@@ -92,8 +110,8 @@ public class RecipeSearchImpl implements RecipeSearch {
                     result.getTitle(),
                     ingredients,
                     result.getInstructions(),
-                    new Nutrition(0, 0, 0, 0, 0, 0),  // Default nutrition
-                    new ArrayList<>()  // Empty food list
+                    new Nutrition(0, 0, 0, 0, 0, 0), // Default nutrition
+                    new ArrayList<>() // Empty food list
             );
 
             recipes.add(recipe);

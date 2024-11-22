@@ -1,13 +1,18 @@
 package data_access;
 
-import entity.Nutrient;
+import entity.*;
+
 import entity.RecipeForSearch;
+
+import java.util.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.*;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -15,7 +20,6 @@ public class RecipeSearchEdamam {
     private static final String APP_ID = "35f28703";
     private static final String APP_KEY = "acb2a3e8e5cd69c1e0bcacefd85ea880";
     private static final String BASE_URL = "https://api.edamam.com/api/recipes/v2";
-    private static final String NA_URL = "https://api.edamam.com/api/nutrition-details";
     private final OkHttpClient httpClient = new OkHttpClient();
 
     /**
@@ -123,54 +127,67 @@ public class RecipeSearchEdamam {
     }
 
     /**
-     * Get totalNutrients from a POST request from the API.
-     * @param recipeName   The recipe name.
-     * @param ingredients  A list of ingredients.
-     * @return A Nutrient entity
-     * @throws IOException If an I/O error occurs.
+     * Retrieve detailed recipe information by recipe ID.
+     * Needed for meal planning to get full recipe details when adding to calendar.
      */
-    public List<Nutrient> analyzeNutrition(String recipeName, List<String> ingredients) throws IOException {
-        List<Nutrient> nutrientsList = new ArrayList<>();
 
-        // Build the URL using HttpUrl.Builder
-        HttpUrl urlBuilder = HttpUrl.parse(NA_URL).newBuilder().addQueryParameter("app_id", APP_ID).addQueryParameter("app_key", APP_KEY).build();
-
-        // Build the request body.
-        JSONObject requestBody = new JSONObject();
-        requestBody.put("title", recipeName);
-        requestBody.put("ingr", ingredients);
+    public Recipe getRecipeById(String recipeId) {
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(BASE_URL).newBuilder();
+        urlBuilder.addQueryParameter("type", "public");
+        urlBuilder.addQueryParameter("id", recipeId);
+        urlBuilder.addQueryParameter("app_id", APP_ID);
+        urlBuilder.addQueryParameter("app_key", APP_KEY);
 
         Request request = new Request.Builder()
-                .url(urlBuilder)
-                .post(RequestBody.create(
-                        requestBody.toString(),
-                        MediaType.get("application/json; charset=utf-8")
-                ))
+                .url(urlBuilder.build().toString())
                 .build();
 
         try (Response response = httpClient.newCall(request).execute()) {
             if (response.body() != null) {
                 String jsonData = response.body().string();
                 JSONObject jsonObject = new JSONObject(jsonData);
-                JSONObject totalNutrients = jsonObject.getJSONObject("totalNutrients");
+                JSONObject recipeJson = jsonObject.getJSONObject("recipe");
 
-                // Iterate over each nutrient in the JSON object totalNutrients.
-                for (String key : totalNutrients.keySet()) {
-                    // Extract
-                    JSONObject nutrient = totalNutrients.getJSONObject(key);
+                // Extract basic info
+                String name = recipeJson.getString("label");
+                String instructions = recipeJson.optString("url", "Instructions not available");
 
-                    // Combine the values into a string and add them to the list
-                    String aNutrient = "Label: " + nutrient.getString("label")
-                            + ", Quantity: " + nutrient.getInt("quantity")
-                            + ", Unit: " + nutrient.getString("unit");
+                // Extract ingredients
+                List<Ingredient> ingredients = new ArrayList<>();
+                JSONArray ingredientsArray = recipeJson.getJSONArray("ingredients");
+                for (int i = 0; i < ingredientsArray.length(); i++) {
+                    JSONObject ingredientJson = ingredientsArray.getJSONObject(i);
+                    int ingredientId = i + 1;
+                    String ingredientName = ingredientJson.getString("food");
+                    double quantity = ingredientJson.optDouble("quantity", 0.0);
+                    String unit = ingredientJson.optString("measure", "");
 
-                    nutrientsList.add(new Nutrient(aNutrient));
+                    ingredients.add(new Ingredient(ingredientId, ingredientName, quantity, unit));
                 }
+
+                // Extract nutrition
+                JSONObject nutritionJson = recipeJson.getJSONObject("totalNutrients");
+                Nutrition nutrition = new Nutrition(
+                        nutritionJson.getJSONObject("ENERC_KCAL").getDouble("quantity"),
+                        nutritionJson.getJSONObject("PROCNT").getDouble("quantity"),
+                        nutritionJson.getJSONObject("FAT").getDouble("quantity"),
+                        nutritionJson.getJSONObject("CHOCDF").getDouble("quantity"),
+                        nutritionJson.getJSONObject("FIBTG").getDouble("quantity"),
+                        nutritionJson.getJSONObject("SUGAR").getDouble("quantity")
+                );
+
+                return new Recipe(
+                        Integer.parseInt(recipeId),
+                        name,
+                        ingredients,
+                        instructions,
+                        nutrition,
+                        new ArrayList<>()  // Food list
+                );
             }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to get recipe details: " + e.getMessage());
         }
-        catch (IOException e) {
-            throw new IOException(e);
-        }
-        return nutrientsList;
+        return null;
     }
 }
