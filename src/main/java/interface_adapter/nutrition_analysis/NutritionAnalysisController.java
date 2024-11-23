@@ -1,5 +1,6 @@
 package interface_adapter.nutrition_analysis;
 
+import entity.Recipe;
 import use_case.nutrition_analysis.NutritionAnalysis;
 
 import java.util.List;
@@ -19,9 +20,9 @@ public class NutritionAnalysisController {
      * @param RecipeName the name of the recipe the user wants to analyze.
      * @param ingredient the list of ingredients of this recipe.
      */
-    public void executeAnalysis(String RecipeName, List<String> ingredient) {
+    public void executeAnalysis(Recipe recipe) {
         try {
-            nutritionAnalysisUseCase.analyzeNutrition(RecipeName, ingredient);
+            nutritionAnalysisUseCase.analyzeNutrition(recipe);
         }
         catch (Exception e) {
             // Error will be handled by the presenter through output boundary

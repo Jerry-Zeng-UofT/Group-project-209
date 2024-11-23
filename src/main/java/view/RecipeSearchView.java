@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.nutrition_analysis.NutritionAnalysisController;
 import interface_adapter.recipe_search.RecipeSearchController;
 import interface_adapter.recipe_search.RecipeSearchState;
 import interface_adapter.recipe_search.RecipeSearchViewModel;
@@ -46,11 +47,16 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private Map<String, List<String>> restrictionMap;
     private final JButton saveRecipeButton;
 
+    private final JButton analyzeNutritionButton;
+
     private final RecipeSearchViewModel recipeSearchViewModel;
     private RecipeSearchController recipeSearchController;
 
     // Optional reference to meal planning view for updates
     private MealPlanningView mealPlanningView;
+
+    // the nutrition analysis controller
+    private NutritionAnalysisController nutritionAnalysisController;
 
     public RecipeSearchView(RecipeSearchViewModel viewModel) {
         this.recipeSearchViewModel = viewModel;
@@ -67,6 +73,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         searchButton = new JButton(RecipeSearchViewModel.SEARCH_BUTTON_LABEL);
         addRestrictionButton = new JButton(RecipeSearchViewModel.ADD_RESTRICTION_LABEL);
         saveRecipeButton = new JButton("Save Recipe");
+        analyzeNutritionButton = new JButton("Analyze Nutrition");
 
         ingredientListModel = new DefaultListModel<>();
         ingredientList = new JList<>(ingredientListModel);
@@ -93,6 +100,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         addRestrictionButton.addActionListener(this);
         saveRecipeButton.addActionListener(this);
 
+        analyzeNutritionButton.addActionListener(this);
+
         final JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
@@ -116,6 +125,10 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     // Method to set reference to meal planning view
     public void setMealPlanningView(MealPlanningView mealPlanningView) {
         this.mealPlanningView = mealPlanningView;
+    }
+
+    public void setNutritionAnalysisController(NutritionAnalysisController nutritionAnalysisController) {
+        this.nutritionAnalysisController = nutritionAnalysisController;
     }
 
     @Override
@@ -179,6 +192,25 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                 else {
                     recipeSearchController.executeRestrictionSearch(restrictionMap);
                 }
+            }
+        }
+        else if (evt.getSource().equals(analyzeNutritionButton)) {
+            int selectedIndex = recipeResults.getSelectedIndex();
+            if (selectedIndex != -1 && nutritionAnalysisController != null) {
+                RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
+                if (state != null) {
+                    List<Recipe> recipes = state.getRecipes();
+                    if (selectedIndex < recipes.size()) {
+                        Recipe selectedRecipe = recipes.get(selectedIndex);
+                        nutritionAnalysisController.executeAnalysis(selectedRecipe);
+                    }
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(this,
+                        "Please select a recipe to analyze first.",
+                        "No Recipe Selected",
+                        JOptionPane.WARNING_MESSAGE);
             }
         }
     }

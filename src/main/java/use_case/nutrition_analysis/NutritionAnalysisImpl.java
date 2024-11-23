@@ -1,6 +1,8 @@
 package use_case.nutrition_analysis;
 
+import data_access.NutritionAnalysisDataAccess;
 import data_access.RecipeSearchEdamam;
+import entity.Recipe;
 import use_case.recipe_search.RecipeSearchException;
 import entity.Nutrient;
 
@@ -11,20 +13,20 @@ import java.util.List;
  */
 public class NutritionAnalysisImpl implements NutritionAnalysis {
 
-    private final RecipeSearchEdamam recipeSearchEdamam;
+    private final NutritionAnalysisDataAccess NutritionAnalysisDAO;
     private final NutritionAnalysisOutputBoundary outputBoundary;
 
-    public NutritionAnalysisImpl(RecipeSearchEdamam recipeSearchEdamam,
+    public NutritionAnalysisImpl(NutritionAnalysisDataAccess NutritionAnalysisDAO,
                                  NutritionAnalysisOutputBoundary outputBoundary) {
-        this.recipeSearchEdamam = recipeSearchEdamam;
+        this.NutritionAnalysisDAO = NutritionAnalysisDAO;
         this.outputBoundary = outputBoundary;
     }
 
     @Override
-    public void analyzeNutrition(String RecipeName, List<String> ingredients) throws NutritionAnalysisException {
+    public void analyzeNutrition(Recipe recipe) throws NutritionAnalysisException {
         try {
             // Get NutritionInfo from Edamam API by the RecipeName.
-            List<Nutrient> nutritionInfo = recipeSearchEdamam.analyzeNutrition(RecipeName, ingredients);
+            List<Nutrient> nutritionInfo = NutritionAnalysisDAO.analyzeNutrition(recipe);
 
             // Present success
             outputBoundary.presentNutritionInfo(nutritionInfo);

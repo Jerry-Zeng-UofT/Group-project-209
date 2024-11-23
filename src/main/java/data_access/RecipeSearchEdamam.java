@@ -9,10 +9,10 @@ import java.util.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+
+import entity.Nutrient;
+import okhttp3.*;
+import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -20,6 +20,7 @@ public class RecipeSearchEdamam {
     private static final String APP_ID = "35f28703";
     private static final String APP_KEY = "acb2a3e8e5cd69c1e0bcacefd85ea880";
     private static final String BASE_URL = "https://api.edamam.com/api/recipes/v2";
+    private static final String NA_URL = "https://api.edamam.com/api/nutrition-details";
     private final OkHttpClient httpClient = new OkHttpClient();
 
     /**

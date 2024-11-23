@@ -27,7 +27,9 @@ public class MainRecipeApplication {
                 .addMealPlanningView()
                 .addMealPlanningUseCase()
                 .addRecipeSearchView()
-                .addRecipeSearchUseCase();
+                .addRecipeSearchUseCase()
+                .addNutritionAnalysisView()
+                .addNutritionAnalysisUseCase();
 
         // Build and show the frame
         builder.build().setVisible(true);

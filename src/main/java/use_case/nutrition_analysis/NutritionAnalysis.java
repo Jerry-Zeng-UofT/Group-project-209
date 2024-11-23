@@ -1,5 +1,7 @@
 package use_case.nutrition_analysis;
 
+import entity.Recipe;
+
 import java.util.List;
 
 /**
@@ -14,5 +16,5 @@ public interface NutritionAnalysis {
      * @param ingredients the list of ingredients of this recipe.
      * @throws NutritionAnalysisException if search fails
      */
-    void analyzeNutrition(String RecipeName, List<String> ingredients) throws NutritionAnalysisException;
+    void analyzeNutrition(Recipe recipe) throws NutritionAnalysisException;
 }

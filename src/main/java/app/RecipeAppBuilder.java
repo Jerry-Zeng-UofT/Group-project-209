@@ -2,8 +2,13 @@ package app;
 
 import javax.swing.*;
 import data_access.*;
+import interface_adapter.nutrition_analysis.NutritionAnalysisController;
+import interface_adapter.nutrition_analysis.NutritionAnalysisPresenter;
+import interface_adapter.nutrition_analysis.NutritionAnalysisViewModel;
 import interface_adapter.recipe_search.*;
 import interface_adapter.meal_planning.*;
+import use_case.nutrition_analysis.NutritionAnalysis;
+import use_case.nutrition_analysis.NutritionAnalysisImpl;
 import use_case.recipe_search.*;
 import use_case.meal_planning.*;
 import view.*;
@@ -18,15 +23,19 @@ public class RecipeAppBuilder {
     private RecipeSearchEdamam recipeSearchEdamam;
     private SavedRecipesDataAccess savedRecipesDataAccess;
     private MealPlanningDataAccess mealPlanningDataAccess;
+    private NutritionAnalysisDataAccess nutritionAnalysisDataAccess;
 
     private RecipeSearchViewModel recipeSearchViewModel;
     private MealPlanningViewModel mealPlanningViewModel;
+    private NutritionAnalysisViewModel nutritionAnalysisViewModel;
 
     private RecipeSearchView recipeSearchView;
     private MealPlanningView mealPlanningView;
+    private NutritionAnalysisView nutritionAnalysisView;
 
     private RecipeSearch recipeSearchUseCase;
     private MealPlanning mealPlanningUseCase;
+    private NutritionAnalysis nutritionAnalysisUseCase;
 
     /**
      * Add the recipe search API.
@@ -37,6 +46,7 @@ public class RecipeAppBuilder {
         this.recipeSearchEdamam = recipeSearchEdamam;
         this.savedRecipesDataAccess = new SavedRecipesDataAccessObject();
         this.mealPlanningDataAccess = new MealPlanningDataAccessObject(this.savedRecipesDataAccess);
+        this.nutritionAnalysisDataAccess = new NutritionAnalysisDataAccess();
         return this;
     }
 
@@ -47,6 +57,16 @@ public class RecipeAppBuilder {
     public RecipeAppBuilder addMealPlanningView() {
         mealPlanningViewModel = new MealPlanningViewModel();
         mealPlanningView = new MealPlanningView(mealPlanningViewModel);
+        return this;
+    }
+
+    /**
+     * Add the meal planning view.
+     * @return The builder instance
+     */
+    public RecipeAppBuilder addNutritionAnalysisView() {
+        nutritionAnalysisViewModel = new NutritionAnalysisViewModel();
+        nutritionAnalysisView = new NutritionAnalysisView();
         return this;
     }
 
@@ -87,6 +107,22 @@ public class RecipeAppBuilder {
         return this;
     }
 
+    public RecipeAppBuilder addNutritionAnalysisUseCase() {
+        if (nutritionAnalysisView == null) {
+            throw new RuntimeException("addNutritionAnalysisView must be called before addNutritionAnalysisUseCase");
+        }
+
+        NutritionAnalysisPresenter presenter = new NutritionAnalysisPresenter(nutritionAnalysisViewModel);
+        nutritionAnalysisUseCase = new NutritionAnalysisImpl(
+                nutritionAnalysisDataAccess,
+                presenter
+        );
+        NutritionAnalysisController controller = new NutritionAnalysisController(nutritionAnalysisUseCase);
+        nutritionAnalysisView.setController(controller);
+
+        return this;
+    }
+
     /**
      * Add the recipe search use case.
      * @return The builder instance
@@ -114,6 +150,14 @@ public class RecipeAppBuilder {
      */
     public SavedRecipesDataAccess getSavedRecipesDataAccess() {
         return savedRecipesDataAccess;
+    }
+
+    /**
+     * Get the Nutrition Analysis data access.
+     * @return The Nutrition Analysis data access
+     */
+    public NutritionAnalysisDataAccess getNutritionAnalysisDataAccess() {
+        return nutritionAnalysisDataAccess;
     }
 
     /**
