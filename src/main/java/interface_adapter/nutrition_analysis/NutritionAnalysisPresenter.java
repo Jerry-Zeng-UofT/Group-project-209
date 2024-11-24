@@ -24,13 +24,11 @@ public class NutritionAnalysisPresenter implements NutritionAnalysisOutputBounda
 
         for (Nutrient nutrient : NutritionInfo) {
             StringBuilder description = new StringBuilder();
-            description.append(nutrient.getNutrients()).append("\n");
+            description.append(nutrient.getNutrients());
             nutritionResults.add(description.toString());
         }
         state.setNutritionResults(nutritionResults);
         viewModel.setState(state);
-        System.out.println("cheang in state");
-        System.out.println(state.getNutritionResults());
         viewModel.firePropertyChanged();
     }
 

@@ -69,9 +69,10 @@ public class NutritionAnalysisDataAccessObject {
                     JSONObject nutrient = totalNutrients.getJSONObject(key);
 
                     // Combine the values into a string and add them to the list
-                    String aNutrient = "Label: " + nutrient.getString("label")
-                            + ", Quantity: " + nutrient.getInt("quantity")
-                            + ", Unit: " + nutrient.getString("unit");
+                    String aNutrient = nutrient.getString("label")
+                            + ": "
+                            + nutrient.getInt("quantity")
+                            + nutrient.getString("unit");
 
                     nutrientsList.add(new Nutrient(aNutrient));
                 }
@@ -80,8 +81,6 @@ public class NutritionAnalysisDataAccessObject {
         catch (IOException e) {
             throw new IOException(e);
         }
-        System.out.println("nutrientsList has been returned");
-        System.out.println(nutrientsList);
         return nutrientsList;
     }
 }

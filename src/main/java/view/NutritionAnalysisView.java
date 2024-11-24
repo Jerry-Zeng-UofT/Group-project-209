@@ -17,7 +17,6 @@ public class NutritionAnalysisView extends JFrame {
 
     private NutritionAnalysisController controller;
     private NutritionAnalysisViewModel viewModel;
-    private String wantToShow;
 
     public NutritionAnalysisView(NutritionAnalysisViewModel nutritionAnalysisViewModel) {
         // Set the title of the JFrame
@@ -34,26 +33,33 @@ public class NutritionAnalysisView extends JFrame {
         panel.setLayout(new BorderLayout());
 
         // result area
-        JLabel resultLabel = new JLabel("State is Null", SwingConstants.CENTER);
-        panel.add(resultLabel, BorderLayout.CENTER);
+        JTextArea resultArea = new JTextArea();
+        resultArea.setEditable(false);  // Make it non-editable
+        resultArea.setLineWrap(true);  // Enable line wrapping
+        resultArea.setWrapStyleWord(true);  // Wrap by words
+
+        JScrollPane scrollPane = new JScrollPane(resultArea);
+        panel.add(scrollPane, BorderLayout.CENTER);
 
         // Add the panel to the frame
         add(panel);
 
+        // Observe changes to the state
         viewModel.addPropertyChangeListener(evt -> {
             if ("state".equals(evt.getPropertyName())) {
                 NutritionAnalysisState state = (NutritionAnalysisState) evt.getNewValue();
                 if (state != null) {
-                    resultLabel.setText(state.getNutritionResults().toString());
+                    StringBuilder displayedNutrionInfo = new StringBuilder();
+                    for (String nutrient : state.getNutritionResults()) {
+                        displayedNutrionInfo.append(nutrient).append("\n");
+                    }
+                    resultArea.setText(displayedNutrionInfo.toString());
                 }
                 else {
-                    resultLabel.setText("State is Null");
+                    resultArea.setText("State is Null");
                 }
-                panel.revalidate();  // Refresh the panel
-                panel.repaint();     // Ensure UI updates
             }
-        }
-        );
+        });
     }
 
     public void setController(NutritionAnalysisController controller) {
