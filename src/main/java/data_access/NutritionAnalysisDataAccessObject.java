@@ -11,13 +11,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NutritionAnalysisDataAccess {
-    private static final String APP_ID = "35f28703";
-    private static final String APP_KEY = "acb2a3e8e5cd69c1e0bcacefd85ea880";
+public class NutritionAnalysisDataAccessObject {
+    private static final String APP_ID = "6ec3d1f4";
+    private static final String APP_KEY = "0bae38670d4f3777d686730b59f0e707";
     private static final String NA_URL = "https://api.edamam.com/api/nutrition-details";
     private static final String BASE_URL = "https://api.edamam.com/api/recipes/v2";
     private final OkHttpClient httpClient = new OkHttpClient();
 
+    public NutritionAnalysisDataAccessObject() {
+        // Empty constructor
+    }
 
     /**
      * Get totalNutrients from a POST request from the API.
@@ -27,7 +30,7 @@ public class NutritionAnalysisDataAccess {
      */
     public List<Nutrient> analyzeNutrition(Recipe recipe) throws IOException {
         String recipeName = recipe.getTitle();
-        List<Object> ingredients = jsonArrayToList(getIngredientsById(recipeName));
+        JSONArray ingredients = getIngredientsById(recipeName);
         List<Nutrient> nutrientsList = new ArrayList<>();
 
         // Build the URL using HttpUrl.Builder
@@ -45,6 +48,7 @@ public class NutritionAnalysisDataAccess {
                         MediaType.get("application/json; charset=utf-8")
                 ))
                 .build();
+        System.out.println("Request has been sent");
 
         try (Response response = httpClient.newCall(request).execute()) {
             if (response.body() != null) {
@@ -69,6 +73,7 @@ public class NutritionAnalysisDataAccess {
         catch (IOException e) {
             throw new IOException(e);
         }
+        System.out.println("nutrientsList has been returned");
         return nutrientsList;
     }
 
@@ -80,7 +85,7 @@ public class NutritionAnalysisDataAccess {
         urlBuilder.addQueryParameter("app_key", APP_KEY);
 
         Request request = new Request.Builder()
-                .url(urlBuilder.build().toString())
+                .url(urlBuilder.build())
                 .build();
 
         try (Response response = httpClient.newCall(request).execute()) {
@@ -90,22 +95,16 @@ public class NutritionAnalysisDataAccess {
                 JSONObject recipeJson = jsonObject.getJSONObject("recipe");
 
                 // Extract ingredients
-                List<Ingredient> ingredients = new ArrayList<>();
-                JSONArray ingredientsArray = recipeJson.getJSONArray("ingredients");
+                List<String> ingredients = new ArrayList<>();
+                JSONArray ingredientsArray = recipeJson.getJSONArray("ingredientLines");
 
                 return ingredientsArray;
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException("Failed to get recipe details: " + e.getMessage());
         }
         return null;
     }
-
-    public static List<Object> jsonArrayToList(JSONArray jsonArray) {
-        List<Object> list = new ArrayList<>();
-        for (int i = 0; i < jsonArray.length(); i++) {
-            list.add(jsonArray.get(i));
-        }
-        return list;
-    }
 }
+

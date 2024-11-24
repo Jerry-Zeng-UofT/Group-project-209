@@ -23,7 +23,7 @@ public class RecipeAppBuilder {
     private RecipeSearchEdamam recipeSearchEdamam;
     private SavedRecipesDataAccess savedRecipesDataAccess;
     private MealPlanningDataAccess mealPlanningDataAccess;
-    private NutritionAnalysisDataAccess nutritionAnalysisDataAccess;
+    private NutritionAnalysisDataAccessObject nutritionAnalysisDataAccess;
 
     private RecipeSearchViewModel recipeSearchViewModel;
     private MealPlanningViewModel mealPlanningViewModel;
@@ -46,7 +46,7 @@ public class RecipeAppBuilder {
         this.recipeSearchEdamam = recipeSearchEdamam;
         this.savedRecipesDataAccess = new SavedRecipesDataAccessObject();
         this.mealPlanningDataAccess = new MealPlanningDataAccessObject(this.savedRecipesDataAccess);
-        this.nutritionAnalysisDataAccess = new NutritionAnalysisDataAccess();
+        this.nutritionAnalysisDataAccess = new NutritionAnalysisDataAccessObject();
         return this;
     }
 
@@ -66,7 +66,7 @@ public class RecipeAppBuilder {
      */
     public RecipeAppBuilder addNutritionAnalysisView() {
         nutritionAnalysisViewModel = new NutritionAnalysisViewModel();
-        nutritionAnalysisView = new NutritionAnalysisView();
+        nutritionAnalysisView = new NutritionAnalysisView(nutritionAnalysisViewModel);
         return this;
     }
 
@@ -79,10 +79,14 @@ public class RecipeAppBuilder {
         if (mealPlanningView == null) {
             throw new RuntimeException("addMealPlanningView must be called before addRecipeSearchView");
         }
+        if (nutritionAnalysisView == null) {
+            throw new RuntimeException("addNutritionAnalysisView must be called before addRecipeSearchView");
+        }
 
         recipeSearchViewModel = new RecipeSearchViewModel();
         recipeSearchView = new RecipeSearchView(recipeSearchViewModel);
         recipeSearchView.setMealPlanningView(mealPlanningView);
+        recipeSearchView.setNutritionAnalysisView(nutritionAnalysisView);
         return this;
     }
 
@@ -107,6 +111,10 @@ public class RecipeAppBuilder {
         return this;
     }
 
+    /**
+     * Add the Nutrition Analysis Use Case.
+     * @return The builder instance
+     */
     public RecipeAppBuilder addNutritionAnalysisUseCase() {
         if (nutritionAnalysisView == null) {
             throw new RuntimeException("addNutritionAnalysisView must be called before addNutritionAnalysisUseCase");
@@ -119,6 +127,7 @@ public class RecipeAppBuilder {
         );
         NutritionAnalysisController controller = new NutritionAnalysisController(nutritionAnalysisUseCase);
         nutritionAnalysisView.setController(controller);
+        recipeSearchView.setNutritionAnalysisController(controller);
 
         return this;
     }
@@ -156,7 +165,7 @@ public class RecipeAppBuilder {
      * Get the Nutrition Analysis data access.
      * @return The Nutrition Analysis data access
      */
-    public NutritionAnalysisDataAccess getNutritionAnalysisDataAccess() {
+    public NutritionAnalysisDataAccessObject getNutritionAnalysisDataAccess() {
         return nutritionAnalysisDataAccess;
     }
 

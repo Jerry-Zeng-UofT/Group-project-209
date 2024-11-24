@@ -17,12 +17,13 @@ public class NutritionAnalysisController {
 
     /**
      * Execute a nutrition analysis with the given recipe name.
-     * @param RecipeName the name of the recipe the user wants to analyze.
-     * @param ingredient the list of ingredients of this recipe.
+     * @param recipe the recipe the user wants to analyze.
      */
     public void executeAnalysis(Recipe recipe) {
         try {
+            System.out.println("ready to analyze");
             nutritionAnalysisUseCase.analyzeNutrition(recipe);
+            System.out.println("Nutrition analysis complete.");
         }
         catch (Exception e) {
             // Error will be handled by the presenter through output boundary
