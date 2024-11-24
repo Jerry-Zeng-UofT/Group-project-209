@@ -21,9 +21,7 @@ public class NutritionAnalysisController {
      */
     public void executeAnalysis(Recipe recipe) {
         try {
-            System.out.println("ready to analyze");
             nutritionAnalysisUseCase.analyzeNutrition(recipe);
-            System.out.println("Nutrition analysis complete.");
         }
         catch (Exception e) {
             // Error will be handled by the presenter through output boundary

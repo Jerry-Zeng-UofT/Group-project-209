@@ -29,7 +29,6 @@ public class NutritionAnalysisDataAccessObject {
      * @throws IOException If an I/O error occurs.
      */
     public List<Nutrient> analyzeNutrition(Recipe recipe) throws IOException {
-        System.out.println("analyzeNutrition has been successfully called");
         String recipeName = recipe.getTitle();
         JSONArray ingredients = recipe.getJsonIngredient();
         List<Nutrient> nutrientsList = new ArrayList<>();
@@ -49,14 +48,8 @@ public class NutritionAnalysisDataAccessObject {
                         MediaType.get("application/json; charset=utf-8")
                 ))
                 .build();
-        System.out.println("Request has been sent");
 
         try (Response response = httpClient.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                System.out.println("Error analyzing nutrition: " + response.code());
-                System.out.println("Response: " + (response.body() != null ? response.body().string() : "No response body"));
-                return nutrientsList;
-            }
 
             if (response.body() != null) {
                 String jsonData = response.body().string();
