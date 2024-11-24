@@ -56,7 +56,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     // Optional reference to meal planning view for updates
     private MealPlanningView mealPlanningView;
 
-    // the nutrition analysis controller
+    // the nutrition analysis view and controller.
     private NutritionAnalysisView nutritionAnalysisView;
     private NutritionAnalysisController nutritionAnalysisController;
 
@@ -208,7 +208,6 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                     if (selectedIndex < recipes.size()) {
                         Recipe selectedRecipe = recipes.get(selectedIndex);
                         nutritionAnalysisController.executeAnalysis(selectedRecipe);
-                        System.out.println("nutritionAnalysisController.executeAnalysis is called");
 
                         nutritionAnalysisView.setVisible(true);
                     }

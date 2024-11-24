@@ -29,6 +29,8 @@ public class NutritionAnalysisPresenter implements NutritionAnalysisOutputBounda
         }
         state.setNutritionResults(nutritionResults);
         viewModel.setState(state);
+        System.out.println("cheang in state");
+        System.out.println(state.getNutritionResults());
         viewModel.firePropertyChanged();
     }
 
