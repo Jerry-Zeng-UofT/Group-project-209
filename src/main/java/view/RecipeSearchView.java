@@ -1,9 +1,9 @@
 package view;
 
+import entity.Recipe;
 import interface_adapter.recipe_search.RecipeSearchController;
 import interface_adapter.recipe_search.RecipeSearchState;
 import interface_adapter.recipe_search.RecipeSearchViewModel;
-import entity.Recipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,6 +51,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     // Optional reference to meal planning view for updates
     private MealPlanningView mealPlanningView;
+    private final ServingAdjustView servingAdjustView;
 
     public RecipeSearchView(RecipeSearchViewModel viewModel) {
         this.recipeSearchViewModel = viewModel;
@@ -79,6 +80,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         restrictions = new ArrayList<>();
         restrictionMap = new HashMap<>();
 
+        servingAdjustView = new ServingAdjustView(evt -> handleServingAdjustment());
+
         this.setLayout(new BorderLayout());
 
         title.setFont(new Font(title.getFont().getName(), Font.BOLD, TITLE_FONT_SIZE));
@@ -102,6 +105,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         mainPanel.add(restrictionPanel);
         mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        mainPanel.add(servingAdjustView);
+        mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         mainPanel.add(searchButton);
         mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         mainPanel.add(resultsPanel);
@@ -116,6 +121,26 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     // Method to set reference to meal planning view
     public void setMealPlanningView(MealPlanningView mealPlanningView) {
         this.mealPlanningView = mealPlanningView;
+    }
+
+    private void handleServingAdjustment() {
+        final int servings = servingAdjustView.getServings();
+        final int selectedIndex = recipeResults.getSelectedIndex();
+
+        if (selectedIndex != -1 && recipeSearchController != null) {
+            final RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
+            if (state != null) {
+                final List<Recipe> recipes = state.getRecipes();
+                if (selectedIndex < recipes.size()) {
+                    final Recipe selectedRecipe = recipes.get(selectedIndex);
+                    recipeSearchController.adjustServings(servings, selectedRecipe);
+                }
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "Please select a recipe first.",
+                    "No Recipe Selected", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     @Override

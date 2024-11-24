@@ -2,10 +2,6 @@ package data_access;
 
 import entity.*;
 
-import entity.RecipeForSearch;
-
-import java.util.*;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,23 +21,23 @@ public class RecipeSearchEdamam {
     /**
      * Get recipes by food name.
      */
-    public List<RecipeForSearch> searchRecipesByFoodName(String foodName) {
-        return fetchRecipes(foodName, null, null, null);
+    public List<Recipe> searchRecipesByFoodName(String foodName) {
+        return searchRecipes(foodName, null, null, null);
     }
 
     /**
      * Get recipes by restrictions.
      */
-    public List<RecipeForSearch> searchRecipesByRestriction(String foodName, String diet, String health, String
+    public List<Recipe> searchRecipesByRestriction(String foodName, String diet, String health, String
             cuisineType) {
-        return fetchRecipes(foodName, diet, health, cuisineType);
+        return searchRecipes(foodName, diet, health, cuisineType);
     }
 
     /**
      * Fetch recipes from Edamam API.
      */
-    private List<RecipeForSearch> fetchRecipes(String foodName, String diet, String health, String cuisineType) {
-        List<RecipeForSearch> recipes = new ArrayList<>();
+    private List<Recipe> searchRecipes(String foodName, String diet, String health, String cuisineType) {
+        List<Recipe> recipes = new ArrayList<>();
 
         // Build API URL
         HttpUrl.Builder urlBuilder = HttpUrl.parse(BASE_URL).newBuilder();
@@ -70,15 +66,33 @@ public class RecipeSearchEdamam {
                     // Extract details
                     String name = recipeJson.getString("label");
                     String description = recipeJson.optString("source", "No description available");
+                    String instructions = recipeJson.optString("url", "Instructions not available");
                     List<Ingredient> ingredients = extractIngredients(recipeJson.getJSONArray("ingredients"));
 
-                    // Create RecipeForSearch
-                    RecipeForSearch recipeForSearch = new RecipeForSearch(name, description, ingredients);
-                    recipes.add(recipeForSearch);
+                    // Provide default nutrition if not available
+                    Nutrition nutrition = new Nutrition(0, 0, 0, 0, 0, 0);
+
+                    // Add a default food list and servings
+                    List<Food> food = new ArrayList<>();
+                    int servings = 1;
+
+                    // Create Recipe
+                    Recipe recipe = new Recipe(
+                            i + 1,
+                            name,
+                            description,
+                            ingredients,
+                            instructions,
+                            nutrition,
+                            food,
+                            servings
+                    );
+
+                    recipes.add(recipe);
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to fetch recipes: " + e.getMessage());
+            throw new RuntimeException();
         }
         return recipes;
     }
@@ -120,27 +134,33 @@ public class RecipeSearchEdamam {
 
                 // Extract details
                 String name = recipeJson.getString("label");
+                String description = recipeJson.optString("source", "No description available");
                 String instructions = recipeJson.optString("url", "Instructions not available");
                 List<Ingredient> ingredients = extractIngredients(recipeJson.getJSONArray("ingredients"));
 
                 // Extract nutrition
-                JSONObject nutritionJson = recipeJson.getJSONObject("totalNutrients");
-                Nutrition nutrition = new Nutrition(
-                        nutritionJson.getJSONObject("ENERC_KCAL").getDouble("quantity"),
-                        nutritionJson.getJSONObject("PROCNT").getDouble("quantity"),
-                        nutritionJson.getJSONObject("FAT").getDouble("quantity"),
-                        nutritionJson.getJSONObject("CHOCDF").getDouble("quantity"),
-                        nutritionJson.getJSONObject("FIBTG").getDouble("quantity"),
-                        nutritionJson.getJSONObject("SUGAR").getDouble("quantity")
-                );
+                JSONObject nutritionJson = recipeJson.optJSONObject("totalNutrients");
+                Nutrition nutrition = (nutritionJson != null) ? new Nutrition(
+                        nutritionJson.optJSONObject("ENERC_KCAL").optDouble("quantity", 0),
+                        nutritionJson.optJSONObject("PROCNT").optDouble("quantity", 0),
+                        nutritionJson.optJSONObject("FAT").optDouble("quantity", 0),
+                        nutritionJson.optJSONObject("CHOCDF").optDouble("quantity", 0),
+                        nutritionJson.optJSONObject("FIBTG").optDouble("quantity", 0),
+                        nutritionJson.optJSONObject("SUGAR").optDouble("quantity", 0)
+                ) : new Nutrition(0, 0, 0, 0, 0, 0);
+
+                List<Food> food = new ArrayList<>();
+                int servings = 1;
 
                 return new Recipe(
                         Integer.parseInt(recipeId),
                         name,
+                        description,
                         ingredients,
                         instructions,
                         nutrition,
-                        new ArrayList<>()
+                        food,
+                        servings
                 );
             }
         } catch (IOException e) {

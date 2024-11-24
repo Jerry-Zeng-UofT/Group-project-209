@@ -2,9 +2,9 @@ package use_case.recipe_search;
 
 import data_access.SavedRecipesDataAccess;
 import entity.Recipe;
-import entity.RecipeForSearch;
 import entity.Ingredient;
 import entity.Nutrition;
+import entity.Food;
 import data_access.RecipeSearchEdamam;
 
 import java.util.List;
@@ -27,13 +27,9 @@ public class RecipeSearchImpl implements RecipeSearch {
     @Override
     public void saveRecipe(int userId, Recipe recipe) throws RecipeSearchException {
         try {
-            // Save the recipe
             savedRecipesDataAccess.saveRecipe(userId, recipe);
-
-            // Present success
             outputBoundary.presentSaveSuccess(recipe);
         } catch (Exception e) {
-            // Present error
             outputBoundary.presentError("Failed to save recipe: " + e.getMessage());
             throw new RecipeSearchException("Failed to save recipe", e);
         }
@@ -42,19 +38,11 @@ public class RecipeSearchImpl implements RecipeSearch {
     @Override
     public void searchRecipes(List<String> ingredients) throws RecipeSearchException {
         try {
-            // Join ingredients with commas for the API search
             String searchQuery = String.join(",", ingredients);
-
-            // Get recipes from Edamam API
-            List<RecipeForSearch> searchResults = recipeSearchEdamam.searchRecipesByFoodName(searchQuery);
-
-            // Convert API results to Recipe entities
+            List<Recipe> searchResults = recipeSearchEdamam.searchRecipesByFoodName(searchQuery);
             List<Recipe> recipes = convertToRecipes(searchResults);
-
-            // Present success
             outputBoundary.presentRecipes(recipes);
         } catch (Exception e) {
-            // Present error
             outputBoundary.presentError("Failed to search recipes: " + e.getMessage());
             throw new RecipeSearchException("Recipe search failed", e);
         }
@@ -63,50 +51,48 @@ public class RecipeSearchImpl implements RecipeSearch {
     @Override
     public void searchRestrictionRecipes(Map<String, List<String>> restrictions) throws RecipeSearchException {
         try {
-            // Join ingredients with commas for the API search
             String searchFoodQuery = String.join(",", restrictions.get("Food Name"));
             String searchDietQuery = String.join(",", restrictions.get("Diet Label"));
             String searchHealthQuery = String.join(",", restrictions.get("Health Label"));
             String searchCuisineQuery = String.join(",", restrictions.get("Cuisine Type"));
-
-            // Get recipes from Edamam API
-            List<RecipeForSearch> searchResults = recipeSearchEdamam.searchRecipesByRestriction(
+            List<Recipe> searchResults = recipeSearchEdamam.searchRecipesByRestriction(
                     searchFoodQuery, searchDietQuery, searchHealthQuery, searchCuisineQuery);
-
-            // Convert API results to Recipe entities
             List<Recipe> recipes = convertToRecipes(searchResults);
-
-            // Present success
             outputBoundary.presentRecipes(recipes);
         } catch (Exception e) {
-            // Present error
             outputBoundary.presentError("Failed to search recipes: " + e.getMessage());
             throw new RecipeSearchException("Recipe search failed", e);
         }
     }
 
-    /**
-     * Convert RecipeForSearch objects to Recipe entities.
-     *
-     * @param searchResults The list of RecipeForSearch objects.
-     * @return A list of Recipe entities.
-     */
-    private List<Recipe> convertToRecipes(List<RecipeForSearch> searchResults) {
+    @Override
+    public void adjustRecipeServings(int newServings, Recipe recipe) {
+        Recipe adjustedRecipe = recipe.adjustServings(newServings);
+        outputBoundary.presentRecipes(List.of(adjustedRecipe));
+    }
+
+    private List<Recipe> convertToRecipes(List<Recipe> searchResults) {
         List<Recipe> recipes = new ArrayList<>();
         int recipeId = 1;
 
-        for (RecipeForSearch result : searchResults) {
-            // Directly use the Ingredient list from RecipeForSearch
+        for (Recipe result : searchResults) {
+            String title = result.getTitle();
+            String description = result.getDescription() != null ? result.getDescription() : "No description available";
             List<Ingredient> ingredients = result.getIngredients();
+            String instructions = result.getInstructions() != null ? result.getInstructions() : "Instructions not available";
+            Nutrition nutrition = result.getNutrition() != null ? result.getNutrition() : new Nutrition(0, 0, 0, 0, 0, 0);
+            List<Food> food = result.getFood() != null ? result.getFood() : new ArrayList<>();
+            int servings = result.getServings() > 0 ? result.getServings() : 1;
 
-            // Create Recipe entity
             Recipe recipe = new Recipe(
                     recipeId++,
-                    result.getTitle(),
+                    title,
+                    description,
                     ingredients,
-                    result.getInstructions(),
-                    new Nutrition(0, 0, 0, 0, 0, 0),
-                    new ArrayList<>()
+                    instructions,
+                    nutrition,
+                    food,
+                    servings
             );
 
             recipes.add(recipe);

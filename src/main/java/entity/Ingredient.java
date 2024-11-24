@@ -1,7 +1,5 @@
 package entity;
 
-import java.util.Objects;
-
 /**
  * The class represents an ingredient in a recipe.
  */

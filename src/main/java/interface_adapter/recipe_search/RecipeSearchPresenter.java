@@ -31,32 +31,36 @@ public class RecipeSearchPresenter implements RecipeSearchOutputBoundary {
             description.append(recipe.getTitle()).append("\n");
             description.append("Ingredients:\n");
             for (Ingredient ingredient : recipe.getIngredients()) {
-                String quantityString;
-
-                if (ingredient.getQuantity() == Math.floor(ingredient.getQuantity())) {
-                    quantityString = String.valueOf((int) ingredient.getQuantity());
+                if (ingredient.getQuantity() == 0) {
+                    // Only append the ingredient name if quantity is zero
+                    description.append("- ").append(ingredient.getName()).append("\n");
                 }
                 else {
-                    quantityString = String.valueOf(ingredient.getQuantity());
-                }
+                    String quantityString;
+                    if (ingredient.getQuantity() == Math.floor(ingredient.getQuantity())) {
+                        quantityString = String.valueOf((int) ingredient.getQuantity());
+                    }
+                    else {
+                        quantityString = String.valueOf(ingredient.getQuantity());
+                    }
 
-                if (ingredient.getUnit() == null || ingredient.getUnit().trim().isEmpty() || ingredient.getUnit().equalsIgnoreCase("<unit>")) {
-
-                    description.append("- ")
-                            .append(quantityString)
-                            .append(" ")
-                            .append(ingredient.getName())
-                            .append("\n");
-                }
-                else {
-
-                    description.append("- ")
-                            .append(ingredient.getName())
-                            .append(" (")
-                            .append(quantityString)
-                            .append(" ")
-                            .append(ingredient.getUnit())
-                            .append(")\n");
+                    if (ingredient.getUnit() == null || ingredient.getUnit().trim().isEmpty() || ingredient.getUnit()
+                            .equalsIgnoreCase("<unit>")) {
+                        description.append("- ")
+                                .append(quantityString)
+                                .append(" ")
+                                .append(ingredient.getName())
+                                .append("\n");
+                    }
+                    else {
+                        description.append("- ")
+                                .append(ingredient.getName())
+                                .append(" (")
+                                .append(quantityString)
+                                .append(" ")
+                                .append(ingredient.getUnit())
+                                .append(")\n");
+                    }
                 }
             }
             recipeResults.add(description.toString());
