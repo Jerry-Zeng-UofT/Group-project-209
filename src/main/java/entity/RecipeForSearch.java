@@ -1,5 +1,7 @@
 package entity;
 
+import org.json.JSONArray;
+
 import java.util.List;
 
 /**
@@ -11,12 +13,14 @@ public class RecipeForSearch {
     private String description;
     private List<String> ingredients;
     private String instructions;
+    private JSONArray jsonIngredient;
 
-    public RecipeForSearch(String title, String description, List<String> ingredients) {
+    public RecipeForSearch(String title, String description, List<String> ingredients, JSONArray jsonIngredient) {
         this.title = title;
         this.description = description;
         this.ingredients = ingredients;
         this.instructions = "Instructions not available";
+        this.jsonIngredient = jsonIngredient;
     }
 
     public String getTitle() {
@@ -49,5 +53,9 @@ public class RecipeForSearch {
 
     public void setInstructions(String instructions) {
         this.instructions = instructions;
+    }
+
+    public JSONArray getJsonIngredient() {
+        return jsonIngredient;
     }
 }
