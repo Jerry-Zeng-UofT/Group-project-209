@@ -59,7 +59,7 @@ public class RecipeSearchEdamam {
                     }
 
                     // Create and add Recipe entity
-                    RecipeForSearch recipeForSearch = new RecipeForSearch(name, description, ingredients);
+                    RecipeForSearch recipeForSearch = new RecipeForSearch(name, description, ingredients, ingredientsArray);
                     recipes.add(recipeForSearch);
                 }
             }
@@ -117,7 +117,7 @@ public class RecipeSearchEdamam {
                     }
 
                     // Create and add Recipe entity
-                    RecipeForSearch recipeForSearch = new RecipeForSearch(name, description, ingredients);
+                    RecipeForSearch recipeForSearch = new RecipeForSearch(name, description, ingredients, ingredientsArray);
                     recipes.add(recipeForSearch);
                 }
             }
@@ -183,7 +183,8 @@ public class RecipeSearchEdamam {
                         ingredients,
                         instructions,
                         nutrition,
-                        new ArrayList<>()  // Food list
+                        new ArrayList<>(),  // Food list
+                        new JSONArray()     // created only to fit the attributes in Recipe
                 );
             }
         } catch (IOException e) {

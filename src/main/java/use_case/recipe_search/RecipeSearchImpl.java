@@ -111,7 +111,8 @@ public class RecipeSearchImpl implements RecipeSearch {
                     ingredients,
                     result.getInstructions(),
                     new Nutrition(0, 0, 0, 0, 0, 0), // Default nutrition
-                    new ArrayList<>() // Empty food list
+                    new ArrayList<>(), // Empty food list
+                    result.getJsonIngredient()
             );
 
             recipes.add(recipe);
