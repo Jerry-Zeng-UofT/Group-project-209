@@ -84,7 +84,12 @@ public class RecipeAppBuilder {
         }
 
         recipeSearchViewModel = new RecipeSearchViewModel();
-        recipeSearchView = new RecipeSearchView(recipeSearchViewModel);
+
+        RecipeSearchPresenter presenter = new RecipeSearchPresenter(recipeSearchViewModel);
+        recipeSearchUseCase = new RecipeSearchImpl(recipeSearchEdamam, savedRecipesDataAccess, presenter);
+        RecipeSearchController controller = new RecipeSearchController(recipeSearchUseCase);
+
+        recipeSearchView = new RecipeSearchView(recipeSearchViewModel, controller);
         recipeSearchView.setMealPlanningView(mealPlanningView);
         recipeSearchView.setNutritionAnalysisView(nutritionAnalysisView);
 

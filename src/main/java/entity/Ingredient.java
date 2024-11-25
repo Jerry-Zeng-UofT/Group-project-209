@@ -7,7 +7,7 @@ public final class Ingredient {
 
     private final int ingredientId;
     private final String name;
-    private final double quantity;
+    private double quantity;
     private final String unit;
 
     /**
@@ -41,6 +41,10 @@ public final class Ingredient {
 
     public String getUnit() {
         return unit;
+    }
+
+    public void setQuantity(double quantity) {
+        this.quantity = quantity;
     }
 
     /**
