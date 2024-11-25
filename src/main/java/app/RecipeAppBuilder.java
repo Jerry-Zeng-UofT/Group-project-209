@@ -2,6 +2,7 @@ package app;
 
 import javax.swing.*;
 import data_access.*;
+
 import interface_adapter.nutrition_analysis.NutritionAnalysisController;
 import interface_adapter.nutrition_analysis.NutritionAnalysisPresenter;
 import interface_adapter.nutrition_analysis.NutritionAnalysisViewModel;
@@ -59,7 +60,6 @@ public class RecipeAppBuilder {
         mealPlanningView = new MealPlanningView(mealPlanningViewModel);
         return this;
     }
-
     /**
      * Add the meal planning view.
      * @return The builder instance
@@ -87,6 +87,7 @@ public class RecipeAppBuilder {
         recipeSearchView = new RecipeSearchView(recipeSearchViewModel);
         recipeSearchView.setMealPlanningView(mealPlanningView);
         recipeSearchView.setNutritionAnalysisView(nutritionAnalysisView);
+
         return this;
     }
 

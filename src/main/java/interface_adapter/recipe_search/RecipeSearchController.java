@@ -49,5 +49,17 @@ public class RecipeSearchController {
             // Error will be handled by the presenter
         }
     }
-}
 
+    /**
+     * Adjust servings for a recipe.
+     * @param newServings The new serving size.
+     * @param selectedRecipe The selected recipe to adjust.
+     */
+    public void adjustServings(int newServings, Recipe selectedRecipe) {
+        try {
+            recipeSearchUseCase.adjustRecipeServings(newServings, selectedRecipe);
+        } catch (Exception e) {
+            // Error will be handled by the presenter through output boundary
+        }
+    }
+}

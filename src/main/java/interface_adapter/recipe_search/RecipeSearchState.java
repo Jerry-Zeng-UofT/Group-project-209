@@ -1,6 +1,7 @@
 package interface_adapter.recipe_search;
 
 import entity.Recipe;
+
 import java.util.ArrayList;
 import java.util.List;
 

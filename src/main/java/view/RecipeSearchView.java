@@ -1,11 +1,11 @@
 package view;
 
+import entity.Recipe;
 import interface_adapter.nutrition_analysis.NutritionAnalysisController;
 import interface_adapter.nutrition_analysis.NutritionAnalysisViewModel;
 import interface_adapter.recipe_search.RecipeSearchController;
 import interface_adapter.recipe_search.RecipeSearchState;
 import interface_adapter.recipe_search.RecipeSearchViewModel;
-import entity.Recipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,7 +47,6 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private final List<String> restrictions;
     private Map<String, List<String>> restrictionMap;
     private final JButton saveRecipeButton;
-
     private final JButton analyzeNutritionButton;
 
     private final RecipeSearchViewModel recipeSearchViewModel;
@@ -55,6 +54,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     // Optional reference to meal planning view for updates
     private MealPlanningView mealPlanningView;
+    private final ServingAdjustView servingAdjustView;
 
     // the nutrition analysis view and controller.
     private NutritionAnalysisView nutritionAnalysisView;
@@ -77,6 +77,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         saveRecipeButton = new JButton("Save Recipe");
         analyzeNutritionButton = new JButton("Analyze Nutrition");
 
+
         ingredientListModel = new DefaultListModel<>();
         ingredientList = new JList<>(ingredientListModel);
         restrictionListModel = new DefaultListModel<>();
@@ -87,6 +88,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         ingredients = new ArrayList<>();
         restrictions = new ArrayList<>();
         restrictionMap = new HashMap<>();
+
+        servingAdjustView = new ServingAdjustView(evt -> handleServingAdjustment());
 
         this.setLayout(new BorderLayout());
 
@@ -112,6 +115,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         mainPanel.add(restrictionPanel);
         mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        mainPanel.add(servingAdjustView);
+        mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         mainPanel.add(searchButton);
         mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         mainPanel.add(resultsPanel);
@@ -134,6 +139,26 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     public void setNutritionAnalysisView(NutritionAnalysisView nutritionAnalysisView) {
         this.nutritionAnalysisView = nutritionAnalysisView;
+    }
+
+    private void handleServingAdjustment() {
+        final int servings = servingAdjustView.getServings();
+        final int selectedIndex = recipeResults.getSelectedIndex();
+
+        if (selectedIndex != -1 && recipeSearchController != null) {
+            final RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
+            if (state != null) {
+                final List<Recipe> recipes = state.getRecipes();
+                if (selectedIndex < recipes.size()) {
+                    final Recipe selectedRecipe = recipes.get(selectedIndex);
+                    recipeSearchController.adjustServings(servings, selectedRecipe);
+                }
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "Please select a recipe first.",
+                    "No Recipe Selected", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     @Override
@@ -220,6 +245,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                         JOptionPane.WARNING_MESSAGE);
             }
         }
+
     }
 
     private int getCurrentUserId() {
@@ -264,7 +290,6 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                 new Dimension(RESULTS_LIST_WIDTH, RESULTS_LIST_HEIGHT));
 
         saveRecipeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
         // Create a panel for the buttons
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));

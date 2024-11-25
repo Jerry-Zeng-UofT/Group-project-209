@@ -22,6 +22,13 @@ public class Nutrition {
         this.sugar = sugar;
     }
 
+    public String formatNutritionInfo() {
+        return String.format(
+                "Calories: %.2f, Protein: %.2f g, Fat: %.2f g, Carbohydrates: %.2f g, Fiber: %.2f g, Sugar: %.2f g",
+                calories, protein, fat, carbohydrates, fiber, sugar
+        );
+    }
+
     public double getCalories() {
         return calories;
     }
