@@ -22,27 +22,24 @@ public class RecipeSearchPresenter implements RecipeSearchOutputBoundary {
         RecipeSearchState state = new RecipeSearchState();
         List<String> recipeResults = new ArrayList<>();
 
-        // Store the actual Recipe objects
         state.setRecipes(recipes);
 
-        // Create string representations for display
         for (Recipe recipe : recipes) {
             StringBuilder description = new StringBuilder();
+
             description.append(recipe.getTitle()).append("\n");
+
+            description.append("Servings: ").append(recipe.getServings()).append("\n");
+
             description.append("Ingredients:\n");
             for (Ingredient ingredient : recipe.getIngredients()) {
                 if (ingredient.getQuantity() == 0) {
-                    // Only append the ingredient name if quantity is zero
                     description.append("- ").append(ingredient.getName()).append("\n");
                 }
                 else {
-                    String quantityString;
-                    if (ingredient.getQuantity() == Math.floor(ingredient.getQuantity())) {
-                        quantityString = String.valueOf((int) ingredient.getQuantity());
-                    }
-                    else {
-                        quantityString = String.valueOf(ingredient.getQuantity());
-                    }
+                    String quantityString = ingredient.getQuantity() == Math.floor(ingredient.getQuantity())
+                            ? String.valueOf((int) ingredient.getQuantity())
+                            : String.valueOf(ingredient.getQuantity());
 
                     if (ingredient.getUnit() == null || ingredient.getUnit().trim().isEmpty() || ingredient.getUnit()
                             .equalsIgnoreCase("<unit>")) {
@@ -63,9 +60,12 @@ public class RecipeSearchPresenter implements RecipeSearchOutputBoundary {
                     }
                 }
             }
+
+            // Add recipe to results
             recipeResults.add(description.toString());
         }
 
+        // Update state and notify listeners
         state.setRecipeResults(recipeResults);
         viewModel.setState(state);
         viewModel.firePropertyChanged();

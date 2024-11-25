@@ -3,9 +3,7 @@ package view;
 import entity.Recipe;
 import interface_adapter.nutrition_analysis.NutritionAnalysisController;
 import interface_adapter.nutrition_analysis.NutritionAnalysisViewModel;
-import interface_adapter.recipe_search.RecipeSearchController;
-import interface_adapter.recipe_search.RecipeSearchState;
-import interface_adapter.recipe_search.RecipeSearchViewModel;
+import interface_adapter.recipe_search.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,6 +49,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     private final RecipeSearchViewModel recipeSearchViewModel;
     private RecipeSearchController recipeSearchController;
+    private final ServingAdjustmentHandler servingAdjustmentHandler;
 
     // Optional reference to meal planning view for updates
     private MealPlanningView mealPlanningView;
@@ -60,9 +59,12 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private NutritionAnalysisView nutritionAnalysisView;
     private NutritionAnalysisController nutritionAnalysisController;
 
-    public RecipeSearchView(RecipeSearchViewModel viewModel) {
+    public RecipeSearchView(RecipeSearchViewModel viewModel, RecipeSearchController controller) {
         this.recipeSearchViewModel = viewModel;
         this.recipeSearchViewModel.addPropertyChangeListener(this);
+        this.recipeSearchController = controller;
+        RecipeSearchPresenter presenter = new RecipeSearchPresenter(viewModel);
+        servingAdjustmentHandler = new ServingAdjustmentHandler(recipeSearchController, presenter);
 
         // Initialize components
         title = new JLabel(RecipeSearchViewModel.TITLE_LABEL);
@@ -76,7 +78,6 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         addRestrictionButton = new JButton(RecipeSearchViewModel.ADD_RESTRICTION_LABEL);
         saveRecipeButton = new JButton("Save Recipe");
         analyzeNutritionButton = new JButton("Analyze Nutrition");
-
 
         ingredientListModel = new DefaultListModel<>();
         ingredientList = new JList<>(ingredientListModel);
@@ -115,8 +116,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         mainPanel.add(restrictionPanel);
         mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
-        mainPanel.add(servingAdjustView);
-        mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        searchButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         mainPanel.add(searchButton);
         mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         mainPanel.add(resultsPanel);
@@ -143,22 +143,9 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     private void handleServingAdjustment() {
         final int servings = servingAdjustView.getServings();
-        final int selectedIndex = recipeResults.getSelectedIndex();
+        final RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
 
-        if (selectedIndex != -1 && recipeSearchController != null) {
-            final RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
-            if (state != null) {
-                final List<Recipe> recipes = state.getRecipes();
-                if (selectedIndex < recipes.size()) {
-                    final Recipe selectedRecipe = recipes.get(selectedIndex);
-                    recipeSearchController.adjustServings(servings, selectedRecipe);
-                }
-            }
-        }
-        else {
-            JOptionPane.showMessageDialog(this, "Please select a recipe first.",
-                    "No Recipe Selected", JOptionPane.WARNING_MESSAGE);
-        }
+        servingAdjustmentHandler.adjustServings(servings, state);
     }
 
     @Override
@@ -294,11 +281,12 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         // Horizontal layout
-        buttonPanel.add(saveRecipeButton);
-        buttonPanel.add(Box.createHorizontalStrut(10));
-        // Add a small gap between buttons
         buttonPanel.add(analyzeNutritionButton);
-
+        buttonPanel.add(Box.createHorizontalStrut(170));
+        buttonPanel.add(saveRecipeButton);
+        buttonPanel.add(Box.createHorizontalStrut(80));
+        buttonPanel.add(servingAdjustView);
+        // Add a small gap between buttons
         resultsPanel.add(resultsLabel);
         resultsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         resultsPanel.add(resultsScrollPane);

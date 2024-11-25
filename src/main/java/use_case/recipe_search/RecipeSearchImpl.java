@@ -67,22 +67,71 @@ public class RecipeSearchImpl implements RecipeSearch {
 
     @Override
     public void adjustRecipeServings(int newServings, Recipe recipe) {
-        Recipe adjustedRecipe = recipe.adjustServings(newServings);
-        outputBoundary.presentRecipes(List.of(adjustedRecipe));
+        if (recipe == null || newServings <= 0) {
+            throw new IllegalArgumentException("Invalid recipe or servings");
+        }
+
+        int currentServings = recipe.getServings();
+        if (currentServings <= 0) {
+            throw new IllegalStateException("Current servings must be greater than zero");
+        }
+
+        double adjustmentFactor = (double) newServings / currentServings;
+
+        for (Ingredient ingredient : recipe.getIngredients()) {
+            double newQuantity = ingredient.getQuantity() * adjustmentFactor;
+            ingredient.setQuantity(newQuantity);
+        }
+
+        recipe.setServings(newServings);
     }
 
     private List<Recipe> convertToRecipes(List<Recipe> searchResults) {
         List<Recipe> recipes = new ArrayList<>();
         int recipeId = 1;
-
         for (Recipe result : searchResults) {
             String title = result.getTitle();
-            String description = result.getDescription() != null ? result.getDescription() : "No description available";
+            String description;
+            if (result.getDescription() != null) {
+                description = result.getDescription();
+            }
+            else {
+                description = "No description available";
+            }
+
             List<Ingredient> ingredients = result.getIngredients();
-            String instructions = result.getInstructions() != null ? result.getInstructions() : "Instructions not available";
-            Nutrition nutrition = result.getNutrition() != null ? result.getNutrition() : new Nutrition(0, 0, 0, 0, 0, 0);
-            List<Food> food = result.getFood() != null ? result.getFood() : new ArrayList<>();
-            int servings = result.getServings() > 0 ? result.getServings() : 1;
+
+            String instructions;
+            if (result.getInstructions() != null) {
+                instructions = result.getInstructions();
+            }
+            else {
+                instructions = "Instructions not available";
+            }
+
+            Nutrition nutrition;
+            if (result.getNutrition() != null) {
+                nutrition = result.getNutrition();
+            }
+            else {
+                nutrition = new Nutrition(0, 0, 0, 0, 0, 0);
+            }
+
+            List<Food> food;
+            if (result.getFood() != null) {
+                food = result.getFood();
+            }
+            else {
+                food = new ArrayList<>();
+            }
+
+            int servings;
+            if (result.getServings() > 0) {
+                servings = result.getServings();
+            }
+            else {
+                servings = 1;
+            }
 
             Recipe recipe = new Recipe(
                     recipeId++,

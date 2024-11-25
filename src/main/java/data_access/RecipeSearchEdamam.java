@@ -48,10 +48,16 @@ public class RecipeSearchEdamam {
         urlBuilder.addQueryParameter("app_id", APP_ID);
         urlBuilder.addQueryParameter("app_key", APP_KEY);
 
-        // Add optional filters
-        if (diet != null && !diet.isEmpty()) urlBuilder.addQueryParameter("diet", diet);
-        if (health != null && !health.isEmpty()) urlBuilder.addQueryParameter("health", health);
-        if (cuisineType != null && !cuisineType.isEmpty()) urlBuilder.addQueryParameter("cuisineType", cuisineType);
+        // Add optional filters if provided
+        if (diet != null && !diet.isEmpty()) {
+            urlBuilder.addQueryParameter("diet", diet);
+        }
+        if (health != null && !health.isEmpty()) {
+            urlBuilder.addQueryParameter("health", health);
+        }
+        if (cuisineType != null && !cuisineType.isEmpty()) {
+            urlBuilder.addQueryParameter("cuisineType", cuisineType);
+        }
 
         Request request = new Request.Builder().url(urlBuilder.build().toString()).build();
 
