@@ -26,8 +26,10 @@ public class MainRecipeApplication {
         builder.addRecipeSearchAPI(recipeSearchEdamam)
                 .addMealPlanningView()
                 .addMealPlanningUseCase()
+                .addNutritionAnalysisView()
                 .addRecipeSearchView()
-                .addRecipeSearchUseCase();
+                .addRecipeSearchUseCase()
+                .addNutritionAnalysisUseCase();
 
         // Build and show the frame
         builder.build().setVisible(true);

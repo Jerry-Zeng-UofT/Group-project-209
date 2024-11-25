@@ -1,5 +1,6 @@
 package entity;
 
+import org.json.JSONArray;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,13 +16,14 @@ public class Recipe {
     private String instructions;
     private Nutrition nutrition;
     private List<Food> food;
+    private JSONArray jsonIngredient;
     private int servings;
 
     /**
      * Constructor for Recipe with all fields.
      */
     public Recipe(int recipeId, String title, String description, List<Ingredient> ingredients,
-                  String instructions, Nutrition nutrition, List<Food> food, int servings) {
+                  String instructions, Nutrition nutrition, List<Food> food, JSONArray jsonIngredient, int servings) {
         this.recipeId = recipeId;
         this.title = title;
         this.description = description;
@@ -29,6 +31,7 @@ public class Recipe {
         this.instructions = Objects.requireNonNullElse(instructions, "Instructions not available");
         this.nutrition = nutrition;
         this.food = food;
+        this.jsonIngredient = jsonIngredient;
         this.servings = servings;
     }
 
@@ -89,6 +92,10 @@ public class Recipe {
         this.food = food;
     }
 
+    public JSONArray getJsonIngredient() {
+        return jsonIngredient;
+    }
+
     public int getServings() {
         return servings;
     }
@@ -116,7 +123,7 @@ public class Recipe {
                 .toList();
 
         return new Recipe(recipeId, title, description, scaledIngredients, instructions,
-                nutrition, food, newServings);
+                nutrition, food, jsonIngredient, newServings);
     }
 
     @Override

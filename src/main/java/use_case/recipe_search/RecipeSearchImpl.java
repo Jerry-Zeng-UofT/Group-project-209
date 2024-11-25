@@ -92,6 +92,7 @@ public class RecipeSearchImpl implements RecipeSearch {
                     instructions,
                     nutrition,
                     food,
+                    result.getJsonIngredient(),
                     servings
             );
 
