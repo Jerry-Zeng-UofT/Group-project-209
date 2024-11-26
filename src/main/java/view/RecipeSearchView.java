@@ -187,7 +187,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                         }
                     }
                 }
-            } else {
+            }
+            else {
                 JOptionPane.showMessageDialog(this,
                         "Please select a recipe to save first.",
                         "No Recipe Selected",
