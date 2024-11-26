@@ -2,7 +2,6 @@ package view;
 
 import entity.Recipe;
 import interface_adapter.nutrition_analysis.NutritionAnalysisController;
-import interface_adapter.nutrition_analysis.NutritionAnalysisViewModel;
 import interface_adapter.recipe_search.*;
 
 import javax.swing.*;
@@ -26,27 +25,42 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private static final int RESULTS_LIST_WIDTH = 300;
     private static final int TITLE_FONT_SIZE = 16;
 
+    // UI Components
+    // Labels
     private final JLabel title;
+
+    // Panels
     private final JPanel inputPanel;
+    private final JPanel resultsPanel;
+    private final JPanel restrictionPanel;
+
+    // Text Fields
     private final JTextField ingredientField;
+
+    // Buttons
     private final JButton addIngredientButton;
-    private final DefaultListModel<String> ingredientListModel;
-    private final JList<String> ingredientList;
     private final JButton removeIngredientButton;
     private final JButton searchButton;
-    private final JPanel resultsPanel;
-    private final DefaultListModel<String> recipeListModel;
-    private final JList<String> recipeResults;
-    private final List<String> ingredients;
-    private final JPanel restrictionPanel;
     private final JButton addRestrictionButton;
-    private final DefaultListModel<String> restrictionListModel;
-    private final JList<String> restrictionList;
-    private final List<String> restrictions;
-    private Map<String, List<String>> restrictionMap;
     private final JButton saveRecipeButton;
     private final JButton analyzeNutritionButton;
 
+    // Lists
+    private final JList<String> ingredientList;
+    private final JList<String> recipeResults;
+    private final JList<String> restrictionList;
+
+    // Data Models
+    private final DefaultListModel<String> ingredientListModel;
+    private final DefaultListModel<String> recipeListModel;
+    private final DefaultListModel<String> restrictionListModel;
+
+    // Data Collections
+    private final List<String> ingredients;
+    private final List<String> restrictions;
+    private Map<String, List<String>> restrictionMap;
+
+    // Controllers and ViewModels
     private final RecipeSearchViewModel recipeSearchViewModel;
     private RecipeSearchController recipeSearchController;
     private final ServingAdjustmentHandler servingAdjustmentHandler;
@@ -67,11 +81,18 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         servingAdjustmentHandler = new ServingAdjustmentHandler(recipeSearchController, presenter);
 
         // Initialize components
+        // UI Components - Labels
         title = new JLabel(RecipeSearchViewModel.TITLE_LABEL);
+
+        // Panels
         inputPanel = new JPanel();
         restrictionPanel = new JPanel();
         resultsPanel = new JPanel();
+
+        // Text Fields
         ingredientField = new JTextField(TEXTFIELD_WIDTH);
+
+        // Buttons
         addIngredientButton = new JButton(RecipeSearchViewModel.ADD_INGREDIENT_BUTTON_LABEL);
         removeIngredientButton = new JButton(RecipeSearchViewModel.REMOVE_INGREDIENT_BUTTON_LABEL);
         searchButton = new JButton(RecipeSearchViewModel.SEARCH_BUTTON_LABEL);
@@ -79,6 +100,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         saveRecipeButton = new JButton("Save Recipe");
         analyzeNutritionButton = new JButton("Analyze Nutrition");
 
+        // Lists
         ingredientListModel = new DefaultListModel<>();
         ingredientList = new JList<>(ingredientListModel);
         restrictionListModel = new DefaultListModel<>();
@@ -86,11 +108,14 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         recipeListModel = new DefaultListModel<>();
         recipeResults = new JList<>(recipeListModel);
 
+        // Data Collections
         ingredients = new ArrayList<>();
         restrictions = new ArrayList<>();
         restrictionMap = new HashMap<>();
 
+        // Controllers and ViewModels
         servingAdjustView = new ServingAdjustView(evt -> handleServingAdjustment());
+
 
         this.setLayout(new BorderLayout());
 
