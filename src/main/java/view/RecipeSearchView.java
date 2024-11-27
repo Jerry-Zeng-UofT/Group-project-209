@@ -187,7 +187,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                         }
                     }
                 }
-            } else {
+            }
+            else {
                 JOptionPane.showMessageDialog(this,
                         "Please select a recipe to save first.",
                         "No Recipe Selected",
@@ -270,28 +271,67 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
 
         final JLabel resultsLabel = new JLabel("Recipe Results:");
+        resultsLabel.setFont(new Font("Arial", Font.BOLD, 14));
         resultsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        final JScrollPane resultsScrollPane = new JScrollPane(recipeResults);
-        resultsScrollPane.setPreferredSize(
-                new Dimension(RESULTS_LIST_WIDTH, RESULTS_LIST_HEIGHT));
+        // Configure the recipe results list
+        recipeResults.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        recipeResults.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        recipeResults.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        saveRecipeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        // Create a panel for the buttons
+        // Create a custom cell renderer for better formatting
+        recipeResults.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value,
+                                                          int index, boolean isSelected, boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(
+                        list, value, index, isSelected, cellHasFocus);
+
+                // Set background colors
+                if (isSelected) {
+                    label.setBackground(new Color(200, 220, 240));
+                    label.setForeground(Color.BLACK);
+                } else {
+                    label.setBackground(Color.WHITE);
+                }
+
+                // Add padding
+                label.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+                return label;
+            }
+        });
+
+        final JScrollPane resultsScrollPane = new JScrollPane(recipeResults);
+        resultsScrollPane.setPreferredSize(new Dimension(RESULTS_LIST_WIDTH, RESULTS_LIST_HEIGHT));
+        resultsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        resultsScrollPane.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                BorderFactory.createLineBorder(Color.GRAY)
+        ));
+
+        // Create button panel with better spacing and alignment
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        // Horizontal layout
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+        analyzeNutritionButton.setBackground(new Color(240, 240, 240));
+        saveRecipeButton.setBackground(new Color(240, 240, 240));
+
+        buttonPanel.add(Box.createHorizontalGlue());
         buttonPanel.add(analyzeNutritionButton);
-        buttonPanel.add(Box.createHorizontalStrut(170));
+        buttonPanel.add(Box.createHorizontalStrut(10));
         buttonPanel.add(saveRecipeButton);
-        buttonPanel.add(Box.createHorizontalStrut(80));
+        buttonPanel.add(Box.createHorizontalStrut(10));
         buttonPanel.add(servingAdjustView);
-        // Add a small gap between buttons
+        buttonPanel.add(Box.createHorizontalGlue());
+
         resultsPanel.add(resultsLabel);
         resultsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         resultsPanel.add(resultsScrollPane);
         resultsPanel.add(buttonPanel);
-        // Add the button panel here
+
+        // Add padding around the results panel
+        resultsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     }
 
     @Override
