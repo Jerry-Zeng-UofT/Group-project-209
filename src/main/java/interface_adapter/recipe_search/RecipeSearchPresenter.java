@@ -21,51 +21,52 @@ public class RecipeSearchPresenter implements RecipeSearchOutputBoundary {
     public void presentRecipes(List<Recipe> recipes) {
         RecipeSearchState state = new RecipeSearchState();
         List<String> recipeResults = new ArrayList<>();
-
         state.setRecipes(recipes);
 
         for (Recipe recipe : recipes) {
             StringBuilder description = new StringBuilder();
 
-            description.append(recipe.getTitle()).append("\n");
+            // Recipe title in bold
+            description.append("----\n")
+                    .append("✦ ").append(recipe.getTitle().toUpperCase()).append("\n")
+                    .append("----\n\n");
 
-            description.append("Servings: ").append(recipe.getServings()).append("\n");
+            // Servings info
+            description.append("👥 Servings: ").append(recipe.getServings()).append("\n\n");
 
-            description.append("Ingredients:\n");
+            // Ingredients section
+            description.append("📝 INGREDIENTS:\n");
             for (Ingredient ingredient : recipe.getIngredients()) {
                 if (ingredient.getQuantity() == 0) {
-                    description.append("- ").append(ingredient.getName()).append("\n");
-                }
-                else {
+                    description.append("  • ").append(ingredient.getName()).append("\n");
+                } else {
                     String quantityString = ingredient.getQuantity() == Math.floor(ingredient.getQuantity())
                             ? String.valueOf((int) ingredient.getQuantity())
-                            : String.valueOf(ingredient.getQuantity());
+                            : String.format("%.2f", ingredient.getQuantity());
 
-                    if (ingredient.getUnit() == null || ingredient.getUnit().trim().isEmpty() || ingredient.getUnit()
-                            .equalsIgnoreCase("<unit>")) {
-                        description.append("- ")
+                    if (ingredient.getUnit() == null || ingredient.getUnit().trim().isEmpty() ||
+                            ingredient.getUnit().equalsIgnoreCase("<unit>")) {
+                        description.append("  • ")
                                 .append(quantityString)
                                 .append(" ")
                                 .append(ingredient.getName())
                                 .append("\n");
-                    }
-                    else {
-                        description.append("- ")
-                                .append(ingredient.getName())
-                                .append(" (")
+                    } else {
+                        description.append("  • ")
                                 .append(quantityString)
                                 .append(" ")
                                 .append(ingredient.getUnit())
-                                .append(")\n");
+                                .append(" ")
+                                .append(ingredient.getName())
+                                .append("\n");
                     }
                 }
             }
 
-            // Add recipe to results
+            description.append("\n"); // Add extra spacing between recipes
             recipeResults.add(description.toString());
         }
 
-        // Update state and notify listeners
         state.setRecipeResults(recipeResults);
         viewModel.setState(state);
         viewModel.firePropertyChanged();
