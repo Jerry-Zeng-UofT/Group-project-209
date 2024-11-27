@@ -6,14 +6,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MealPlanningState {
+public class MealPlanningState implements MealPlanningStateInterface {
     private List<MealPlanEntry> mealPlanEntries = new ArrayList<>();
-    private List<Recipe> savedRecipes = new ArrayList<>();  // Added to store saved recipes
+    private List<Recipe> savedRecipes = new ArrayList<>();
     private LocalDate currentWeekStart = LocalDate.now();
     private String message;
     private String error;
     private boolean isLoading = false;
 
+    // Copy constructor
     public MealPlanningState(MealPlanningState copy) {
         if (copy != null) {
             this.mealPlanEntries = new ArrayList<>(copy.mealPlanEntries);
@@ -30,14 +31,54 @@ public class MealPlanningState {
 
     }
 
-    // Getters and setters
-
+    @Override
     public List<Recipe> getSavedRecipes() {
         return new ArrayList<>(savedRecipes);
     }
 
+    @Override
     public void setSavedRecipes(List<Recipe> recipes) {
         this.savedRecipes = new ArrayList<>(recipes);
+    }
+
+    @Override
+    public List<MealPlanEntry> getMealPlanEntries() {
+        return new ArrayList<>(mealPlanEntries);
+    }
+
+    @Override
+    public void setMealPlanEntries(List<MealPlanEntry> entries) {
+        this.mealPlanEntries = new ArrayList<>(entries);
+    }
+
+    @Override
+    public LocalDate getCurrentWeekStart() {
+        return currentWeekStart;
+    }
+
+    @Override
+    public void setCurrentWeekStart(LocalDate date) {
+        this.currentWeekStart = date;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    @Override
+    public String getError() {
+        return error;
+    }
+
+    @Override
+    public void setError(String error) {
+        this.error = error;
     }
 
     public boolean isLoading() {
@@ -46,37 +87,5 @@ public class MealPlanningState {
 
     public void setLoading(boolean loading) {
         isLoading = loading;
-    }
-
-    public List<MealPlanEntry> getMealPlanEntries() {
-        return new ArrayList<>(mealPlanEntries);
-    }
-
-    public void setMealPlanEntries(List<MealPlanEntry> entries) {
-        this.mealPlanEntries = new ArrayList<>(entries);
-    }
-
-    public LocalDate getCurrentWeekStart() {
-        return currentWeekStart;
-    }
-
-    public void setCurrentWeekStart(LocalDate date) {
-        this.currentWeekStart = date;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getError() {
-        return error;
-    }
-
-    public void setError(String error) {
-        this.error = error;
     }
 }
