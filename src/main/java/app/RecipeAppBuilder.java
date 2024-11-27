@@ -30,6 +30,7 @@ public class RecipeAppBuilder {
     private MealPlanningViewModel mealPlanningViewModel;
     private NutritionAnalysisViewModel nutritionAnalysisViewModel;
 
+    private FrontPageView frontPageView;
     private RecipeSearchView recipeSearchView;
     private MealPlanningView mealPlanningView;
     private NutritionAnalysisView nutritionAnalysisView;
@@ -60,6 +61,7 @@ public class RecipeAppBuilder {
         mealPlanningView = new MealPlanningView(mealPlanningViewModel);
         return this;
     }
+
     /**
      * Add the meal planning view.
      * @return The builder instance
@@ -94,6 +96,13 @@ public class RecipeAppBuilder {
         recipeSearchView.setNutritionAnalysisView(nutritionAnalysisView);
 
         return this;
+    }
+
+    /**
+     * Add the front page view.
+     */
+    public void addFrontpageView() {
+        frontPageView = new FrontPageView(recipeSearchView, mealPlanningView);
     }
 
     /**
@@ -188,17 +197,6 @@ public class RecipeAppBuilder {
      * @return The main frame
      */
     public JFrame build() {
-        final JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setTitle("Recipe Wiz");
-        frame.setSize(WIDTH, HEIGHT);
-
-        JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Recipe Search", recipeSearchView);
-        tabbedPane.addTab("Meal Planning", mealPlanningView);
-
-        frame.add(tabbedPane);
-        frame.setLocationRelativeTo(null);
-        return frame;
+        return frontPageView;
     }
 }
