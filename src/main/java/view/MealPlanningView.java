@@ -199,9 +199,11 @@ public class MealPlanningView extends JPanel implements ActionListener, Property
         String statusLower = status.toLowerCase();
         if (statusLower.equals("completed")) {
             return new Color(200, 255, 200); // Light green
-        } else if (statusLower.equals("in progress")) {
+        }
+        else if (statusLower.equals("in progress")) {
             return new Color(255, 255, 200); // Light yellow
-        } else {
+        }
+        else {
             return new Color(255, 255, 255); // White for planned
         }
     }
