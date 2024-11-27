@@ -116,7 +116,6 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         // Controllers and ViewModels
         servingAdjustView = new ServingAdjustView(evt -> handleServingAdjustment());
 
-
         this.setLayout(new BorderLayout());
 
         title.setFont(new Font(title.getFont().getName(), Font.BOLD, TITLE_FONT_SIZE));
