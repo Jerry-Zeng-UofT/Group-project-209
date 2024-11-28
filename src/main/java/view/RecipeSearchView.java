@@ -286,7 +286,6 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                                                           int index, boolean isSelected, boolean cellHasFocus) {
                 JLabel label = (JLabel) super.getListCellRendererComponent(
                         list, value, index, isSelected, cellHasFocus);
-
                 // Set background colors
                 if (isSelected) {
                     label.setBackground(new Color(200, 220, 240));
@@ -309,21 +308,14 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                 BorderFactory.createLineBorder(Color.GRAY)
         ));
 
-        // Create button panel with better spacing and alignment
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        // Create a panel for the buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0)); // FlowLayout with 15px horizontal gap
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 90, 10, 10));
 
-        analyzeNutritionButton.setBackground(new Color(240, 240, 240));
-        saveRecipeButton.setBackground(new Color(240, 240, 240));
-
-        buttonPanel.add(Box.createHorizontalGlue());
+        // Add buttons
         buttonPanel.add(analyzeNutritionButton);
-        buttonPanel.add(Box.createHorizontalStrut(10));
         buttonPanel.add(saveRecipeButton);
-        buttonPanel.add(Box.createHorizontalStrut(10));
         buttonPanel.add(servingAdjustView);
-        buttonPanel.add(Box.createHorizontalGlue());
 
         resultsPanel.add(resultsLabel);
         resultsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
