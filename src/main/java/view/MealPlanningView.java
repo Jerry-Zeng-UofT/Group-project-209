@@ -370,7 +370,12 @@ public class MealPlanningView extends JPanel implements ActionListener, Property
         this.controller = controller;
         if (controller != null) {
             savedRecipesList.setCellRenderer(new RecipeListCellRenderer(controller));
-            controller.getSavedRecipes(getCurrentUserId());
+
+            int userId = getCurrentUserId();
+            controller.initializeMealPlanning(userId);
+
+            LocalDate currentWeekStart = viewModel.getState().getCurrentWeekStart();
+            controller.viewCalendarWeek(userId, currentWeekStart);
         }
     }
 

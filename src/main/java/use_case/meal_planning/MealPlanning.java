@@ -10,4 +10,5 @@ public interface MealPlanning {
     void getCalendarWeek(int userId, LocalDate weekStart);
     List<Recipe> getSavedRecipes(int userId);  // Added to get user's saved recipes
     void updateMealStatus(int userId, int entryId, String status);  // Added to update meal status
+    void initializeMealPlanning(int userId);
 }

@@ -73,4 +73,16 @@ public class MealPlanningInteractor implements MealPlanning {
         }
     }
 
+    @Override
+    public void initializeMealPlanning(int userId) {
+        try {
+            LocalDate currentWeekStart = LocalDate.now().with(java.time.DayOfWeek.MONDAY);
+            List<MealPlanEntry> entries = dataAccess.getWeeklyPlan(userId, currentWeekStart);
+            outputBoundary.presentCalendarWeek(entries);
+        }
+        catch (Exception e) {
+            outputBoundary.presentError("Failed to initialize meal planning: " + e.getMessage());
+        }
+    }
+
 }

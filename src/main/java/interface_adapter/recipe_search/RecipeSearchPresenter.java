@@ -26,7 +26,6 @@ public class RecipeSearchPresenter implements RecipeSearchOutputBoundary {
         for (Recipe recipe : recipes) {
             StringBuilder description = new StringBuilder();
 
-            // Start HTML
             description.append("<html>");
             description.append("<b>✦ ").append(recipe.getTitle().toUpperCase()).append("</b><br>");
 
