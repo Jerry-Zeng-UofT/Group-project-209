@@ -13,8 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class RecipeSearchEdamam {
-    private static final String APP_ID = "6ec3d1f4";
-    private static final String APP_KEY = "0bae38670d4f3777d686730b59f0e707";
+    private static final String APP_ID = "aaac3ad0";
+    private static final String APP_KEY = "3862f2800864a629947f0f79f4da280d";
     private static final String BASE_URL = "https://api.edamam.com/api/recipes/v2";
     private static final String NA_URL = "https://api.edamam.com/api/nutrition-details";
     private final OkHttpClient httpClient = new OkHttpClient();
