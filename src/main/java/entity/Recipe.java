@@ -104,28 +104,6 @@ public class Recipe {
         this.servings = servings;
     }
 
-    /**
-     * Scale the quantities of all ingredients by the given factor.
-     *
-     * @param newServings The new serving size.
-     * @return A new Recipe with scaled ingredient quantities.
-     * @throws IllegalArgumentException if the new serving size is negative or zero.
-     */
-    public Recipe adjustServings(int newServings) {
-        if (newServings <= 0) {
-            throw new IllegalArgumentException("Servings must be greater than zero.");
-        }
-
-        double factor = (double) newServings / servings;
-
-        List<Ingredient> scaledIngredients = ingredients.stream()
-                .map(ingredient -> ingredient.scaleQuantity(factor))
-                .toList();
-
-        return new Recipe(recipeId, title, description, scaledIngredients, instructions,
-                nutrition, food, jsonIngredient, newServings);
-    }
-
     @Override
     public String toString() {
         return String.format("Recipe: %s (Servings: %d)%nDescription: %s%nIngredients: %s%nInstructions: %s",

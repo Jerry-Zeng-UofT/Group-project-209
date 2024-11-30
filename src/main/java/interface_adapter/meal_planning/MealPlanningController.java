@@ -31,4 +31,8 @@ public class MealPlanningController {
     public void viewCalendarWeek(int userId, LocalDate weekStart) {
         mealPlanningUseCase.getCalendarWeek(userId, weekStart);
     }
+
+    public void initializeMealPlanning(int userId) {
+        mealPlanningUseCase.initializeMealPlanning(userId);
+    }
 }

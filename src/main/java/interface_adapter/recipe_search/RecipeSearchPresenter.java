@@ -26,44 +26,34 @@ public class RecipeSearchPresenter implements RecipeSearchOutputBoundary {
         for (Recipe recipe : recipes) {
             StringBuilder description = new StringBuilder();
 
-            // Recipe title in bold
-            description.append("----\n")
-                    .append("✦ ").append(recipe.getTitle().toUpperCase()).append("\n")
-                    .append("----\n\n");
+            description.append("<html>");
+            description.append("<b>✦ ").append(recipe.getTitle().toUpperCase()).append("</b><br>");
 
-            // Servings info
-            description.append("👥 Servings: ").append(recipe.getServings()).append("\n\n");
+            description.append("<i>👥 Servings:</i> ").append(recipe.getServings()).append("<br><br>");
 
-            // Ingredients section
-            description.append("📝 INGREDIENTS:\n");
+            description.append("<u>📝 INGREDIENTS:</u> ");
+
+            // Combine ingredients into a single line
+            List<String> ingredientStrings = new ArrayList<>();
             for (Ingredient ingredient : recipe.getIngredients()) {
-                if (ingredient.getQuantity() == 0) {
-                    description.append("  • ").append(ingredient.getName()).append("\n");
-                } else {
-                    String quantityString = ingredient.getQuantity() == Math.floor(ingredient.getQuantity())
-                            ? String.valueOf((int) ingredient.getQuantity())
-                            : String.format("%.2f", ingredient.getQuantity());
+                String quantityString = ingredient.getQuantity() == Math.floor(ingredient.getQuantity())
+                        ? String.valueOf((int) ingredient.getQuantity())
+                        : String.format("%.2f", ingredient.getQuantity());
 
-                    if (ingredient.getUnit() == null || ingredient.getUnit().trim().isEmpty() ||
-                            ingredient.getUnit().equalsIgnoreCase("<unit>")) {
-                        description.append("  • ")
-                                .append(quantityString)
-                                .append(" ")
-                                .append(ingredient.getName())
-                                .append("\n");
-                    } else {
-                        description.append("  • ")
-                                .append(quantityString)
-                                .append(" ")
-                                .append(ingredient.getUnit())
-                                .append(" ")
-                                .append(ingredient.getName())
-                                .append("\n");
-                    }
+                if (ingredient.getQuantity() == 0) {
+                    ingredientStrings.add(ingredient.getName());
+                } else if (ingredient.getUnit() == null || ingredient.getUnit().trim().isEmpty()
+                        || ingredient.getUnit().equalsIgnoreCase("<unit>")) {
+                    ingredientStrings.add(quantityString + " " + ingredient.getName());
+                } else {
+                    ingredientStrings.add(quantityString + " " + ingredient.getUnit() + " " + ingredient.getName());
                 }
             }
 
-            description.append("\n"); // Add extra spacing between recipes
+            // Join all ingredients with commas
+            description.append(String.join(", ", ingredientStrings)).append("<br>");
+
+            description.append("</html>");
             recipeResults.add(description.toString());
         }
 
