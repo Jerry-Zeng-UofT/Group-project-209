@@ -25,7 +25,7 @@ public class NutritionAnalysisView extends JFrame {
         this.viewModel = nutritionAnalysisViewModel;
 
         // Set size and default close operation
-        setSize(300, 200);
+        setSize(400, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Add some content to display results

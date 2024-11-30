@@ -62,7 +62,8 @@ public class NutritionAnalysisDataAccessObject {
                     JSONObject nutrient = totalNutrients.getJSONObject(key);
 
                     // Combine the values into a string and add them to the list
-                    String aNutrient = nutrient.getString("label")
+                    String aNutrient = "  • "
+                            + nutrient.getString("label")
                             + ": "
                             + nutrient.getInt("quantity")
                             + nutrient.getString("unit");
