@@ -29,9 +29,10 @@ public class MainRecipeApplication {
                 .addNutritionAnalysisView()
                 .addRecipeSearchView()
                 .addRecipeSearchUseCase()
-                .addNutritionAnalysisUseCase();
+                .addNutritionAnalysisUseCase()
+                .addFrontpageView();
 
         // Build and show the frame
-        builder.build().setVisible(true);
+        builder.build();
     }
 }

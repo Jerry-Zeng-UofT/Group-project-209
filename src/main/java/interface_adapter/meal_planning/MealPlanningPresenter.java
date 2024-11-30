@@ -6,16 +6,16 @@ import use_case.meal_planning.MealPlanningOutputBoundary;
 import java.util.List;
 
 public class MealPlanningPresenter implements MealPlanningOutputBoundary {
-    private final MealPlanningViewModel viewModel;
+    private final MealPlanningViewModelInterface viewModel;
 
-    public MealPlanningPresenter(MealPlanningViewModel viewModel) {
+    public MealPlanningPresenter(MealPlanningViewModelInterface viewModel) {
         this.viewModel = viewModel;
     }
 
     @Override
     public void presentCalendarWeek(List<MealPlanEntry> entries) {
         MealPlanningState currentState = viewModel.getState();
-        MealPlanningState newState = new MealPlanningState(currentState); // Copy constructor
+        MealPlanningState newState = new MealPlanningState(currentState);
         newState.setMealPlanEntries(entries);
         viewModel.setState(newState);
         viewModel.firePropertyChanged();
