@@ -72,9 +72,11 @@ public class RecipeSearchPresenter implements RecipeSearchOutputBoundary {
 
     @Override
     public void presentSaveSuccess(Recipe recipe) {
-        RecipeSearchState state = new RecipeSearchState();
-        state.setMessage("Recipe '" + recipe.getTitle() + "' saved successfully!");
-        viewModel.setState(state);
+        // Instead of creating a new state, get the current state and update it
+        RecipeSearchState currentState = (RecipeSearchState) viewModel.getState();
+        RecipeSearchState newState = new RecipeSearchState(currentState); // Copy the current state
+        newState.setMessage("Recipe '" + recipe.getTitle() + "' saved successfully!");
+        viewModel.setState(newState);
         viewModel.firePropertyChanged();
     }
 }

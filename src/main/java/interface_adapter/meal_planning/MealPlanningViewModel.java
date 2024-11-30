@@ -2,7 +2,7 @@ package interface_adapter.meal_planning;
 
 import interface_adapter.ViewModel;
 
-public class MealPlanningViewModel extends ViewModel<MealPlanningState> {
+public class MealPlanningViewModel extends ViewModel<MealPlanningState> implements MealPlanningViewModelInterface {
     public static final String TITLE_LABEL = "Meal Planning Calendar";
     public static final String ADD_BUTTON_LABEL = "Add to Calendar";
     public static final String REMOVE_BUTTON_LABEL = "Remove from Calendar";
@@ -11,5 +11,20 @@ public class MealPlanningViewModel extends ViewModel<MealPlanningState> {
 
     public MealPlanningViewModel() {
         super("Meal Planning Calendar");
+    }
+
+    @Override
+    public MealPlanningState getState() {
+        return super.getState();
+    }
+
+    @Override
+    public void setState(MealPlanningState state) {
+        super.setState(state);
+    }
+
+    @Override
+    public void firePropertyChanged() {
+        super.firePropertyChanged();
     }
 }

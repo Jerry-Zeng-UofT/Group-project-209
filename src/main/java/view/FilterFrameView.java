@@ -3,7 +3,9 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FilterFrameView extends JFrame {
     private static final int WINDOW_WIDTH = 500;
@@ -15,6 +17,8 @@ public class FilterFrameView extends JFrame {
     private final JPanel dietPanel;
     private final JPanel healthPanel;
     private final JPanel cuisinePanel;
+
+    private Map<String, List<String>> restrictionMap;
 
     private static final String[] DIET_TYPES = {"balanced", "high-fiber", "high-protein", "low-carb", "low-fat", "low-sodium"};
     private static final String[] DIET_RESTRICTIONS = {"alcohol-cocktail", "alcohol-free", "celery-free", "crustacean-free",
@@ -28,6 +32,8 @@ public class FilterFrameView extends JFrame {
 
     public FilterFrameView(RecipeSearchView mainFrame) {
         this.mainFrame = mainFrame;
+
+        restrictionMap = new HashMap<>();
 
         setTitle("Filter Page");
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -110,39 +116,28 @@ public class FilterFrameView extends JFrame {
     public String getSelectedFilters() {
         StringBuilder resultText = new StringBuilder();
 
-        // Diet Label
-        for (JCheckBox checkBox : getCheckBoxes(dietPanel)) {
-            if (checkBox.isSelected()) resultText.append(checkBox.getText()).append(", ");
-        }
-
-        if (resultText.toString().endsWith(", ")) {
-            resultText.setLength(resultText.length() - 2);
-        }
-
-        resultText.append("\n");
-
-        // Health Label
-        for (JCheckBox checkBox : getCheckBoxes(healthPanel)) {
-            if (checkBox.isSelected()) resultText.append(checkBox.getText()).append(", ");
-        }
-
-        if (resultText.toString().endsWith(", ")) {
-            resultText.setLength(resultText.length() - 2);
-        }
-
-        resultText.append("\n");
-
-        // Cuisine Type
-        for (JCheckBox checkBox : getCheckBoxes(cuisinePanel)) {
-            if (checkBox.isSelected()) resultText.append(checkBox.getText()).append(", ");
-        }
-
-        if (resultText.toString().endsWith(", ")) {
-            resultText.setLength(resultText.length() - 2);
-        }
+        appendSelectedFilters(resultText, dietPanel);
+        appendSelectedFilters(resultText, healthPanel);
+        appendSelectedFilters(resultText, cuisinePanel);
 
         return resultText.toString();
     }
+
+    // Helper Method
+    private void appendSelectedFilters(StringBuilder resultText, JPanel panel) {
+        boolean first = true;
+        for (JCheckBox checkBox : getCheckBoxes(panel)) {
+            if (checkBox.isSelected()) {
+                if (!first) {
+                    resultText.append(", ");
+                }
+                resultText.append(checkBox.getText());
+                first = false;
+            }
+        }
+        resultText.append("\n");
+    }
+
 
     public List<String> getDietType() {
         ArrayList<String> dietList = new ArrayList<>();
@@ -174,6 +169,13 @@ public class FilterFrameView extends JFrame {
         return cuisineList;
     }
 
+    public Map<String, List<String>> dataTransfer() {
+        restrictionMap.put("Diet Types", getDietType());
+        restrictionMap.put("Health Types", getHealthType());
+        restrictionMap.put("Cuisine Types", getCuisineType());
+        return restrictionMap;
+    }
+
     private void cancelAction() {
         mainFrame.setVisible(true);
         this.setVisible(false);
@@ -181,7 +183,7 @@ public class FilterFrameView extends JFrame {
 
     private void confirmAction() {
         String selectedFilters = getSelectedFilters();
-        mainFrame.updateSelection(selectedFilters);
+        mainFrame.updateSelection(selectedFilters, dataTransfer());
         this.setVisible(false);
     }
 }

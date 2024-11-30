@@ -26,7 +26,8 @@ public class MealPlanningInteractor implements MealPlanning {
             List<Recipe> recipes = savedRecipesDataAccess.getSavedRecipes(userId);
             outputBoundary.presentSavedRecipes(recipes);
             return recipes;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             outputBoundary.presentError("Failed to load saved recipes: " + e.getMessage());
             return List.of();
         }
@@ -47,7 +48,8 @@ public class MealPlanningInteractor implements MealPlanning {
         try {
             dataAccess.addMealPlanEntry(userId, recipeId, date, mealType);
             outputBoundary.presentAddSuccess("Recipe added to calendar");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             outputBoundary.presentError("Failed to add recipe to calendar: " + e.getMessage());
         }
     }
@@ -68,7 +70,8 @@ public class MealPlanningInteractor implements MealPlanning {
         try {
             List<MealPlanEntry> entries = dataAccess.getWeeklyPlan(userId, weekStart);
             outputBoundary.presentCalendarWeek(entries);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             outputBoundary.presentError("Failed to load calendar: " + e.getMessage());
         }
     }
