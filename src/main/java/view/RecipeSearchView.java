@@ -343,7 +343,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                 if (isSelected) {
                     label.setBackground(new Color(200, 220, 240));
                     label.setForeground(Color.BLACK);
-                } else {
+                }
+                else {
                     label.setBackground(Color.WHITE);
                 }
                 // Add padding
