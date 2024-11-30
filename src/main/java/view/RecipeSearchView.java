@@ -10,10 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class RecipeSearchView extends JPanel implements ActionListener, PropertyChangeListener {
 
@@ -188,16 +186,6 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         }
         else if (evt.getSource().equals(addRestrictionButton)) {
             FilterFrameView filterFrame = new FilterFrameView(this);
-            final String restriction = filterFrame.getSelectedFilters().trim();
-            System.out.println(restriction);
-            restrictionMap.put("Diet Types", filterFrame.getDietType());
-            restrictionMap.put("Health Types", filterFrame.getHealthType());
-            restrictionMap.put("Cuisine Types", filterFrame.getCuisineType());
-
-            if (!restriction.isEmpty()) {
-                restrictions.add(restriction);
-                restrictionListModel.addElement(restriction);
-            }
         }
         else if (evt.getSource().equals(saveRecipeButton)) {
             int selectedIndex = recipeResults.getSelectedIndex();
@@ -235,7 +223,13 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
             if (selectedIndex != -1) {
                 restrictions.remove(selectedIndex);
                 restrictionListModel.remove(selectedIndex);
-                // TODO: Add codes here to make search function work correctly
+                removeByJList(restrictionList.getModel().getElementAt(selectedIndex));
+            }
+            else {
+                JOptionPane.showMessageDialog(this,
+                        "Please select restrictions to remove.",
+                        "No Restrictions Selected",
+                        JOptionPane.WARNING_MESSAGE);
             }
         }
         else if (evt.getSource().equals(searchButton)) {
@@ -272,6 +266,13 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     }
 
+    // Helper method for remove restrictions
+    private void removeByJList(String valueToRemove) {
+        List<String> valuesToRemove = Arrays.asList(valueToRemove.split(" "));
+
+        restrictionMap.values().removeIf(valuesToRemove::contains);
+    }
+
     private int getCurrentUserId() {
         return 1; // For testing purposes
     }
@@ -281,17 +282,17 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
         final JPanel addIngredientPanel = new JPanel();
         addIngredientPanel.setLayout(new BoxLayout(addIngredientPanel, BoxLayout.Y_AXIS));
+
+        final JPanel labelPanel = new JPanel();
+        labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
+        final JPanel ingredientLabelPanel = new JPanel();
+        final JPanel restrictionLabelPanel = new JPanel();
+
         final JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+
         final JPanel displayPanel = new JPanel();
         displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.X_AXIS));
-
-        addIngredientPanel.add(new JLabel("Enter Ingredient:"));
-        addIngredientPanel.add(ingredientField);
-
-        buttonPanel.add(addIngredientButton);
-        buttonPanel.add(Box.createHorizontalStrut(250));
-        buttonPanel.add(addRestrictionButton);
 
         final JScrollPane ingredientScrollPane = new JScrollPane(ingredientList);
         ingredientScrollPane.setPreferredSize(
@@ -301,19 +302,34 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         restrictionScrollPane.setPreferredSize(
                 new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
 
+        addIngredientPanel.add(new JLabel("Enter Ingredient:"));
+        addIngredientPanel.add(ingredientField);
+
+        ingredientLabelPanel.add(new JLabel("Ingredient:"));
+
+        JLabel label = new JLabel("Ingredient:");
+        label.setHorizontalAlignment(SwingConstants.LEFT);
+
+        restrictionLabelPanel.add(new JLabel("Restriction:"));
+        labelPanel.add(label);
+        labelPanel.add(restrictionLabelPanel);
+
+        buttonPanel.add(addIngredientButton);
+        buttonPanel.add(Box.createHorizontalStrut(30));
+        buttonPanel.add(removeIngredientButton);
+        buttonPanel.add(Box.createHorizontalStrut(80));
+        buttonPanel.add(addRestrictionButton);
+        buttonPanel.add(Box.createHorizontalStrut(30));
+        buttonPanel.add(removeRestrictionsButton);
+
         displayPanel.add(ingredientScrollPane);
         displayPanel.add(restrictionScrollPane);
 
-        final JPanel removeButtonPanel = new JPanel();
-        removeButtonPanel.add(removeIngredientButton);
-        removeButtonPanel.add(Box.createHorizontalStrut(240));
-        removeButtonPanel.add(removeRestrictionsButton);
-
         inputPanel.add(addIngredientPanel);
-        inputPanel.add(buttonPanel);
+        inputPanel.add(labelPanel);
         inputPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
         inputPanel.add(displayPanel);
-        inputPanel.add(removeButtonPanel);
+        inputPanel.add(buttonPanel);
     }
 
     private void setupResultsPanel() {

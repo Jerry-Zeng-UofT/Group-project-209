@@ -113,7 +113,7 @@ public class FilterFrameView extends JFrame {
         return new JCheckBox[0];
     }
 
-    public String getSelectedFilters() {
+    private String getSelectedFilters() {
         StringBuilder resultText = new StringBuilder();
 
         appendSelectedFilters(resultText, dietPanel);
@@ -138,8 +138,7 @@ public class FilterFrameView extends JFrame {
         resultText.append("\n");
     }
 
-
-    public List<String> getDietType() {
+    private List<String> getDietType() {
         ArrayList<String> dietList = new ArrayList<>();
         for (JCheckBox checkBox : getCheckBoxes(dietPanel)) {
             if (checkBox.isSelected()) {
@@ -149,7 +148,7 @@ public class FilterFrameView extends JFrame {
         return dietList;
     }
 
-    public List<String> getHealthType() {
+    private List<String> getHealthType() {
         ArrayList<String> healthList = new ArrayList<>();
         for (JCheckBox checkBox : getCheckBoxes(healthPanel)) {
             if (checkBox.isSelected()) {
@@ -159,7 +158,7 @@ public class FilterFrameView extends JFrame {
         return healthList;
     }
 
-    public List<String> getCuisineType() {
+    private List<String> getCuisineType() {
         ArrayList<String> cuisineList = new ArrayList<>();
         for (JCheckBox checkBox : getCheckBoxes(cuisinePanel)) {
             if (checkBox.isSelected()) {
@@ -169,7 +168,7 @@ public class FilterFrameView extends JFrame {
         return cuisineList;
     }
 
-    public Map<String, List<String>> dataTransfer() {
+    private Map<String, List<String>> dataTransfer() {
         restrictionMap.put("Diet Types", getDietType());
         restrictionMap.put("Health Types", getHealthType());
         restrictionMap.put("Cuisine Types", getCuisineType());

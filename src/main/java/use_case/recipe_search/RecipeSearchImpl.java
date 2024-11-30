@@ -52,9 +52,21 @@ public class RecipeSearchImpl implements RecipeSearch {
     public void searchRestrictionRecipes(Map<String, List<String>> restrictions) throws RecipeSearchException {
         try {
             String searchFoodQuery = String.join(",", restrictions.get("Food Name"));
-            String searchDietQuery = String.join(",", restrictions.get("Diet Label"));
-            String searchHealthQuery = String.join(",", restrictions.get("Health Label"));
-            String searchCuisineQuery = String.join(",", restrictions.get("Cuisine Type"));
+
+            String searchDietQuery = null;
+            if (restrictions.get("Diet Label") != null && !restrictions.get("Diet Label").isEmpty()) {
+                searchDietQuery = String.join(",", restrictions.get("Diet Label"));
+            }
+
+            String searchHealthQuery = null;
+            if (restrictions.get("Health Label") != null && !restrictions.get("Health Label").isEmpty()) {
+                searchHealthQuery = String.join(",", restrictions.get("Health Label"));
+            }
+
+            String searchCuisineQuery = null;
+            if (restrictions.get("Cuisine Type") != null && !restrictions.get("Cuisine Type").isEmpty()) {
+                searchCuisineQuery = String.join(",", restrictions.get("Cuisine Type"));
+            }
             List<Recipe> searchResults = recipeSearchEdamam.searchRecipesByRestriction(
                     searchFoodQuery, searchDietQuery, searchHealthQuery, searchCuisineQuery);
             List<Recipe> recipes = convertToRecipes(searchResults);
