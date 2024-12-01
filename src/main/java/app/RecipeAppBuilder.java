@@ -11,12 +11,18 @@ import interface_adapter.meal_planning.*;
 import interface_adapter.search_with_restriction.RestrictionController;
 import interface_adapter.search_with_restriction.RestrictionPresenter;
 import interface_adapter.search_with_restriction.RestrictionViewModel;
+import interface_adapter.serving_adjust.ServingAdjustController;
+import interface_adapter.serving_adjust.ServingAdjustPresenter;
+import interface_adapter.serving_adjust.ServingAdjustViewModel;
 import use_case.nutrition_analysis.NutritionAnalysis;
 import use_case.nutrition_analysis.NutritionAnalysisImpl;
 import use_case.recipe_search.*;
 import use_case.meal_planning.*;
 import use_case.search_with_restriction.RecipeSearchWithRestrictionInteractor;
 import use_case.search_with_restriction.SearchWithRestrictionInputBoundary;
+import use_case.serving_adjust.ServingAdjustInputBoundary;
+import use_case.serving_adjust.ServingAdjustInteractor;
+import use_case.serving_adjust.ServingAdjustOutputBoundary;
 import view.*;
 
 /**
@@ -103,7 +109,13 @@ public class RecipeAppBuilder {
         searchWithRestrictionInputBoundaryUseCase = new RecipeSearchWithRestrictionInteractor(recipeSearchEdamam, restrictionPresenter);
         RestrictionController restrictionController = new RestrictionController(searchWithRestrictionInputBoundaryUseCase);
 
-        recipeSearchView = new RecipeSearchView(recipeSearchViewModel, restrictionViewModel, controller, restrictionController);
+        ServingAdjustViewModel servingAdjustViewModel = new ServingAdjustViewModel();
+        ServingAdjustPresenter servingAdjustPresenter = new ServingAdjustPresenter(servingAdjustViewModel);
+        ServingAdjustInputBoundary servingAdjustUseCase = new ServingAdjustInteractor(servingAdjustPresenter);
+        ServingAdjustController servingAdjustController = new ServingAdjustController(servingAdjustUseCase);
+
+        recipeSearchView = new RecipeSearchView(recipeSearchViewModel, restrictionViewModel, controller,
+                restrictionController, servingAdjustController);
         recipeSearchView.setMealPlanningView(mealPlanningView);
         recipeSearchView.setNutritionAnalysisView(nutritionAnalysisView);
 
@@ -196,6 +208,28 @@ public class RecipeAppBuilder {
         );
         RestrictionController controller = new RestrictionController(searchWithRestrictionInputBoundaryUseCase);
         recipeSearchView.setRestrictionController(controller);
+
+        return this;
+    }
+
+    /**
+     * Add the serving adjust use case.
+     * @return The builder instance
+     */
+    public RecipeAppBuilder addServingAdjustUseCase() {
+        ServingAdjustViewModel servingAdjustViewModel = new ServingAdjustViewModel();
+
+        ServingAdjustOutputBoundary presenter = new ServingAdjustPresenter(servingAdjustViewModel);
+        ServingAdjustInputBoundary servingAdjustUseCase = new ServingAdjustInteractor(presenter);
+
+        ServingAdjustController controller = new ServingAdjustController(servingAdjustUseCase);
+
+        if (recipeSearchView == null) {
+            throw new RuntimeException("addRecipeSearchView must be called before addServingAdjustUseCase");
+        }
+
+        recipeSearchView.setServingAdjustController(controller);
+        recipeSearchView.setServingAdjustViewModel(servingAdjustViewModel);
 
         return this;
     }

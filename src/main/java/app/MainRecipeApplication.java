@@ -31,6 +31,7 @@ public class MainRecipeApplication {
                 .addRecipeSearchUseCase()
                 .addRestrictionSearchUseCase()
                 .addNutritionAnalysisUseCase()
+                .addServingAdjustUseCase()
                 .addFrontpageView();
 
         // Build and show the frame
