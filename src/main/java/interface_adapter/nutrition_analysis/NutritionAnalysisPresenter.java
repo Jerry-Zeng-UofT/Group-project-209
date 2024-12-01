@@ -23,9 +23,7 @@ public class NutritionAnalysisPresenter implements NutritionAnalysisOutputBounda
         List<String> nutritionResults = new ArrayList<>();
 
         for (Nutrient nutrient : NutritionInfo) {
-            StringBuilder description = new StringBuilder();
-            description.append(nutrient.getNutrients());
-            nutritionResults.add(description.toString());
+            nutritionResults.add(nutrient.getNutrients());
         }
         state.setNutritionResults(nutritionResults);
         viewModel.setState(state);

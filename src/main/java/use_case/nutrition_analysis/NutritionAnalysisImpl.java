@@ -26,7 +26,6 @@ public class NutritionAnalysisImpl implements NutritionAnalysis {
     public void analyzeNutrition(Recipe recipe) throws NutritionAnalysisException {
         try {
             // Get NutritionInfo from Edamam API by the RecipeName.
-            System.out.println("Ready to extract info from the API");
             List<Nutrient> nutritionInfo = NutritionAnalysisDAO.analyzeNutrition(recipe);
 
             // Present success
