@@ -3,6 +3,9 @@ package view;
 import entity.Recipe;
 import interface_adapter.nutrition_analysis.NutritionAnalysisController;
 import interface_adapter.recipe_search.*;
+import interface_adapter.search_with_restriction.*;
+import interface_adapter.search_with_restriction.RestrictionController;
+import interface_adapter.search_with_restriction.RestrictionViewModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -61,7 +64,9 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     // Controllers and ViewModels
     private final RecipeSearchViewModel recipeSearchViewModel;
+    private final RestrictionViewModel restrictionViewModel;
     private RecipeSearchController recipeSearchController;
+    private RestrictionController restrictionController;
     private final ServingAdjustmentHandler servingAdjustmentHandler;
 
     // Optional reference to meal planning view for updates
@@ -72,10 +77,13 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private NutritionAnalysisView nutritionAnalysisView;
     private NutritionAnalysisController nutritionAnalysisController;
 
-    public RecipeSearchView(RecipeSearchViewModel viewModel, RecipeSearchController controller) {
+    public RecipeSearchView(RecipeSearchViewModel viewModel, RestrictionViewModel restrictionModel, RecipeSearchController controller, RestrictionController restrictionController ) {
         this.recipeSearchViewModel = viewModel;
         this.recipeSearchViewModel.addPropertyChangeListener(this);
+        this.restrictionViewModel = restrictionModel;
+        this.restrictionViewModel.addPropertyChangeListener(this);
         this.recipeSearchController = controller;
+        this.restrictionController = restrictionController;
         RecipeSearchPresenter presenter = new RecipeSearchPresenter(viewModel);
         servingAdjustmentHandler = new ServingAdjustmentHandler(recipeSearchController, presenter);
 
@@ -95,8 +103,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         addIngredientButton = new JButton(RecipeSearchViewModel.ADD_INGREDIENT_BUTTON_LABEL);
         removeIngredientButton = new JButton(RecipeSearchViewModel.REMOVE_INGREDIENT_BUTTON_LABEL);
         searchButton = new JButton(RecipeSearchViewModel.SEARCH_BUTTON_LABEL);
-        addRestrictionButton = new JButton(RecipeSearchViewModel.ADD_RESTRICTION_LABEL);
-        removeRestrictionsButton = new JButton(RecipeSearchViewModel.REMOVE_RESTRICTION_LABEL);
+        addRestrictionButton = new JButton(RestrictionViewModel.ADD_RESTRICTION_LABEL);
+        removeRestrictionsButton = new JButton(RestrictionViewModel.REMOVE_RESTRICTION_LABEL);
         saveRecipeButton = new JButton(RecipeSearchViewModel.SAVE_RECIPE_LABEL);
         analyzeNutritionButton = new JButton(RecipeSearchViewModel.ANALYZE_NUTRITION_LABEL);
 
@@ -155,6 +163,10 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     public void setRecipeSearchController(RecipeSearchController controller) {
         this.recipeSearchController = controller;
+    }
+
+    public void setRestrictionController(RestrictionController restrictionController) {
+        this.restrictionController = restrictionController;
     }
 
     // Method to set reference to meal planning view
@@ -221,9 +233,13 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         }
 
         if (recipeSearchController != null) {
-            RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
-            if (state != null) {
-                List<Recipe> recipes = state.getRecipes();
+            Object state = recipeSearchViewModel.getState();
+            if (state == null) {
+                state = restrictionViewModel.getState();
+            }
+
+            if (state instanceof RecipeSearchState recipeState) {
+                List<Recipe> recipes = recipeState.getRecipes();
                 if (selectedIndex < recipes.size()) {
                     Recipe selectedRecipe = recipes.get(selectedIndex);
                     recipeSearchController.saveRecipe(getCurrentUserId(), selectedRecipe);
@@ -232,6 +248,18 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                         mealPlanningView.refreshSavedRecipes();
                     }
                 }
+            } else if (state instanceof RestrictionState restrictionState) {
+                List<Recipe> recipes = restrictionState.getRecipes();
+                if (selectedIndex < recipes.size()) {
+                    Recipe selectedRecipe = recipes.get(selectedIndex);
+                    recipeSearchController.saveRecipe(getCurrentUserId(), selectedRecipe);
+
+                    if (mealPlanningView != null && mealPlanningView.getController() != null) {
+                        mealPlanningView.refreshSavedRecipes();
+                    }
+                }
+            } else {
+                showMessage("Unknown state type.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -256,11 +284,11 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     }
 
     private void handleSearch() {
-        if (recipeSearchController != null) {
+        if (recipeSearchController != null && restrictionController != null) {
             if (restrictions.isEmpty()) {
                 recipeSearchController.executeSearch(new ArrayList<>(ingredients));
             } else {
-                recipeSearchController.executeRestrictionSearch(restrictionMap);
+                restrictionController.executeRestrictionSearch(restrictionMap);
             }
         }
     }
@@ -334,7 +362,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         ingredientLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
         JPanel restrictionLabelPanel = new JPanel();
-        restrictionLabelPanel.add(new JLabel(RecipeSearchViewModel.RESTRICTION_TITLE_LABEL));
+        restrictionLabelPanel.add(new JLabel(RestrictionViewModel.RESTRICTION_TITLE_LABEL));
 
         labelPanel.add(ingredientLabel);
         labelPanel.add(restrictionLabelPanel);
@@ -445,21 +473,44 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        RecipeSearchState state = (RecipeSearchState) evt.getNewValue();
-        if (state != null) {
-            if (state.getError() != null) {
+        Object newState = evt.getNewValue();
+
+        if (newState instanceof RecipeSearchState) {
+            RecipeSearchState recipeState = (RecipeSearchState) newState;
+
+            if (recipeState.getError() != null) {
                 JOptionPane.showMessageDialog(this,
-                        state.getError(),
+                        recipeState.getError(),
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
-            } else if (state.getMessage() != null) {
+            } else if (recipeState.getMessage() != null) {
                 JOptionPane.showMessageDialog(this,
-                        state.getMessage(),
-                        "Success",
+                        recipeState.getMessage(),
+                        "Message",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
-                updateRecipeResults(state.getRecipeResults());
+                updateRecipeResults(recipeState.getRecipeResults());
             }
+
+        } else if (newState instanceof RestrictionState) {
+            RestrictionState restrictionState = (RestrictionState) newState;
+
+            if (restrictionState.getError() != null) {
+                JOptionPane.showMessageDialog(this,
+                        restrictionState.getError(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            } else if (restrictionState.getMessage() != null) {
+                JOptionPane.showMessageDialog(this,
+                        restrictionState.getMessage(),
+                        "Message",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                updateRecipeResults(restrictionState.getRecipeResults());
+            }
+
+        } else {
+            System.out.println("Unexpected state type: " + newState.getClass().getName());
         }
     }
 
