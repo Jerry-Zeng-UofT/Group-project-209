@@ -6,6 +6,8 @@ import interface_adapter.recipe_search.*;
 import interface_adapter.search_with_restriction.*;
 import interface_adapter.search_with_restriction.RestrictionController;
 import interface_adapter.search_with_restriction.RestrictionViewModel;
+import interface_adapter.serving_adjust.ServingAdjustController;
+import interface_adapter.serving_adjust.ServingAdjustViewModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -67,17 +69,20 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private final RestrictionViewModel restrictionViewModel;
     private RecipeSearchController recipeSearchController;
     private RestrictionController restrictionController;
-    private final ServingAdjustmentHandler servingAdjustmentHandler;
+    private final ServingAdjustView servingAdjustView;
+    private ServingAdjustController servingAdjustController;
 
     // Optional reference to meal planning view for updates
     private MealPlanningView mealPlanningView;
-    private final ServingAdjustView servingAdjustView;
 
     // the nutrition analysis view and controller.
     private NutritionAnalysisView nutritionAnalysisView;
     private NutritionAnalysisController nutritionAnalysisController;
+    private ServingAdjustViewModel servingAdjustViewModel;
 
-    public RecipeSearchView(RecipeSearchViewModel viewModel, RestrictionViewModel restrictionModel, RecipeSearchController controller, RestrictionController restrictionController ) {
+    public RecipeSearchView(RecipeSearchViewModel viewModel, RestrictionViewModel restrictionModel,
+                            RecipeSearchController controller, RestrictionController restrictionController,
+                            ServingAdjustController servingAdjustController) {
         this.recipeSearchViewModel = viewModel;
         this.recipeSearchViewModel.addPropertyChangeListener(this);
         this.restrictionViewModel = restrictionModel;
@@ -85,7 +90,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         this.recipeSearchController = controller;
         this.restrictionController = restrictionController;
         RecipeSearchPresenter presenter = new RecipeSearchPresenter(viewModel);
-        servingAdjustmentHandler = new ServingAdjustmentHandler(recipeSearchController, presenter);
+        this.servingAdjustController = servingAdjustController;
 
         // Initialize components
         // UI Components - Labels
@@ -182,11 +187,38 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         this.nutritionAnalysisView = nutritionAnalysisView;
     }
 
-    private void handleServingAdjustment() {
-        final int servings = servingAdjustView.getServings();
-        final RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
+    public void setServingAdjustController(ServingAdjustController controller) {
+        this.servingAdjustController = controller;
+    }
 
-        servingAdjustmentHandler.adjustServings(servings, state);
+    public void setServingAdjustViewModel(ServingAdjustViewModel viewModel) {
+        this.servingAdjustViewModel = viewModel;
+    }
+
+    private void handleServingAdjustment() {
+        int servings = servingAdjustView.getServings();
+        if (recipeSearchController != null && servingAdjustController != null) {
+            RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
+            if (state != null) {
+                servingAdjustController.updateServingsForAll(servings, state.getRecipes());
+
+                servingAdjustViewModel.updateRecipes(state.getRecipes());
+
+                RecipeSearchPresenter presenter = new RecipeSearchPresenter(recipeSearchViewModel);
+                presenter.presentRecipes(state.getRecipes());
+
+                JOptionPane.showMessageDialog(this,
+                        "All recipes updated to " + servings + " servings.",
+                        "Update Successful",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(this,
+                    "Serving adjustment is not configured properly.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @Override
