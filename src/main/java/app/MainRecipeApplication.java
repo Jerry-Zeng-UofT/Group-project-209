@@ -1,6 +1,7 @@
 package app;
 
-import data_access.RecipeSearchEdamam;
+import data_access.RecipeSearchDataAccessObject;
+import data_access.SearchWithRestrictionDataAccessObject;
 
 /**
  * An application where users can search for recipes based on ingredients.
@@ -17,13 +18,14 @@ public class MainRecipeApplication {
      */
     public static void main(String[] args) {
         // Create the data access object for recipe search
-        final RecipeSearchEdamam recipeSearchEdamam = new RecipeSearchEdamam();
+        final RecipeSearchDataAccessObject recipeSearchDataAccessObject = new RecipeSearchDataAccessObject();
+        final SearchWithRestrictionDataAccessObject searchWithRestrictionDataAccessObject = new SearchWithRestrictionDataAccessObject();
 
         // Create and configure the application using the builder
         final RecipeAppBuilder builder = new RecipeAppBuilder();
 
         // Build the application with correct order
-        builder.addRecipeSearchAPI(recipeSearchEdamam)
+        builder.addRecipeSearchAPI(recipeSearchDataAccessObject, searchWithRestrictionDataAccessObject)
                 .addMealPlanningView()
                 .addMealPlanningUseCase()
                 .addNutritionAnalysisView()

@@ -1,6 +1,6 @@
 package use_case.recipe_search;
 
-import data_access.RecipeSearchEdamam;
+import data_access.RecipeSearchDataAccessObject;
 import data_access.SavedRecipesDataAccess;
 import entity.Food;
 import entity.Ingredient;
@@ -10,14 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecipeSearchInteractor implements RecipeSearchInputBoundary {
-    private final RecipeSearchEdamam recipeSearchEdamam;
+    private final RecipeSearchDataAccessObject recipeSearchDataAccessObject;
     private final RecipeSearchOutputBoundary outputBoundary;
     private final SavedRecipesDataAccess savedRecipesDataAccess;
 
-    public RecipeSearchInteractor(RecipeSearchEdamam recipeSearchEdamam,
+    public RecipeSearchInteractor(RecipeSearchDataAccessObject recipeSearchDataAccessObject,
                                   SavedRecipesDataAccess savedRecipesDataAccess,
                                   RecipeSearchOutputBoundary outputBoundary) {
-        this.recipeSearchEdamam = recipeSearchEdamam;
+        this.recipeSearchDataAccessObject = recipeSearchDataAccessObject;
         this.savedRecipesDataAccess = savedRecipesDataAccess;
         this.outputBoundary = outputBoundary;
     }
@@ -37,7 +37,7 @@ public class RecipeSearchInteractor implements RecipeSearchInputBoundary {
     public void searchRecipes(List<String> ingredients) throws RecipeSearchException {
         try {
             String searchQuery = String.join(",", ingredients);
-            List<Recipe> searchResults = recipeSearchEdamam.searchRecipesByFoodName(searchQuery);
+            List<Recipe> searchResults = recipeSearchDataAccessObject.searchRecipesByFoodName(searchQuery);
             List<Recipe> recipes = convertToRecipes(searchResults);
             outputBoundary.presentRecipes(recipes);
         } catch (Exception e) {

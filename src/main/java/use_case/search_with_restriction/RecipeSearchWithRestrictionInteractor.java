@@ -1,6 +1,6 @@
 package use_case.search_with_restriction;
 
-import data_access.RecipeSearchEdamam;
+import data_access.SearchWithRestrictionDataAccessObject;
 import entity.Food;
 import entity.Ingredient;
 import entity.Nutrition;
@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Map;
 
 public class RecipeSearchWithRestrictionInteractor implements SearchWithRestrictionInputBoundary {
-    private final RecipeSearchEdamam recipeSearchEdamam;
+    private final SearchWithRestrictionDataAccessObject searchWithRestrictionDataAccessObject;
     private final SearchWithRestrictionOutputBoundry outputBoundary;
 
-    public RecipeSearchWithRestrictionInteractor(RecipeSearchEdamam recipeSearchEdamam,
+    public RecipeSearchWithRestrictionInteractor(SearchWithRestrictionDataAccessObject searchWithRestrictionDataAccessObject,
                                                  SearchWithRestrictionOutputBoundry outputBoundary) {
-        this.recipeSearchEdamam = recipeSearchEdamam;
+        this.searchWithRestrictionDataAccessObject = searchWithRestrictionDataAccessObject;
         this.outputBoundary = outputBoundary;
     }
 
@@ -39,7 +39,7 @@ public class RecipeSearchWithRestrictionInteractor implements SearchWithRestrict
             if (restrictions.get("Cuisine Type") != null && !restrictions.get("Cuisine Type").isEmpty()) {
                 searchCuisineQuery = String.join(",", restrictions.get("Cuisine Type"));
             }
-            List<Recipe> searchResults = recipeSearchEdamam.searchRecipesByRestriction(
+            List<Recipe> searchResults = searchWithRestrictionDataAccessObject.searchRecipesByRestriction(
                     searchFoodQuery, searchDietQuery, searchHealthQuery, searchCuisineQuery);
             List<Recipe> recipes = convertToRecipes(searchResults);
             outputBoundary.presentRecipes(recipes);
