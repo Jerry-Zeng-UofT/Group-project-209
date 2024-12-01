@@ -3,7 +3,6 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +32,7 @@ public class FilterFrameView extends JFrame {
     public FilterFrameView(RecipeSearchView mainFrame) {
         this.mainFrame = mainFrame;
 
-        restrictionMap = new HashMap<>();
+        restrictionMap = mainFrame.getRestrictionMap();
 
         setTitle("Filter Page");
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -168,11 +167,10 @@ public class FilterFrameView extends JFrame {
         return cuisineList;
     }
 
-    private Map<String, List<String>> dataTransfer() {
+    private void dataTransfer() {
         restrictionMap.put("Diet Types", getDietType());
         restrictionMap.put("Health Types", getHealthType());
         restrictionMap.put("Cuisine Types", getCuisineType());
-        return restrictionMap;
     }
 
     private void cancelAction() {
@@ -182,7 +180,8 @@ public class FilterFrameView extends JFrame {
 
     private void confirmAction() {
         String selectedFilters = getSelectedFilters();
-        mainFrame.updateSelection(selectedFilters, dataTransfer());
+        mainFrame.updateSelection(selectedFilters);
+        dataTransfer();
         this.setVisible(false);
     }
 }

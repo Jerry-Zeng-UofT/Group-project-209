@@ -97,8 +97,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         searchButton = new JButton(RecipeSearchViewModel.SEARCH_BUTTON_LABEL);
         addRestrictionButton = new JButton(RecipeSearchViewModel.ADD_RESTRICTION_LABEL);
         removeRestrictionsButton = new JButton(RecipeSearchViewModel.REMOVE_RESTRICTION_LABEL);
-        saveRecipeButton = new JButton("Save Recipe");
-        analyzeNutritionButton = new JButton("Analyze Nutrition");
+        saveRecipeButton = new JButton(RecipeSearchViewModel.SAVE_RECIPE_LABEL);
+        analyzeNutritionButton = new JButton(RecipeSearchViewModel.ANALYZE_NUTRITION_LABEL);
 
         // Lists
         ingredientListModel = new DefaultListModel<>();
@@ -149,6 +149,10 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         this.add(mainPanel, BorderLayout.CENTER);
     }
 
+    public Map<String, List<String>> getRestrictionMap() {
+        return restrictionMap;
+    }
+
     public void setRecipeSearchController(RecipeSearchController controller) {
         this.recipeSearchController = controller;
     }
@@ -175,100 +179,121 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     @Override
     public void actionPerformed(ActionEvent evt) {
-        if (evt.getSource().equals(addIngredientButton)) {
-            final String ingredient = ingredientField.getText().trim();
-            if (!ingredient.isEmpty()) {
-                ingredients.add(ingredient);
-                addValueToKey(restrictionMap, "Food Name", ingredient);
-                ingredientListModel.addElement(ingredient);
-                ingredientField.setText("");
-            }
-        }
-        else if (evt.getSource().equals(addRestrictionButton)) {
-            FilterFrameView filterFrame = new FilterFrameView(this);
-        }
-        else if (evt.getSource().equals(saveRecipeButton)) {
-            int selectedIndex = recipeResults.getSelectedIndex();
-            if (selectedIndex != -1 && recipeSearchController != null) {
-                RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
-                if (state != null) {
-                    List<Recipe> recipes = state.getRecipes();
-                    if (selectedIndex < recipes.size()) {
-                        Recipe selectedRecipe = recipes.get(selectedIndex);
-                        recipeSearchController.saveRecipe(getCurrentUserId(), selectedRecipe);
+        Object source = evt.getSource();
 
-                        // Refresh meal planning view if available
-                        if (mealPlanningView != null && mealPlanningView.getController() != null) {
-                            mealPlanningView.refreshSavedRecipes();
-                        }
-                    }
-                }
-            }
-            else {
-                JOptionPane.showMessageDialog(this,
-                        "Please select a recipe to save first.",
-                        "No Recipe Selected",
-                        JOptionPane.WARNING_MESSAGE);
-            }
+        if (source.equals(addIngredientButton)) {
+            handleAddIngredient();
+        } else if (source.equals(addRestrictionButton)) {
+            handleAddRestriction();
+        } else if (source.equals(saveRecipeButton)) {
+            handleSaveRecipe();
+        } else if (source.equals(removeIngredientButton)) {
+            handleRemoveIngredient();
+        } else if (source.equals(removeRestrictionsButton)) {
+            handleRemoveRestriction();
+        } else if (source.equals(searchButton)) {
+            handleSearch();
+        } else if (source.equals(analyzeNutritionButton)) {
+            handleAnalyzeNutrition();
         }
-        else if (evt.getSource().equals(removeIngredientButton)) {
-            final int selectedIndex = ingredientList.getSelectedIndex();
-            if (selectedIndex != -1) {
-                ingredients.remove(selectedIndex);
-                ingredientListModel.remove(selectedIndex);
-            }
-        }
-        else if (evt.getSource().equals(removeRestrictionsButton)) {
-            final int selectedIndex = restrictionList.getSelectedIndex();
-            if (selectedIndex != -1) {
-                restrictions.remove(selectedIndex);
-                restrictionListModel.remove(selectedIndex);
-                removeByJList(restrictionList.getModel().getElementAt(selectedIndex));
-            }
-            else {
-                JOptionPane.showMessageDialog(this,
-                        "Please select restrictions to remove.",
-                        "No Restrictions Selected",
-                        JOptionPane.WARNING_MESSAGE);
-            }
-        }
-        else if (evt.getSource().equals(searchButton)) {
-            if (recipeSearchController != null) {
-                if (restrictions.isEmpty()) {
-                    recipeSearchController.executeSearch(new ArrayList<>(ingredients));
-                }
-                else {
-                    recipeSearchController.executeRestrictionSearch(restrictionMap);
-                }
-            }
-        }
-        else if (evt.getSource().equals(analyzeNutritionButton)) {
-            int selectedIndex = recipeResults.getSelectedIndex();
-            if (selectedIndex != -1 && nutritionAnalysisController != null) {
-                RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
-                if (state != null) {
-                    List<Recipe> recipes = state.getRecipes();
-                    if (selectedIndex < recipes.size()) {
-                        Recipe selectedRecipe = recipes.get(selectedIndex);
-                        nutritionAnalysisController.executeAnalysis(selectedRecipe);
-
-                        nutritionAnalysisView.setVisible(true);
-                    }
-                }
-            }
-            else {
-                JOptionPane.showMessageDialog(this,
-                        "Please select a recipe to analyze first.",
-                        "No Recipe Selected",
-                        JOptionPane.WARNING_MESSAGE);
-            }
-        }
-
     }
+
+    // Extracted methods for each action
+    private void handleAddIngredient() {
+        final String ingredient = ingredientField.getText().trim();
+        if (!ingredient.isEmpty()) {
+            ingredients.add(ingredient);
+            addValueToKey(restrictionMap, "Food Name", ingredient);
+            ingredientListModel.addElement(ingredient);
+            ingredientField.setText("");
+        }
+    }
+
+    private void handleAddRestriction() {
+        new FilterFrameView(this);
+    }
+
+    private void handleSaveRecipe() {
+        int selectedIndex = recipeResults.getSelectedIndex();
+        if (selectedIndex == -1) {
+            showMessage("Please select a recipe to save first.", "No Recipe Selected", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (recipeSearchController != null) {
+            RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
+            if (state != null) {
+                List<Recipe> recipes = state.getRecipes();
+                if (selectedIndex < recipes.size()) {
+                    Recipe selectedRecipe = recipes.get(selectedIndex);
+                    recipeSearchController.saveRecipe(getCurrentUserId(), selectedRecipe);
+
+                    if (mealPlanningView != null && mealPlanningView.getController() != null) {
+                        mealPlanningView.refreshSavedRecipes();
+                    }
+                }
+            }
+        }
+    }
+
+    private void handleRemoveIngredient() {
+        final int selectedIndex = ingredientList.getSelectedIndex();
+        if (selectedIndex != -1) {
+            ingredients.remove(selectedIndex);
+            ingredientListModel.remove(selectedIndex);
+        }
+    }
+
+    private void handleRemoveRestriction() {
+        final int selectedIndex = restrictionList.getSelectedIndex();
+        if (selectedIndex != -1) {
+            restrictions.remove(selectedIndex);
+            restrictionListModel.remove(selectedIndex);
+            removeByJList(restrictionList.getModel().getElementAt(selectedIndex));
+        } else {
+            showMessage("Please select restrictions to remove.", "No Restrictions Selected", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private void handleSearch() {
+        if (recipeSearchController != null) {
+            if (restrictions.isEmpty()) {
+                recipeSearchController.executeSearch(new ArrayList<>(ingredients));
+            } else {
+                recipeSearchController.executeRestrictionSearch(restrictionMap);
+            }
+        }
+    }
+
+    private void handleAnalyzeNutrition() {
+        final int selectedIndex = recipeResults.getSelectedIndex();
+        if (selectedIndex == -1) {
+            showMessage("Please select a recipe to analyze first.", "No Recipe Selected", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (nutritionAnalysisController != null) {
+            final RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
+            if (state != null) {
+                final List<Recipe> recipes = state.getRecipes();
+                if (selectedIndex < recipes.size()) {
+                    final Recipe selectedRecipe = recipes.get(selectedIndex);
+                    nutritionAnalysisController.executeAnalysis(selectedRecipe);
+                    nutritionAnalysisView.setVisible(true);
+                }
+            }
+        }
+    }
+
+    // Utility method for showing messages
+    private void showMessage(String message, String title, int messageType) {
+        JOptionPane.showMessageDialog(this, message, title, messageType);
+    }
+
 
     // Helper method for remove restrictions
     private void removeByJList(String valueToRemove) {
-        List<String> valuesToRemove = Arrays.asList(valueToRemove.split(" "));
+        final List<String> valuesToRemove = Arrays.asList(valueToRemove.split(" "));
 
         restrictionMap.values().removeIf(valuesToRemove::contains);
     }
@@ -280,39 +305,46 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private void setupInputPanel() {
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
 
-        final JPanel addIngredientPanel = new JPanel();
+        final JPanel addIngredientPanel = createAddIngredientPanel();
+        final JPanel labelPanel = createLabelPanel();
+        final JPanel buttonPanel = createButtonPanel();
+        final JPanel displayPanel = createDisplayPanel();
+
+        inputPanel.add(addIngredientPanel);
+        inputPanel.add(labelPanel);
+        inputPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        inputPanel.add(displayPanel);
+        inputPanel.add(buttonPanel);
+    }
+
+    // Extracted helper methods
+    private JPanel createAddIngredientPanel() {
+        JPanel addIngredientPanel = new JPanel();
         addIngredientPanel.setLayout(new BoxLayout(addIngredientPanel, BoxLayout.Y_AXIS));
-
-        final JPanel labelPanel = new JPanel();
-        labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
-        final JPanel ingredientLabelPanel = new JPanel();
-        final JPanel restrictionLabelPanel = new JPanel();
-
-        final JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-
-        final JPanel displayPanel = new JPanel();
-        displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.X_AXIS));
-
-        final JScrollPane ingredientScrollPane = new JScrollPane(ingredientList);
-        ingredientScrollPane.setPreferredSize(
-                new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
-
-        final JScrollPane restrictionScrollPane = new JScrollPane(restrictionList);
-        restrictionScrollPane.setPreferredSize(
-                new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
-
-        addIngredientPanel.add(new JLabel("Enter Ingredient:"));
+        addIngredientPanel.add(new JLabel(RecipeSearchViewModel.ENTER_INGREDIENT_LABEL));
         addIngredientPanel.add(ingredientField);
+        return addIngredientPanel;
+    }
 
-        ingredientLabelPanel.add(new JLabel("Ingredient:"));
+    private JPanel createLabelPanel() {
+        JPanel labelPanel = new JPanel();
+        labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
 
-        JLabel label = new JLabel("Ingredient:");
-        label.setHorizontalAlignment(SwingConstants.LEFT);
+        JLabel ingredientLabel = new JLabel(RecipeSearchViewModel.INGREDIENT_TITLE_LABEL);
+        ingredientLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
-        restrictionLabelPanel.add(new JLabel("Restriction:"));
-        labelPanel.add(label);
+        JPanel restrictionLabelPanel = new JPanel();
+        restrictionLabelPanel.add(new JLabel(RecipeSearchViewModel.RESTRICTION_TITLE_LABEL));
+
+        labelPanel.add(ingredientLabel);
         labelPanel.add(restrictionLabelPanel);
+
+        return labelPanel;
+    }
+
+    private JPanel createButtonPanel() {
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
         buttonPanel.add(addIngredientButton);
         buttonPanel.add(Box.createHorizontalStrut(30));
@@ -322,20 +354,32 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         buttonPanel.add(Box.createHorizontalStrut(30));
         buttonPanel.add(removeRestrictionsButton);
 
+        return buttonPanel;
+    }
+
+    private JPanel createDisplayPanel() {
+        JPanel displayPanel = new JPanel();
+        displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.X_AXIS));
+
+        JScrollPane ingredientScrollPane = new JScrollPane(ingredientList);
+        ingredientScrollPane.setPreferredSize(
+                new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
+
+        JScrollPane restrictionScrollPane = new JScrollPane(restrictionList);
+        restrictionScrollPane.setPreferredSize(
+                new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
+
         displayPanel.add(ingredientScrollPane);
         displayPanel.add(restrictionScrollPane);
 
-        inputPanel.add(addIngredientPanel);
-        inputPanel.add(labelPanel);
-        inputPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
-        inputPanel.add(displayPanel);
-        inputPanel.add(buttonPanel);
+        return displayPanel;
     }
+
 
     private void setupResultsPanel() {
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
 
-        final JLabel resultsLabel = new JLabel("Recipe Results:");
+        final JLabel resultsLabel = new JLabel(RecipeSearchViewModel.RECIPE_RESULT_LABEL);
         resultsLabel.setFont(new Font("Arial", Font.BOLD, 14));
         resultsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -419,10 +463,9 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         }
     }
 
-    public void updateSelection(String selectionText, Map<String, List<String>> selectionResults) {
+    public void updateSelection(String selectionText) {
         restrictionListModel.addElement(selectionText);
         restrictions.add(selectionText);
-        restrictionMap = selectionResults;
     }
 
     private void updateRecipeResults(List<String> recipes) {
