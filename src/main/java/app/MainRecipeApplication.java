@@ -29,6 +29,7 @@ public class MainRecipeApplication {
                 .addNutritionAnalysisView()
                 .addRecipeSearchView()
                 .addRecipeSearchUseCase()
+                .addRestrictionSearchUseCase()
                 .addNutritionAnalysisUseCase()
                 .addFrontpageView();
 
