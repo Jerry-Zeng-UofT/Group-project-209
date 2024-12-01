@@ -1,5 +1,6 @@
 package use_case.nutrition_analysis;
 
+import data_access.NutritionAnalysisDataAccess;
 import data_access.NutritionAnalysisDataAccessObject;
 import data_access.RecipeSearchEdamam;
 import entity.Recipe;
@@ -13,10 +14,10 @@ import java.util.List;
  */
 public class NutritionAnalysisImpl implements NutritionAnalysis {
 
-    private final NutritionAnalysisDataAccessObject NutritionAnalysisDAO;
+    private final NutritionAnalysisDataAccess NutritionAnalysisDAO;
     private final NutritionAnalysisOutputBoundary outputBoundary;
 
-    public NutritionAnalysisImpl(NutritionAnalysisDataAccessObject NutritionAnalysisDAO,
+    public NutritionAnalysisImpl(NutritionAnalysisDataAccess NutritionAnalysisDAO,
                                  NutritionAnalysisOutputBoundary outputBoundary) {
         this.NutritionAnalysisDAO = NutritionAnalysisDAO;
         this.outputBoundary = outputBoundary;
