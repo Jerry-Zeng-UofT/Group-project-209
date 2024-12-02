@@ -1,7 +1,8 @@
 package use_case.nutrition_analysis;
 
-import entity.Nutrient;
 import java.util.List;
+
+import entity.Nutrient;
 
 /**
  * Output boundary for the Nutrition Analysis use case.

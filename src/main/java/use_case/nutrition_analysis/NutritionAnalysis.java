@@ -12,8 +12,7 @@ public interface NutritionAnalysis {
     /**
      * Searches for recipes based on a list of ingredients.
      *
-     * @param RecipeName the title of recipe to analyze.
-     * @param ingredients the list of ingredients of this recipe.
+     * @param recipe the title of recipe to analyze.
      * @throws NutritionAnalysisException if search fails
      */
     void analyzeNutrition(Recipe recipe) throws NutritionAnalysisException;

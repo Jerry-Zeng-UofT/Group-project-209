@@ -22,6 +22,10 @@ public class Nutrition {
         this.sugar = sugar;
     }
 
+    /**
+     * A method that formats the Nutrition Info into the structure required (A String).
+     * @return String, a simple structure that illustrates all nutrition information.
+     */
     public String formatNutritionInfo() {
         return String.format(
                 "Calories: %.2f, Protein: %.2f g, Fat: %.2f g, Carbohydrates: %.2f g, Fiber: %.2f g, Sugar: %.2f g",
