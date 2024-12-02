@@ -1,8 +1,9 @@
 package interface_adapter.recipe_search;
 
+import java.util.List;
+
 import entity.Recipe;
 import use_case.recipe_search.RecipeSearchInputBoundary;
-import java.util.List;
 
 /**
  * Controller for the recipe search functionality.
@@ -27,6 +28,11 @@ public class RecipeSearchController {
         }
     }
 
+    /**
+     * Execute a recipe save with the given recipe.
+     * @param userId userId with user.
+     * @param recipe recipe to save.
+     */
     public void saveRecipe(int userId, Recipe recipe) {
         try {
             recipeSearchInputBoundaryUseCase.saveRecipe(userId, recipe);
@@ -44,7 +50,8 @@ public class RecipeSearchController {
     public void adjustServings(int newServings, Recipe selectedRecipe) {
         try {
             recipeSearchInputBoundaryUseCase.adjustRecipeServings(newServings, selectedRecipe);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // Error will be handled by the presenter through output boundary
         }
     }

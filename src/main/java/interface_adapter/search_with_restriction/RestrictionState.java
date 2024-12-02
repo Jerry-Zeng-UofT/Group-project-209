@@ -1,10 +1,13 @@
 package interface_adapter.search_with_restriction;
 
-import entity.Recipe;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import entity.Recipe;
+
+/**
+ * State for Restriction search.
+ */
 public class RestrictionState {
     private List<String> ingredients = new ArrayList<>();
     private List<String> recipeResults = new ArrayList<>();
@@ -16,6 +19,7 @@ public class RestrictionState {
      * Default constructor for RestrictionState.
      */
     public RestrictionState() {
+        // No specific actions required.
     }
 
     /**

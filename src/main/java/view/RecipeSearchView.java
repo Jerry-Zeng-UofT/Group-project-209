@@ -1,23 +1,51 @@
 package view;
 
-import entity.Recipe;
-import interface_adapter.nutrition_analysis.NutritionAnalysisController;
-import interface_adapter.recipe_search.*;
-import interface_adapter.search_with_restriction.*;
-import interface_adapter.search_with_restriction.RestrictionController;
-import interface_adapter.search_with_restriction.RestrictionViewModel;
-import interface_adapter.serving_adjust.ServingAdjustController;
-import interface_adapter.serving_adjust.ServingAdjustViewModel;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+
+import entity.Recipe;
+import interface_adapter.nutrition_analysis.NutritionAnalysisController;
+import interface_adapter.recipe_search.RecipeSearchController;
+import interface_adapter.recipe_search.RecipeSearchPresenter;
+import interface_adapter.recipe_search.RecipeSearchState;
+import interface_adapter.recipe_search.RecipeSearchViewModel;
+import interface_adapter.search_with_restriction.RestrictionController;
+import interface_adapter.search_with_restriction.RestrictionState;
+import interface_adapter.search_with_restriction.RestrictionViewModel;
+import interface_adapter.serving_adjust.ServingAdjustController;
+import interface_adapter.serving_adjust.ServingAdjustViewModel;
+
+/**
+ * View for recipe search.
+ */
 public class RecipeSearchView extends JPanel implements ActionListener, PropertyChangeListener {
 
     private static final int TEXTFIELD_WIDTH = 20;
@@ -27,15 +55,19 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private static final int RESULTS_LIST_HEIGHT = 200;
     private static final int RESULTS_LIST_WIDTH = 300;
     private static final int TITLE_FONT_SIZE = 16;
-
-    // UI Components
-    // Labels
-    private final JLabel title;
+    private static final int HORIZONTAL_STRUT_SMALL = 30;
+    private static final int HORIZONTAL_STRUT_LARGE = 80;
+    private static final int VERTICAL_PADDING = 10;
+    private static final int BORDER_PADDING = 5;
+    private static final int RESULTS_LABEL_FONT_SIZE = 14;
+    private static final int RESULTS_LIST_FONT_SIZE = 12;
+    private static final Color SELECTED_BACKGROUND_COLOR = new Color(200, 220, 240);
+    private static final Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
+    private static final Color BUTTON_BACKGROUND_COLOR = new Color(240, 240, 240);
 
     // Panels
     private final JPanel inputPanel;
     private final JPanel resultsPanel;
-    private final JPanel restrictionPanel;
 
     // Text Fields
     private final JTextField ingredientField;
@@ -62,7 +94,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     // Data Collections
     private final List<String> ingredients;
     private final List<String> restrictions;
-    private Map<String, List<String>> restrictionMap;
+    private final Map<String, List<String>> restrictionMap;
 
     // Controllers and ViewModels
     private final RecipeSearchViewModel recipeSearchViewModel;
@@ -80,6 +112,14 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private NutritionAnalysisController nutritionAnalysisController;
     private ServingAdjustViewModel servingAdjustViewModel;
 
+    /**
+     * View for recipe search.
+     * @param viewModel view model for recipe search.
+     * @param restrictionModel view model for restriction view model.
+     * @param controller controller for recipe search.
+     * @param restrictionController controller for restriction search.
+     * @param servingAdjustController controller for servingAdjust.
+     */
     public RecipeSearchView(RecipeSearchViewModel viewModel, RestrictionViewModel restrictionModel,
                             RecipeSearchController controller, RestrictionController restrictionController,
                             ServingAdjustController servingAdjustController) {
@@ -89,16 +129,17 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         this.restrictionViewModel.addPropertyChangeListener(this);
         this.recipeSearchController = controller;
         this.restrictionController = restrictionController;
-        RecipeSearchPresenter presenter = new RecipeSearchPresenter(viewModel);
         this.servingAdjustController = servingAdjustController;
 
         // Initialize components
         // UI Components - Labels
-        title = new JLabel(RecipeSearchViewModel.TITLE_LABEL);
+        // UI Components
+        // Labels
+        final JLabel title = new JLabel(RecipeSearchViewModel.TITLE_LABEL);
 
         // Panels
         inputPanel = new JPanel();
-        restrictionPanel = new JPanel();
+        final JPanel restrictionPanel = new JPanel();
         resultsPanel = new JPanel();
 
         // Text Fields
@@ -196,7 +237,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     }
 
     private void handleServingAdjustment() {
-        int servings = servingAdjustView.getServings();
+        final int servings = servingAdjustView.getServings();
         if (recipeSearchController != null && servingAdjustController != null) {
             RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
             if (state != null) {
@@ -223,21 +264,27 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     @Override
     public void actionPerformed(ActionEvent evt) {
-        Object source = evt.getSource();
+        final Object source = evt.getSource();
 
         if (source.equals(addIngredientButton)) {
             handleAddIngredient();
-        } else if (source.equals(addRestrictionButton)) {
+        }
+        else if (source.equals(addRestrictionButton)) {
             handleAddRestriction();
-        } else if (source.equals(saveRecipeButton)) {
+        }
+        else if (source.equals(saveRecipeButton)) {
             handleSaveRecipe();
-        } else if (source.equals(removeIngredientButton)) {
+        }
+        else if (source.equals(removeIngredientButton)) {
             handleRemoveIngredient();
-        } else if (source.equals(removeRestrictionsButton)) {
+        }
+        else if (source.equals(removeRestrictionsButton)) {
             handleRemoveRestriction();
-        } else if (source.equals(searchButton)) {
+        }
+        else if (source.equals(searchButton)) {
             handleSearch();
-        } else if (source.equals(analyzeNutritionButton)) {
+        }
+        else if (source.equals(analyzeNutritionButton)) {
             handleAnalyzeNutrition();
         }
     }
@@ -258,7 +305,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     }
 
     private void handleSaveRecipe() {
-        int selectedIndex = recipeResults.getSelectedIndex();
+        final int selectedIndex = recipeResults.getSelectedIndex();
         if (selectedIndex == -1) {
             showMessage("Please select a recipe to save first.", "No Recipe Selected", JOptionPane.WARNING_MESSAGE);
             return;
@@ -271,26 +318,28 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
             }
 
             if (state instanceof RecipeSearchState recipeState) {
-                List<Recipe> recipes = recipeState.getRecipes();
+                final List<Recipe> recipes = recipeState.getRecipes();
                 if (selectedIndex < recipes.size()) {
-                    Recipe selectedRecipe = recipes.get(selectedIndex);
+                    final Recipe selectedRecipe = recipes.get(selectedIndex);
                     recipeSearchController.saveRecipe(getCurrentUserId(), selectedRecipe);
 
                     if (mealPlanningView != null && mealPlanningView.getController() != null) {
                         mealPlanningView.refreshSavedRecipes();
                     }
                 }
-            } else if (state instanceof RestrictionState restrictionState) {
-                List<Recipe> recipes = restrictionState.getRecipes();
+            }
+            else if (state instanceof RestrictionState restrictionState) {
+                final List<Recipe> recipes = restrictionState.getRecipes();
                 if (selectedIndex < recipes.size()) {
-                    Recipe selectedRecipe = recipes.get(selectedIndex);
+                    final Recipe selectedRecipe = recipes.get(selectedIndex);
                     recipeSearchController.saveRecipe(getCurrentUserId(), selectedRecipe);
 
                     if (mealPlanningView != null && mealPlanningView.getController() != null) {
                         mealPlanningView.refreshSavedRecipes();
                     }
                 }
-            } else {
+            }
+            else {
                 showMessage("Unknown state type.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -310,7 +359,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
             restrictions.remove(selectedIndex);
             restrictionListModel.remove(selectedIndex);
             removeByJList(restrictionList.getModel().getElementAt(selectedIndex));
-        } else {
+        }
+        else {
             showMessage("Please select restrictions to remove.", "No Restrictions Selected", JOptionPane.WARNING_MESSAGE);
         }
     }
@@ -319,7 +369,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         if (recipeSearchController != null && restrictionController != null) {
             if (restrictions.isEmpty()) {
                 recipeSearchController.executeSearch(new ArrayList<>(ingredients));
-            } else {
+            }
+            else {
                 restrictionController.executeRestrictionSearch(restrictionMap);
             }
         }
@@ -329,7 +380,6 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         final int selectedIndex = recipeResults.getSelectedIndex();
         if (selectedIndex == -1) {
             showMessage("Please select a recipe to analyze first.", "No Recipe Selected", JOptionPane.WARNING_MESSAGE);
-            return;
         }
 
         if (nutritionAnalysisController != null) {
@@ -350,7 +400,6 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         JOptionPane.showMessageDialog(this, message, title, messageType);
     }
 
-
     // Helper method for remove restrictions
     private void removeByJList(String valueToRemove) {
         final List<String> valuesToRemove = Arrays.asList(valueToRemove.split(" "));
@@ -358,8 +407,9 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         restrictionMap.values().removeIf(valuesToRemove::contains);
     }
 
+    // For testing purposes
     private int getCurrentUserId() {
-        return 1; // For testing purposes
+        return 1;
     }
 
     private void setupInputPanel() {
@@ -379,7 +429,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     // Extracted helper methods
     private JPanel createAddIngredientPanel() {
-        JPanel addIngredientPanel = new JPanel();
+        final JPanel addIngredientPanel = new JPanel();
         addIngredientPanel.setLayout(new BoxLayout(addIngredientPanel, BoxLayout.Y_AXIS));
         addIngredientPanel.add(new JLabel(RecipeSearchViewModel.ENTER_INGREDIENT_LABEL));
         addIngredientPanel.add(ingredientField);
@@ -387,13 +437,13 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     }
 
     private JPanel createLabelPanel() {
-        JPanel labelPanel = new JPanel();
+        final JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
 
-        JLabel ingredientLabel = new JLabel(RecipeSearchViewModel.INGREDIENT_TITLE_LABEL);
+        final JLabel ingredientLabel = new JLabel(RecipeSearchViewModel.INGREDIENT_TITLE_LABEL);
         ingredientLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
-        JPanel restrictionLabelPanel = new JPanel();
+        final JPanel restrictionLabelPanel = new JPanel();
         restrictionLabelPanel.add(new JLabel(RestrictionViewModel.RESTRICTION_TITLE_LABEL));
 
         labelPanel.add(ingredientLabel);
@@ -403,29 +453,29 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     }
 
     private JPanel createButtonPanel() {
-        JPanel buttonPanel = new JPanel();
+        final JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
         buttonPanel.add(addIngredientButton);
-        buttonPanel.add(Box.createHorizontalStrut(30));
+        buttonPanel.add(Box.createHorizontalStrut(HORIZONTAL_STRUT_SMALL));
         buttonPanel.add(removeIngredientButton);
-        buttonPanel.add(Box.createHorizontalStrut(80));
+        buttonPanel.add(Box.createHorizontalStrut(HORIZONTAL_STRUT_LARGE));
         buttonPanel.add(addRestrictionButton);
-        buttonPanel.add(Box.createHorizontalStrut(30));
+        buttonPanel.add(Box.createHorizontalStrut(HORIZONTAL_STRUT_SMALL));
         buttonPanel.add(removeRestrictionsButton);
 
         return buttonPanel;
     }
 
     private JPanel createDisplayPanel() {
-        JPanel displayPanel = new JPanel();
+        final JPanel displayPanel = new JPanel();
         displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.X_AXIS));
 
-        JScrollPane ingredientScrollPane = new JScrollPane(ingredientList);
+        final JScrollPane ingredientScrollPane = new JScrollPane(ingredientList);
         ingredientScrollPane.setPreferredSize(
                 new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
 
-        JScrollPane restrictionScrollPane = new JScrollPane(restrictionList);
+        final JScrollPane restrictionScrollPane = new JScrollPane(restrictionList);
         restrictionScrollPane.setPreferredSize(
                 new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
 
@@ -435,40 +485,30 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         return displayPanel;
     }
 
-
     private void setupResultsPanel() {
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
+        resultsPanel.setBorder(BorderFactory.createEmptyBorder(VERTICAL_PADDING, VERTICAL_PADDING,
+                VERTICAL_PADDING, VERTICAL_PADDING));
 
+        resultsPanel.add(createResultsLabel());
+        resultsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        resultsPanel.add(createResultsScrollPane());
+        resultsPanel.add(createBottomButtonPanel());
+    }
+
+    private JLabel createResultsLabel() {
         final JLabel resultsLabel = new JLabel(RecipeSearchViewModel.RECIPE_RESULT_LABEL);
-        resultsLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        resultsLabel.setFont(new Font("Arial", Font.BOLD, RESULTS_LABEL_FONT_SIZE));
         resultsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return resultsLabel;
+    }
 
-        // Configure the recipe results list
-        recipeResults.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        recipeResults.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    private JScrollPane createResultsScrollPane() {
+        recipeResults.setFont(new Font("Monospaced", Font.PLAIN, RESULTS_LIST_FONT_SIZE));
+        recipeResults.setBorder(BorderFactory.createEmptyBorder(BORDER_PADDING, BORDER_PADDING,
+                BORDER_PADDING, BORDER_PADDING));
         recipeResults.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        // Create a custom cell renderer for better formatting
-        recipeResults.setCellRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value,
-                                                          int index, boolean isSelected, boolean cellHasFocus) {
-                JLabel label = (JLabel) super.getListCellRendererComponent(
-                        list, value, index, isSelected, cellHasFocus);
-
-                // Set background colors
-                if (isSelected) {
-                    label.setBackground(new Color(200, 220, 240));
-                    label.setForeground(Color.BLACK);
-                } else {
-                    label.setBackground(Color.WHITE);
-                }
-
-                // Add padding
-                label.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-                return label;
-            }
-        });
+        recipeResults.setCellRenderer(createCustomCellRenderer());
 
         final JScrollPane resultsScrollPane = new JScrollPane(recipeResults);
         resultsScrollPane.setPreferredSize(new Dimension(RESULTS_LIST_WIDTH, RESULTS_LIST_HEIGHT));
@@ -477,14 +517,38 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                 BorderFactory.createEmptyBorder(5, 5, 5, 5),
                 BorderFactory.createLineBorder(Color.GRAY)
         ));
+        return resultsScrollPane;
+    }
 
-        // Create button panel with better spacing and alignment
-        JPanel buttonPanel = new JPanel();
+    private ListCellRenderer<? super Object> createCustomCellRenderer() {
+        return new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value,
+                                                          int index, boolean isSelected, boolean cellHasFocus) {
+                final JLabel label = (JLabel) super.getListCellRendererComponent(
+                        list, value, index, isSelected, cellHasFocus);
+
+                if (isSelected) {
+                    label.setBackground(SELECTED_BACKGROUND_COLOR);
+                    label.setForeground(Color.BLACK);
+                }
+                else {
+                    label.setBackground(DEFAULT_BACKGROUND_COLOR);
+                }
+                label.setBorder(BorderFactory.createEmptyBorder(BORDER_PADDING, VERTICAL_PADDING,
+                        BORDER_PADDING, VERTICAL_PADDING));
+                return label;
+            }
+        };
+    }
+
+    private JPanel createBottomButtonPanel() {
+        final JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(VERTICAL_PADDING, 0, VERTICAL_PADDING, 0));
 
-        analyzeNutritionButton.setBackground(new Color(240, 240, 240));
-        saveRecipeButton.setBackground(new Color(240, 240, 240));
+        configureButton(analyzeNutritionButton);
+        configureButton(saveRecipeButton);
 
         buttonPanel.add(Box.createHorizontalGlue());
         buttonPanel.add(analyzeNutritionButton);
@@ -494,58 +558,64 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         buttonPanel.add(servingAdjustView);
         buttonPanel.add(Box.createHorizontalGlue());
 
-        resultsPanel.add(resultsLabel);
-        resultsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
-        resultsPanel.add(resultsScrollPane);
-        resultsPanel.add(buttonPanel);
+        return buttonPanel;
+    }
 
-        // Add padding around the results panel
-        resultsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    private void configureButton(JButton button) {
+        button.setBackground(BUTTON_BACKGROUND_COLOR);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        Object newState = evt.getNewValue();
+        final Object newState = evt.getNewValue();
 
-        if (newState instanceof RecipeSearchState) {
-            RecipeSearchState recipeState = (RecipeSearchState) newState;
+        if (newState instanceof RecipeSearchState recipeState) {
 
             if (recipeState.getError() != null) {
                 JOptionPane.showMessageDialog(this,
                         recipeState.getError(),
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
-            } else if (recipeState.getMessage() != null) {
+            }
+            else if (recipeState.getMessage() != null) {
                 JOptionPane.showMessageDialog(this,
                         recipeState.getMessage(),
                         "Message",
                         JOptionPane.INFORMATION_MESSAGE);
-            } else {
+            }
+            else {
                 updateRecipeResults(recipeState.getRecipeResults());
             }
 
-        } else if (newState instanceof RestrictionState) {
-            RestrictionState restrictionState = (RestrictionState) newState;
+        }
+        else if (newState instanceof RestrictionState restrictionState) {
 
             if (restrictionState.getError() != null) {
                 JOptionPane.showMessageDialog(this,
                         restrictionState.getError(),
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
-            } else if (restrictionState.getMessage() != null) {
+            }
+            else if (restrictionState.getMessage() != null) {
                 JOptionPane.showMessageDialog(this,
                         restrictionState.getMessage(),
                         "Message",
                         JOptionPane.INFORMATION_MESSAGE);
-            } else {
+            }
+            else {
                 updateRecipeResults(restrictionState.getRecipeResults());
             }
 
-        } else {
+        }
+        else {
             System.out.println("Unexpected state type: " + newState.getClass().getName());
         }
     }
 
+    /**
+     * Update selection for restriction search function.
+     * @param selectionText the text selected in filter frame view.
+     */
     public void updateSelection(String selectionText) {
         restrictionListModel.addElement(selectionText);
         restrictions.add(selectionText);
