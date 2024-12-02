@@ -29,7 +29,9 @@ public class MainRecipeApplication {
                 .addNutritionAnalysisView()
                 .addRecipeSearchView()
                 .addRecipeSearchUseCase()
+                .addRestrictionSearchUseCase()
                 .addNutritionAnalysisUseCase()
+                .addServingAdjustUseCase()
                 .addFrontpageView();
 
         // Build and show the frame

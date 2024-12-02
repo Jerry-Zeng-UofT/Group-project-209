@@ -1,54 +1,27 @@
-package use_case.recipe_search;
+package use_case.search_with_restriction;
 
 import data_access.RecipeSearchEdamam;
-import data_access.SavedRecipesDataAccess;
 import entity.Food;
 import entity.Ingredient;
 import entity.Nutrition;
 import entity.Recipe;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class RecipeSearchImpl implements RecipeSearch {
+public class RecipeSearchWithRestrictionInteractor implements SearchWithRestrictionInputBoundary {
     private final RecipeSearchEdamam recipeSearchEdamam;
-    private final RecipeSearchOutputBoundary outputBoundary;
-    private final SavedRecipesDataAccess savedRecipesDataAccess;
+    private final SearchWithRestrictionOutputBoundry outputBoundary;
 
-    public RecipeSearchImpl(RecipeSearchEdamam recipeSearchEdamam,
-                            SavedRecipesDataAccess savedRecipesDataAccess,
-                            RecipeSearchOutputBoundary outputBoundary) {
+    public RecipeSearchWithRestrictionInteractor(RecipeSearchEdamam recipeSearchEdamam,
+                                                 SearchWithRestrictionOutputBoundry outputBoundary) {
         this.recipeSearchEdamam = recipeSearchEdamam;
-        this.savedRecipesDataAccess = savedRecipesDataAccess;
         this.outputBoundary = outputBoundary;
     }
 
     @Override
-    public void saveRecipe(int userId, Recipe recipe) throws RecipeSearchException {
-        try {
-            savedRecipesDataAccess.saveRecipe(userId, recipe);
-            outputBoundary.presentSaveSuccess(recipe);
-        } catch (Exception e) {
-            outputBoundary.presentError("Failed to save recipe: " + e.getMessage());
-            throw new RecipeSearchException("Failed to save recipe", e);
-        }
-    }
-
-    @Override
-    public void searchRecipes(List<String> ingredients) throws RecipeSearchException {
-        try {
-            String searchQuery = String.join(",", ingredients);
-            List<Recipe> searchResults = recipeSearchEdamam.searchRecipesByFoodName(searchQuery);
-            List<Recipe> recipes = convertToRecipes(searchResults);
-            outputBoundary.presentRecipes(recipes);
-        } catch (Exception e) {
-            outputBoundary.presentError("Failed to search recipes: " + e.getMessage());
-            throw new RecipeSearchException("Recipe search failed", e);
-        }
-    }
-
-    @Override
-    public void searchRestrictionRecipes(Map<String, List<String>> restrictions) throws RecipeSearchException {
+    public void searchRestrictionRecipes(Map<String, List<String>> restrictions) throws SearchWithRestrictionException {
         try {
             String searchFoodQuery = String.join(",", restrictions.get("Food Name"));
 
@@ -70,31 +43,11 @@ public class RecipeSearchImpl implements RecipeSearch {
                     searchFoodQuery, searchDietQuery, searchHealthQuery, searchCuisineQuery);
             List<Recipe> recipes = convertToRecipes(searchResults);
             outputBoundary.presentRecipes(recipes);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             outputBoundary.presentError("Failed to search recipes: " + e.getMessage());
-            throw new RecipeSearchException("Recipe search failed", e);
+            throw new SearchWithRestrictionException("Recipe search failed", e);
         }
-    }
-
-    @Override
-    public void adjustRecipeServings(int newServings, Recipe recipe) {
-        if (recipe == null || newServings <= 0) {
-            throw new IllegalArgumentException("Invalid recipe or servings");
-        }
-
-        int currentServings = recipe.getServings();
-        if (currentServings <= 0) {
-            throw new IllegalStateException("Current servings must be greater than zero");
-        }
-
-        double adjustmentFactor = (double) newServings / currentServings;
-
-        for (Ingredient ingredient : recipe.getIngredients()) {
-            double newQuantity = ingredient.getQuantity() * adjustmentFactor;
-            ingredient.setQuantity(newQuantity);
-        }
-
-        recipe.setServings(newServings);
     }
 
     private List<Recipe> convertToRecipes(List<Recipe> searchResults) {
