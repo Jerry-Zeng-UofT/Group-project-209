@@ -1,17 +1,30 @@
 package use_case.meal_planning;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.List;
+
 import data_access.MealPlanningDataAccess;
 import data_access.SavedRecipesDataAccess;
 import entity.MealPlanEntry;
 import entity.Recipe;
-import java.time.LocalDate;
-import java.util.List;
 
+/**
+ * Implements the MealPlanning interface to handle meal planning business logic.
+ * Coordinates between data access layer and output boundary for meal planning operations.
+ */
 public class MealPlanningInteractor implements MealPlanning {
     private final MealPlanningDataAccess dataAccess;
     private final SavedRecipesDataAccess savedRecipesDataAccess;
     private final MealPlanningOutputBoundary outputBoundary;
 
+    /**
+     * Constructs a new MealPlanningInteractor.
+     *
+     * @param dataAccess data access for meal planning operations
+     * @param savedRecipesDataAccess data access for saved recipes
+     * @param outputBoundary output boundary for presenting results
+     */
     public MealPlanningInteractor(MealPlanningDataAccess dataAccess,
                                   SavedRecipesDataAccess savedRecipesDataAccess,
                                   MealPlanningOutputBoundary outputBoundary) {
@@ -22,15 +35,15 @@ public class MealPlanningInteractor implements MealPlanning {
 
     @Override
     public List<Recipe> getSavedRecipes(int userId) {
+        List<Recipe> recipes = List.of();
         try {
-            List<Recipe> recipes = savedRecipesDataAccess.getSavedRecipes(userId);
+            recipes = savedRecipesDataAccess.getSavedRecipes(userId);
             outputBoundary.presentSavedRecipes(recipes);
-            return recipes;
         }
-        catch (Exception e) {
-            outputBoundary.presentError("Failed to load saved recipes: " + e.getMessage());
-            return List.of();
+        catch (IllegalArgumentException exception) {
+            outputBoundary.presentError("Failed to load saved recipes: " + exception.getMessage());
         }
+        return recipes;
     }
 
     @Override
@@ -38,8 +51,9 @@ public class MealPlanningInteractor implements MealPlanning {
         try {
             dataAccess.updateMealStatus(userId, entryId, status);
             outputBoundary.presentStatusUpdateSuccess("Meal status updated");
-        } catch (Exception e) {
-            outputBoundary.presentError("Failed to update meal status: " + e.getMessage());
+        }
+        catch (IllegalArgumentException exception) {
+            outputBoundary.presentError("Failed to update meal status: " + exception.getMessage());
         }
     }
 
@@ -49,8 +63,8 @@ public class MealPlanningInteractor implements MealPlanning {
             dataAccess.addMealPlanEntry(userId, recipeId, date, mealType);
             outputBoundary.presentAddSuccess("Recipe added to calendar");
         }
-        catch (Exception e) {
-            outputBoundary.presentError("Failed to add recipe to calendar: " + e.getMessage());
+        catch (IllegalArgumentException exception) {
+            outputBoundary.presentError("Failed to add recipe to calendar: " + exception.getMessage());
         }
     }
 
@@ -60,32 +74,31 @@ public class MealPlanningInteractor implements MealPlanning {
             dataAccess.removeMealPlanEntry(userId, mealPlanEntryId);
             outputBoundary.presentRemoveSuccess("Recipe removed from calendar");
         }
-        catch (Exception e) {
-            outputBoundary.presentError("Failed to remove recipe from calendar: " + e.getMessage());
+        catch (IllegalArgumentException exception) {
+            outputBoundary.presentError("Failed to remove recipe from calendar: " + exception.getMessage());
         }
     }
 
     @Override
     public void getCalendarWeek(int userId, LocalDate weekStart) {
         try {
-            List<MealPlanEntry> entries = dataAccess.getWeeklyPlan(userId, weekStart);
+            final List<MealPlanEntry> entries = dataAccess.getWeeklyPlan(userId, weekStart);
             outputBoundary.presentCalendarWeek(entries);
         }
-        catch (Exception e) {
-            outputBoundary.presentError("Failed to load calendar: " + e.getMessage());
+        catch (IllegalArgumentException exception) {
+            outputBoundary.presentError("Failed to load calendar: " + exception.getMessage());
         }
     }
 
     @Override
     public void initializeMealPlanning(int userId) {
         try {
-            LocalDate currentWeekStart = LocalDate.now().with(java.time.DayOfWeek.MONDAY);
-            List<MealPlanEntry> entries = dataAccess.getWeeklyPlan(userId, currentWeekStart);
+            final LocalDate currentWeekStart = LocalDate.now().with(DayOfWeek.MONDAY);
+            final List<MealPlanEntry> entries = dataAccess.getWeeklyPlan(userId, currentWeekStart);
             outputBoundary.presentCalendarWeek(entries);
         }
-        catch (Exception e) {
-            outputBoundary.presentError("Failed to initialize meal planning: " + e.getMessage());
+        catch (IllegalArgumentException exception) {
+            outputBoundary.presentError("Failed to initialize meal planning: " + exception.getMessage());
         }
     }
-
 }

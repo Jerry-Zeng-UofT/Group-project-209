@@ -1,18 +1,27 @@
 package interface_adapter.meal_planning;
 
-import entity.MealPlanEntry;
-import entity.Recipe;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import entity.MealPlanEntry;
+import entity.Recipe;
+
+/**
+ * Represents the state of meal planning functionality.
+ * Maintains lists of meal plan entries and saved recipes, along with current week,
+ * status messages, error messages, and loading state.
+ * Implements defensive copying for collections to maintain immutability.
+ *
+ * @see MealPlanningStateInterface
+ */
 public class MealPlanningState implements MealPlanningStateInterface {
     private List<MealPlanEntry> mealPlanEntries = new ArrayList<>();
     private List<Recipe> savedRecipes = new ArrayList<>();
     private LocalDate currentWeekStart = LocalDate.now();
     private String message;
     private String error;
-    private boolean isLoading = false;
+    private boolean isLoading;
 
     // Copy constructor
     public MealPlanningState(MealPlanningState copy) {
