@@ -32,7 +32,8 @@ public class RecipeAppBuilder {
     public static final int HEIGHT = 600;
     public static final int WIDTH = 800;
 
-    private RecipeSearchEdamam recipeSearchEdamam;
+    private RecipeSearchDataAccessObject recipeSearchDataAccessObject;
+    private SearchWithRestrictionDataAccessObject searchWithRestrictionDataAccessObject;
     private SavedRecipesDataAccess savedRecipesDataAccess;
     private MealPlanningDataAccess mealPlanningDataAccess;
     private NutritionAnalysisDataAccessObject nutritionAnalysisDataAccess;
@@ -54,11 +55,13 @@ public class RecipeAppBuilder {
 
     /**
      * Add the recipe search API.
-     * @param recipeSearchEdamam The recipe search API
+     * @param recipeSearchDataAccessObject The recipe search API
+     * @param searchWithRestrictionDataAccessObject The restriction search API
      * @return The builder instance
      */
-    public RecipeAppBuilder addRecipeSearchAPI(RecipeSearchEdamam recipeSearchEdamam) {
-        this.recipeSearchEdamam = recipeSearchEdamam;
+    public RecipeAppBuilder addRecipeSearchAPI(RecipeSearchDataAccessObject recipeSearchDataAccessObject, SearchWithRestrictionDataAccessObject searchWithRestrictionDataAccessObject) {
+        this.recipeSearchDataAccessObject = recipeSearchDataAccessObject;
+        this.searchWithRestrictionDataAccessObject = searchWithRestrictionDataAccessObject;
         this.savedRecipesDataAccess = new SavedRecipesDataAccessObject();
         this.mealPlanningDataAccess = new MealPlanningDataAccessObject(this.savedRecipesDataAccess);
         this.nutritionAnalysisDataAccess = new NutritionAnalysisDataAccessObject();
@@ -102,11 +105,11 @@ public class RecipeAppBuilder {
         restrictionViewModel = new RestrictionViewModel();
 
         RecipeSearchPresenter presenter = new RecipeSearchPresenter(recipeSearchViewModel);
-        recipeSearchInputBoundaryUseCase = new RecipeSearchInteractor(recipeSearchEdamam, savedRecipesDataAccess, presenter);
+        recipeSearchInputBoundaryUseCase = new RecipeSearchInteractor(recipeSearchDataAccessObject, savedRecipesDataAccess, presenter);
         RecipeSearchController controller = new RecipeSearchController(recipeSearchInputBoundaryUseCase);
 
         RestrictionPresenter restrictionPresenter = new RestrictionPresenter(restrictionViewModel);
-        searchWithRestrictionInputBoundaryUseCase = new RecipeSearchWithRestrictionInteractor(recipeSearchEdamam, restrictionPresenter);
+        searchWithRestrictionInputBoundaryUseCase = new RecipeSearchWithRestrictionInteractor(searchWithRestrictionDataAccessObject, restrictionPresenter);
         RestrictionController restrictionController = new RestrictionController(searchWithRestrictionInputBoundaryUseCase);
 
         ServingAdjustViewModel servingAdjustViewModel = new ServingAdjustViewModel();
@@ -182,7 +185,7 @@ public class RecipeAppBuilder {
 
         RecipeSearchPresenter presenter = new RecipeSearchPresenter(recipeSearchViewModel);
         recipeSearchInputBoundaryUseCase = new RecipeSearchInteractor(
-                recipeSearchEdamam,
+                recipeSearchDataAccessObject,
                 savedRecipesDataAccess,
                 presenter
         );
@@ -203,7 +206,7 @@ public class RecipeAppBuilder {
 
         RestrictionPresenter restrictionPresenter = new RestrictionPresenter(restrictionViewModel);
         searchWithRestrictionInputBoundaryUseCase = new RecipeSearchWithRestrictionInteractor(
-                recipeSearchEdamam,
+                searchWithRestrictionDataAccessObject,
                 restrictionPresenter
         );
         RestrictionController controller = new RestrictionController(searchWithRestrictionInputBoundaryUseCase);

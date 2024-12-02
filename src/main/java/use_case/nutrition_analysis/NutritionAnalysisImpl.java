@@ -1,7 +1,6 @@
 package use_case.nutrition_analysis;
 
 import data_access.NutritionAnalysisDataAccessObject;
-import data_access.RecipeSearchEdamam;
 import entity.Recipe;
 import use_case.recipe_search.RecipeSearchException;
 import entity.Nutrient;

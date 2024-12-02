@@ -12,26 +12,16 @@ import okhttp3.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class RecipeSearchEdamam {
+public class RecipeSearchDataAccessObject implements RecipeSearchDataAccess {
     private static final String APP_ID = "aaac3ad0";
     private static final String APP_KEY = "3862f2800864a629947f0f79f4da280d";
     private static final String BASE_URL = "https://api.edamam.com/api/recipes/v2";
     private static final String NA_URL = "https://api.edamam.com/api/nutrition-details";
     private final OkHttpClient httpClient = new OkHttpClient();
 
-    /**
-     * Get recipes by food name.
-     */
+    @Override
     public List<Recipe> searchRecipesByFoodName(String foodName) {
         return searchRecipes(foodName, null, null, null);
-    }
-
-    /**
-     * Get recipes by restrictions.
-     */
-    public List<Recipe> searchRecipesByRestriction(String foodName, String diet, String health, String
-            cuisineType) {
-        return searchRecipes(foodName, diet, health, cuisineType);
     }
 
     /**
