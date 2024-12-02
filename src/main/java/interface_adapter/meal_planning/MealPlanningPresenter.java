@@ -1,10 +1,18 @@
 package interface_adapter.meal_planning;
 
+import java.util.List;
+
 import entity.MealPlanEntry;
 import entity.Recipe;
 import use_case.meal_planning.MealPlanningOutputBoundary;
-import java.util.List;
 
+/**
+ * Presenter class for meal planning that implements the MealPlanningOutputBoundary interface.
+ * Handles updating the view model with data and state changes.
+ *
+ * @see MealPlanningOutputBoundary
+ * @see MealPlanningViewModelInterface
+ */
 public class MealPlanningPresenter implements MealPlanningOutputBoundary {
     private final MealPlanningViewModelInterface viewModel;
 
@@ -14,8 +22,8 @@ public class MealPlanningPresenter implements MealPlanningOutputBoundary {
 
     @Override
     public void presentCalendarWeek(List<MealPlanEntry> entries) {
-        MealPlanningState currentState = viewModel.getState();
-        MealPlanningState newState = new MealPlanningState(currentState);
+        final MealPlanningState currentState = viewModel.getState();
+        final MealPlanningState newState = new MealPlanningState(currentState);
         newState.setMealPlanEntries(entries);
         viewModel.setState(newState);
         viewModel.firePropertyChanged();
@@ -23,8 +31,8 @@ public class MealPlanningPresenter implements MealPlanningOutputBoundary {
 
     @Override
     public void presentAddSuccess(String message) {
-        MealPlanningState state = viewModel.getState();
-        MealPlanningState newState = new MealPlanningState(state);
+        final MealPlanningState state = viewModel.getState();
+        final MealPlanningState newState = new MealPlanningState(state);
         newState.setMessage(message);
         viewModel.setState(newState);
         viewModel.firePropertyChanged();
@@ -32,8 +40,8 @@ public class MealPlanningPresenter implements MealPlanningOutputBoundary {
 
     @Override
     public void presentRemoveSuccess(String message) {
-        MealPlanningState state = viewModel.getState();
-        MealPlanningState newState = new MealPlanningState(state);
+        final MealPlanningState state = viewModel.getState();
+        final MealPlanningState newState = new MealPlanningState(state);
         newState.setMessage(message);
         viewModel.setState(newState);
         viewModel.firePropertyChanged();
@@ -41,8 +49,8 @@ public class MealPlanningPresenter implements MealPlanningOutputBoundary {
 
     @Override
     public void presentStatusUpdateSuccess(String message) {
-        MealPlanningState state = viewModel.getState();
-        MealPlanningState newState = new MealPlanningState(state);
+        final MealPlanningState state = viewModel.getState();
+        final MealPlanningState newState = new MealPlanningState(state);
         newState.setMessage(message);
         viewModel.setState(newState);
         viewModel.firePropertyChanged();
@@ -50,8 +58,8 @@ public class MealPlanningPresenter implements MealPlanningOutputBoundary {
 
     @Override
     public void presentError(String error) {
-        MealPlanningState state = viewModel.getState();
-        MealPlanningState newState = new MealPlanningState(state);
+        final MealPlanningState state = viewModel.getState();
+        final MealPlanningState newState = new MealPlanningState(state);
         newState.setError(error);
         viewModel.setState(newState);
         viewModel.firePropertyChanged();
@@ -59,8 +67,8 @@ public class MealPlanningPresenter implements MealPlanningOutputBoundary {
 
     @Override
     public void presentSavedRecipes(List<Recipe> recipes) {
-        MealPlanningState currentState = viewModel.getState();
-        MealPlanningState newState = new MealPlanningState(currentState);
+        final MealPlanningState currentState = viewModel.getState();
+        final MealPlanningState newState = new MealPlanningState(currentState);
         newState.setSavedRecipes(recipes);
         viewModel.setState(newState);
         viewModel.firePropertyChanged();
