@@ -1,7 +1,8 @@
 package use_case.recipe_search;
 
-import entity.Recipe;
 import java.util.List;
+
+import entity.Recipe;
 
 /**
  * Interface for the recipe search use case.
@@ -14,7 +15,19 @@ public interface RecipeSearchInputBoundary {
      */
     void searchRecipes(List<String> ingredients) throws RecipeSearchException;
 
+    /**
+     * Searches for recipes based on a list of ingredients.
+     * @param userId number represents user id.
+     * @param recipe the recipe related to user with user id.
+     * @throws RecipeSearchException if search fails
+     */
     void saveRecipe(int userId, Recipe recipe) throws RecipeSearchException;
 
+    /**
+     * Searches for recipes based on a list of ingredients.
+     * @param newServings number of servings user chose.
+     * @param recipe the recipe needed to adjust.
+     * @throws RecipeSearchException if search fails
+     */
     void adjustRecipeServings(int newServings, Recipe recipe);
 }

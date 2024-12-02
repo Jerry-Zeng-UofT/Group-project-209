@@ -1,13 +1,14 @@
 package use_case.recipe_search;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import data_access.RecipeSearchDataAccessObject;
 import data_access.SavedRecipesDataAccess;
 import entity.Food;
 import entity.Ingredient;
 import entity.Nutrition;
 import entity.Recipe;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RecipeSearchInteractor implements RecipeSearchInputBoundary {
     private final RecipeSearchDataAccessObject recipeSearchDataAccessObject;
@@ -27,22 +28,23 @@ public class RecipeSearchInteractor implements RecipeSearchInputBoundary {
         try {
             savedRecipesDataAccess.saveRecipe(userId, recipe);
             outputBoundary.presentSaveSuccess(recipe);
-        } catch (Exception e) {
-            outputBoundary.presentError("Failed to save recipe: " + e.getMessage());
-            throw new RecipeSearchException("Failed to save recipe", e);
+        } catch (Exception exception) {
+            outputBoundary.presentError("Failed to save recipe: " + exception.getMessage());
+            throw new RecipeSearchException("Failed to save recipe", exception);
         }
     }
 
     @Override
     public void searchRecipes(List<String> ingredients) throws RecipeSearchException {
         try {
-            String searchQuery = String.join(",", ingredients);
-            List<Recipe> searchResults = recipeSearchDataAccessObject.searchRecipesByFoodName(searchQuery);
-            List<Recipe> recipes = convertToRecipes(searchResults);
+            final String searchQuery = String.join(",", ingredients);
+            final List<Recipe> searchResults = recipeSearchDataAccessObject.searchRecipesByFoodName(searchQuery);
+            final List<Recipe> recipes = convertToRecipes(searchResults);
             outputBoundary.presentRecipes(recipes);
-        } catch (Exception e) {
-            outputBoundary.presentError("Failed to search recipes: " + e.getMessage());
-            throw new RecipeSearchException("Recipe search failed", e);
+        }
+        catch (Exception exception) {
+            outputBoundary.presentError("Failed to search recipes: " + exception.getMessage());
+            throw new RecipeSearchException("Recipe search failed", exception);
         }
     }
 
@@ -52,15 +54,15 @@ public class RecipeSearchInteractor implements RecipeSearchInputBoundary {
             throw new IllegalArgumentException("Invalid recipe or servings");
         }
 
-        int currentServings = recipe.getServings();
+        final int currentServings = recipe.getServings();
         if (currentServings <= 0) {
             throw new IllegalStateException("Current servings must be greater than zero");
         }
 
-        double adjustmentFactor = (double) newServings / currentServings;
+        final double adjustmentFactor = (double) newServings / currentServings;
 
         for (Ingredient ingredient : recipe.getIngredients()) {
-            double newQuantity = ingredient.getQuantity() * adjustmentFactor;
+            final double newQuantity = ingredient.getQuantity() * adjustmentFactor;
             ingredient.setQuantity(newQuantity);
         }
 
@@ -68,57 +70,21 @@ public class RecipeSearchInteractor implements RecipeSearchInputBoundary {
     }
 
     private List<Recipe> convertToRecipes(List<Recipe> searchResults) {
-        List<Recipe> recipes = new ArrayList<>();
+        final List<Recipe> recipes = new ArrayList<>();
         int recipeId = 1;
+
         for (Recipe result : searchResults) {
-            String title = result.getTitle();
-            String description;
-            if (result.getDescription() != null) {
-                description = result.getDescription();
-            }
-            else {
-                description = "No description available";
-            }
+            final String description = defaultIfNull(result.getDescription(), "No description available");
+            final String instructions = defaultIfNull(result.getInstructions(), "Instructions not available");
+            final Nutrition nutrition = defaultIfNull(result.getNutrition(), new Nutrition(0, 0, 0, 0, 0, 0));
+            final List<Food> food = defaultIfNull(result.getFood(), new ArrayList<>());
+            final int servings = Math.max(result.getServings(), 1);
 
-            List<Ingredient> ingredients = result.getIngredients();
-
-            String instructions;
-            if (result.getInstructions() != null) {
-                instructions = result.getInstructions();
-            }
-            else {
-                instructions = "Instructions not available";
-            }
-
-            Nutrition nutrition;
-            if (result.getNutrition() != null) {
-                nutrition = result.getNutrition();
-            }
-            else {
-                nutrition = new Nutrition(0, 0, 0, 0, 0, 0);
-            }
-
-            List<Food> food;
-            if (result.getFood() != null) {
-                food = result.getFood();
-            }
-            else {
-                food = new ArrayList<>();
-            }
-
-            int servings;
-            if (result.getServings() > 0) {
-                servings = result.getServings();
-            }
-            else {
-                servings = 1;
-            }
-
-            Recipe recipe = new Recipe(
+            final Recipe recipe = new Recipe(
                     recipeId++,
-                    title,
+                    result.getTitle(),
                     description,
-                    ingredients,
+                    result.getIngredients(),
                     instructions,
                     nutrition,
                     food,
@@ -130,5 +96,9 @@ public class RecipeSearchInteractor implements RecipeSearchInputBoundary {
         }
 
         return recipes;
+    }
+
+    private <T> T defaultIfNull(T value, T defaultValue) {
+        return value != null ? value : defaultValue;
     }
 }

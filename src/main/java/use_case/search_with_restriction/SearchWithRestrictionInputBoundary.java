@@ -1,9 +1,9 @@
 package use_case.search_with_restriction;
 
-import use_case.recipe_search.RecipeSearchException;
-
 import java.util.List;
 import java.util.Map;
+
+import use_case.recipe_search.RecipeSearchException;
 
 /**
  * Interface for the recipe search with restriction use case.

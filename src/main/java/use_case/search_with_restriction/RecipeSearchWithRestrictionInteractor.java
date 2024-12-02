@@ -1,16 +1,23 @@
 package use_case.search_with_restriction;
 
-import data_access.SearchWithRestrictionDataAccessObject;
-import entity.Food;
-import entity.Ingredient;
-import entity.Nutrition;
-import entity.Recipe;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import data_access.SearchWithRestrictionDataAccessObject;
+import entity.Food;
+import entity.Nutrition;
+import entity.Recipe;
+
+/**
+ * Interactor for recipe search with restriction.
+ */
 public class RecipeSearchWithRestrictionInteractor implements SearchWithRestrictionInputBoundary {
+    private static final String DIET_LABEL = "Diet Label";
+    private static final String HEALTH_LABEL = "Health Label";
+    private static final String CUISINE_TYPE = "Cuisine Type";
+    private static final String DELIMETER = ",";
+
     private final SearchWithRestrictionDataAccessObject searchWithRestrictionDataAccessObject;
     private final SearchWithRestrictionOutputBoundry outputBoundary;
 
@@ -23,85 +30,49 @@ public class RecipeSearchWithRestrictionInteractor implements SearchWithRestrict
     @Override
     public void searchRestrictionRecipes(Map<String, List<String>> restrictions) throws SearchWithRestrictionException {
         try {
-            String searchFoodQuery = String.join(",", restrictions.get("Food Name"));
+            final String searchFoodQuery = String.join(DELIMETER, restrictions.get("Food Name"));
 
             String searchDietQuery = null;
-            if (restrictions.get("Diet Label") != null && !restrictions.get("Diet Label").isEmpty()) {
-                searchDietQuery = String.join(",", restrictions.get("Diet Label"));
+            if (restrictions.get(DIET_LABEL) != null && !restrictions.get(DIET_LABEL).isEmpty()) {
+                searchDietQuery = String.join(DELIMETER, restrictions.get(DIET_LABEL));
             }
 
             String searchHealthQuery = null;
-            if (restrictions.get("Health Label") != null && !restrictions.get("Health Label").isEmpty()) {
-                searchHealthQuery = String.join(",", restrictions.get("Health Label"));
+            if (restrictions.get(HEALTH_LABEL) != null && !restrictions.get(HEALTH_LABEL).isEmpty()) {
+                searchHealthQuery = String.join(DELIMETER, restrictions.get(HEALTH_LABEL));
             }
 
             String searchCuisineQuery = null;
-            if (restrictions.get("Cuisine Type") != null && !restrictions.get("Cuisine Type").isEmpty()) {
-                searchCuisineQuery = String.join(",", restrictions.get("Cuisine Type"));
+            if (restrictions.get(CUISINE_TYPE) != null && !restrictions.get(CUISINE_TYPE).isEmpty()) {
+                searchCuisineQuery = String.join(DELIMETER, restrictions.get(CUISINE_TYPE));
             }
-            List<Recipe> searchResults = searchWithRestrictionDataAccessObject.searchRecipesByRestriction(
+            final List<Recipe> searchResults = searchWithRestrictionDataAccessObject.searchRecipesByRestriction(
                     searchFoodQuery, searchDietQuery, searchHealthQuery, searchCuisineQuery);
-            List<Recipe> recipes = convertToRecipes(searchResults);
+            final List<Recipe> recipes = convertToRecipes(searchResults);
             outputBoundary.presentRecipes(recipes);
         }
-        catch (Exception e) {
-            outputBoundary.presentError("Failed to search recipes: " + e.getMessage());
-            throw new SearchWithRestrictionException("Recipe search failed", e);
+        catch (Exception exception) {
+            outputBoundary.presentError("Failed to search recipes: " + exception.getMessage());
+            throw new SearchWithRestrictionException("Recipe search failed", exception);
         }
     }
 
     private List<Recipe> convertToRecipes(List<Recipe> searchResults) {
-        List<Recipe> recipes = new ArrayList<>();
+        final List<Recipe> recipes = new ArrayList<>();
         int recipeId = 1;
+
         for (Recipe result : searchResults) {
-            String title = result.getTitle();
-            String description;
-            if (result.getDescription() != null) {
-                description = result.getDescription();
-            }
-            else {
-                description = "No description available";
-            }
+            final String description = defaultIfNull(result.getDescription(), "No description available");
+            final String instructions = defaultIfNull(result.getInstructions(), "Instructions not available");
+            final Nutrition nutrition = defaultIfNull(result.getNutrition(), new Nutrition(0, 0, 0, 0, 0, 0));
+            final List<Food> food = defaultIfNull(result.getFood(), new ArrayList<>());
+            final int servings = Math.max(result.getServings(), 1);
 
-            List<Ingredient> ingredients = result.getIngredients();
-
-            String instructions;
-            if (result.getInstructions() != null) {
-                instructions = result.getInstructions();
-            }
-            else {
-                instructions = "Instructions not available";
-            }
-
-            Nutrition nutrition;
-            if (result.getNutrition() != null) {
-                nutrition = result.getNutrition();
-            }
-            else {
-                nutrition = new Nutrition(0, 0, 0, 0, 0, 0);
-            }
-
-            List<Food> food;
-            if (result.getFood() != null) {
-                food = result.getFood();
-            }
-            else {
-                food = new ArrayList<>();
-            }
-
-            int servings;
-            if (result.getServings() > 0) {
-                servings = result.getServings();
-            }
-            else {
-                servings = 1;
-            }
-
-            Recipe recipe = new Recipe(
+            final Recipe recipe = new Recipe(
                     recipeId++,
-                    title,
+                    result.getTitle(),
                     description,
-                    ingredients,
+                    result.getIngredients(),
                     instructions,
                     nutrition,
                     food,
@@ -113,5 +84,9 @@ public class RecipeSearchWithRestrictionInteractor implements SearchWithRestrict
         }
 
         return recipes;
+    }
+
+    private <T> T defaultIfNull(T value, T defaultValue) {
+        return value != null ? value : defaultValue;
     }
 }

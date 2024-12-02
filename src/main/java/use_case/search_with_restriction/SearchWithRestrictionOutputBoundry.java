@@ -1,8 +1,12 @@
 package use_case.search_with_restriction;
 
-import entity.Recipe;
 import java.util.List;
 
+import entity.Recipe;
+
+/**
+ * The outputBoundary for SearchWithRestriction.
+ */
 public interface SearchWithRestrictionOutputBoundry {
     /**
      * Present the recipes to the user.

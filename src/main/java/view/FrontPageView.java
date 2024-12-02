@@ -23,7 +23,7 @@ public class FrontPageView extends JFrame implements ActionListener {
 
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(500, 600);
+        setSize(1500, 900);
         setLocationRelativeTo(null);
 
         JPanel panel = new ImagePanel();

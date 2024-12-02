@@ -1,9 +1,9 @@
 package interface_adapter.search_with_restriction;
 
-import use_case.search_with_restriction.SearchWithRestrictionInputBoundary;
-
 import java.util.List;
 import java.util.Map;
+
+import use_case.search_with_restriction.SearchWithRestrictionInputBoundary;
 
 /**
  * Controller for the recipe search with restriction functionality.
@@ -23,7 +23,7 @@ public class RestrictionController {
         try {
             searchWithRestrictionInputBoundaryUseCase.searchRestrictionRecipes(ingredients);
         }
-        catch (Exception e) {
+        catch (Exception exception) {
             // Error will be handled by the presenter through output boundary
         }
     }
