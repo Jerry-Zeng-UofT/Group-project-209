@@ -1,8 +1,8 @@
 package use_case.serving_adjust;
 
-import entity.Recipe;
-
 import java.util.List;
+
+import entity.Recipe;
 
 /**
  * Interface for presenting the output of serving adjustments.
