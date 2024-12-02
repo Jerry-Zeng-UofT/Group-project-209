@@ -88,9 +88,11 @@ Before installing Recipe Wiz, ensure your system meets the following requirement
 
     - Try refreshing the project dependencies: Right-click on the project and select Maven > Reload Project.
 
+
 2. **Incorrect JDK Version**
 
     - In your IDE, ensure that the Project SDK is set to JDK 22 or higher. Check that individual modules are also set to use the correct SDK.
+
 
 3. **Language Level Issues**
 
@@ -101,8 +103,45 @@ Before installing Recipe Wiz, ensure your system meets the following requirement
 
 
 ## License
+- This project is licensed under the **MIT License**, which means you are free to:
+  - Use the code for personal or commercial purposes.
+  - Modify and distribute the code.
+  - Include the code in proprietary software.
 
+
+- However, you **must**:
+  - Include the original copyright notice and this permission notice in any copies of the software.
+  - Not hold the original authors liable for any damages arising from the use of the software.
+
+
+- You can view the full text of the MIT License in the [LICENSE](./LICENSE) file included in this repository.
 ## Support and Feedback
+
+We value your input and encourage you to provide feedback to help us improve Recipe Wiz. Here’s how you can share your thoughts and suggestions:
+
+1. **GitHub Issues** 
+
+    - Submit feedback, report bugs, or suggest new features by creating an issue in the GitHub [Issues](https://github.com/Jerry-Zeng-UofT/Group-project-209/issues) section.
+
+
+2. **Discussion Board**
+
+   - Join discussions with the community and developers in our GitHub [Discussions](https://github.com/Jerry-Zeng-UofT/Group-project-209/discussions)
+
+### Feedback Guidelines
+
+**Valid Feedback Includes**:
+
+1. Clear descriptions of issues or suggestions.
+2. Steps to reproduce bugs, if applicable.
+3. Relevant screenshots, logs, or examples to support your points.
+
+**What to Expect**
+
+1. We aim to review and respond to feedback within 1 week.
+2. Once verified, we will prioritize fixes based on severity.
+3. Contributors who provide actionable feedback that results in improvements may receive acknowledgment in project updates.
+
 
 ## How to Contribute
 
