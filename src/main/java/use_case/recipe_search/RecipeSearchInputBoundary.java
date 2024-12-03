@@ -22,12 +22,4 @@ public interface RecipeSearchInputBoundary {
      * @throws RecipeSearchException if search fails
      */
     void saveRecipe(int userId, Recipe recipe) throws RecipeSearchException;
-
-    /**
-     * Searches for recipes based on a list of ingredients.
-     * @param newServings number of servings user chose.
-     * @param recipe the recipe needed to adjust.
-     * @throws RecipeSearchException if search fails
-     */
-    void adjustRecipeServings(int newServings, Recipe recipe);
 }

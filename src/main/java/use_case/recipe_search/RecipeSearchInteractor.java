@@ -6,7 +6,6 @@ import java.util.List;
 import data_access.RecipeSearchDataAccessObject;
 import data_access.SavedRecipesDataAccess;
 import entity.Food;
-import entity.Ingredient;
 import entity.Nutrition;
 import entity.Recipe;
 
@@ -28,7 +27,8 @@ public class RecipeSearchInteractor implements RecipeSearchInputBoundary {
         try {
             savedRecipesDataAccess.saveRecipe(userId, recipe);
             outputBoundary.presentSaveSuccess(recipe);
-        } catch (Exception exception) {
+        }
+        catch (Exception exception) {
             outputBoundary.presentError("Failed to save recipe: " + exception.getMessage());
             throw new RecipeSearchException("Failed to save recipe", exception);
         }
@@ -46,27 +46,6 @@ public class RecipeSearchInteractor implements RecipeSearchInputBoundary {
             outputBoundary.presentError("Failed to search recipes: " + exception.getMessage());
             throw new RecipeSearchException("Recipe search failed", exception);
         }
-    }
-
-    @Override
-    public void adjustRecipeServings(int newServings, Recipe recipe) {
-        if (recipe == null || newServings <= 0) {
-            throw new IllegalArgumentException("Invalid recipe or servings");
-        }
-
-        final int currentServings = recipe.getServings();
-        if (currentServings <= 0) {
-            throw new IllegalStateException("Current servings must be greater than zero");
-        }
-
-        final double adjustmentFactor = (double) newServings / currentServings;
-
-        for (Ingredient ingredient : recipe.getIngredients()) {
-            final double newQuantity = ingredient.getQuantity() * adjustmentFactor;
-            ingredient.setQuantity(newQuantity);
-        }
-
-        recipe.setServings(newServings);
     }
 
     private List<Recipe> convertToRecipes(List<Recipe> searchResults) {

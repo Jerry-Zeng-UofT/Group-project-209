@@ -144,7 +144,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         resultsPanel = new JPanel();
 
         // Text Fields
-        ingredientField = new JTextField(TEXTFIELD_WIDTH);
+        ingredientField = new JTextField(ViewConstants.TEXTFIELD_WIDTH);
 
         // Buttons
         addIngredientButton = new JButton(RecipeSearchViewModel.ADD_INGREDIENT_BUTTON_LABEL);
@@ -173,7 +173,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
         this.setLayout(new BorderLayout());
 
-        title.setFont(new Font(title.getFont().getName(), Font.BOLD, TITLE_FONT_SIZE));
+        title.setFont(new Font(title.getFont().getName(), Font.BOLD, ViewConstants.TITLE_FONT_SIZE));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         setupInputPanel();
@@ -189,16 +189,16 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
         final JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        mainPanel.add(Box.createVerticalStrut(ViewConstants.VERTICAL_SPACING));
         mainPanel.add(title);
-        mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        mainPanel.add(Box.createVerticalStrut(ViewConstants.VERTICAL_SPACING));
         mainPanel.add(inputPanel);
-        mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        mainPanel.add(Box.createVerticalStrut(ViewConstants.VERTICAL_SPACING));
         mainPanel.add(restrictionPanel);
-        mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        mainPanel.add(Box.createVerticalStrut(ViewConstants.VERTICAL_SPACING));
         searchButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         mainPanel.add(searchButton);
-        mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        mainPanel.add(Box.createVerticalStrut(ViewConstants.VERTICAL_SPACING));
         mainPanel.add(resultsPanel);
 
         this.add(mainPanel, BorderLayout.CENTER);
@@ -242,14 +242,13 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
         if (recipeSearchController != null && servingAdjustController != null) {
             Object state = recipeSearchViewModel.getState();
-
             if (state == null) {
                 state = restrictionViewModel.getState();
             }
 
             if (state instanceof RecipeSearchState recipeState) {
                 final List<Recipe> recipes = recipeState.getRecipes();
-
+                
                 servingAdjustController.updateServingsForAll(servings, recipes);
                 servingAdjustViewModel.updateRecipes(recipes);
 
@@ -442,7 +441,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
         inputPanel.add(addIngredientPanel);
         inputPanel.add(labelPanel);
-        inputPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        inputPanel.add(Box.createVerticalStrut(ViewConstants.VERTICAL_SPACING));
         inputPanel.add(displayPanel);
         inputPanel.add(buttonPanel);
     }
@@ -477,11 +476,11 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
         buttonPanel.add(addIngredientButton);
-        buttonPanel.add(Box.createHorizontalStrut(HORIZONTAL_STRUT_SMALL));
+        buttonPanel.add(Box.createHorizontalStrut(ViewConstants.HORIZONTAL_STRUT_SMALL));
         buttonPanel.add(removeIngredientButton);
-        buttonPanel.add(Box.createHorizontalStrut(HORIZONTAL_STRUT_LARGE));
+        buttonPanel.add(Box.createHorizontalStrut(ViewConstants.HORIZONTAL_STRUT_LARGE));
         buttonPanel.add(addRestrictionButton);
-        buttonPanel.add(Box.createHorizontalStrut(HORIZONTAL_STRUT_SMALL));
+        buttonPanel.add(Box.createHorizontalStrut(ViewConstants.HORIZONTAL_STRUT_SMALL));
         buttonPanel.add(removeRestrictionsButton);
 
         return buttonPanel;
@@ -493,11 +492,11 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
         final JScrollPane ingredientScrollPane = new JScrollPane(ingredientList);
         ingredientScrollPane.setPreferredSize(
-                new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
+                new Dimension(ViewConstants.INGREDIENT_LIST_WIDTH, ViewConstants.INGREDIENT_LIST_HEIGHT));
 
         final JScrollPane restrictionScrollPane = new JScrollPane(restrictionList);
         restrictionScrollPane.setPreferredSize(
-                new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
+                new Dimension(ViewConstants.INGREDIENT_LIST_WIDTH, ViewConstants.INGREDIENT_LIST_HEIGHT));
 
         displayPanel.add(ingredientScrollPane);
         displayPanel.add(restrictionScrollPane);
@@ -507,34 +506,38 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     private void setupResultsPanel() {
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
-        resultsPanel.setBorder(BorderFactory.createEmptyBorder(VERTICAL_PADDING, VERTICAL_PADDING,
-                VERTICAL_PADDING, VERTICAL_PADDING));
+        resultsPanel.setBorder(BorderFactory.createEmptyBorder(ViewConstants.VERTICAL_PADDING, ViewConstants.VERTICAL_PADDING,
+                ViewConstants.VERTICAL_PADDING, ViewConstants.VERTICAL_PADDING));
 
         resultsPanel.add(createResultsLabel());
-        resultsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        resultsPanel.add(Box.createVerticalStrut(ViewConstants.VERTICAL_SPACING));
         resultsPanel.add(createResultsScrollPane());
         resultsPanel.add(createBottomButtonPanel());
     }
 
     private JLabel createResultsLabel() {
         final JLabel resultsLabel = new JLabel(RecipeSearchViewModel.RECIPE_RESULT_LABEL);
-        resultsLabel.setFont(new Font("Arial", Font.BOLD, RESULTS_LABEL_FONT_SIZE));
+        resultsLabel.setFont(new Font("Arial", Font.BOLD, ViewConstants.RESULTS_LABEL_FONT_SIZE));
         resultsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         return resultsLabel;
     }
 
     private JScrollPane createResultsScrollPane() {
-        recipeResults.setFont(new Font("Monospaced", Font.PLAIN, RESULTS_LIST_FONT_SIZE));
-        recipeResults.setBorder(BorderFactory.createEmptyBorder(BORDER_PADDING, BORDER_PADDING,
-                BORDER_PADDING, BORDER_PADDING));
+        recipeResults.setFont(new Font("Monospaced", Font.PLAIN, ViewConstants.RESULTS_LIST_FONT_SIZE));
+        recipeResults.setBorder(BorderFactory.createEmptyBorder(ViewConstants.SEARCHING_BORDER_PADDING,
+                ViewConstants.SEARCHING_BORDER_PADDING, ViewConstants.SEARCHING_BORDER_PADDING,
+                ViewConstants.SEARCHING_BORDER_PADDING));
         recipeResults.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         recipeResults.setCellRenderer(createCustomCellRenderer());
 
         final JScrollPane resultsScrollPane = new JScrollPane(recipeResults);
-        resultsScrollPane.setPreferredSize(new Dimension(RESULTS_LIST_WIDTH, RESULTS_LIST_HEIGHT));
+        resultsScrollPane.setPreferredSize(new Dimension(ViewConstants.RESULTS_LIST_WIDTH,
+                ViewConstants.RESULTS_LIST_HEIGHT));
         resultsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         resultsScrollPane.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                BorderFactory.createEmptyBorder(ViewConstants.SEARCHING_BORDER_PADDING,
+                        ViewConstants.SEARCHING_BORDER_PADDING, ViewConstants.SEARCHING_BORDER_PADDING,
+                        ViewConstants.SEARCHING_BORDER_PADDING),
                 BorderFactory.createLineBorder(Color.GRAY)
         ));
         return resultsScrollPane;
@@ -549,14 +552,15 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                         list, value, index, isSelected, cellHasFocus);
 
                 if (isSelected) {
-                    label.setBackground(SELECTED_BACKGROUND_COLOR);
+                    label.setBackground(ViewConstants.SELECTED_BACKGROUND_COLOR);
                     label.setForeground(Color.BLACK);
                 }
                 else {
-                    label.setBackground(DEFAULT_BACKGROUND_COLOR);
+                    label.setBackground(ViewConstants.DEFAULT_BACKGROUND_COLOR);
                 }
-                label.setBorder(BorderFactory.createEmptyBorder(BORDER_PADDING, VERTICAL_PADDING,
-                        BORDER_PADDING, VERTICAL_PADDING));
+                label.setBorder(BorderFactory.createEmptyBorder(ViewConstants.SEARCHING_BORDER_PADDING,
+                        ViewConstants.VERTICAL_PADDING,
+                        ViewConstants.SEARCHING_BORDER_PADDING, ViewConstants.VERTICAL_PADDING));
                 return label;
             }
         };
@@ -565,16 +569,17 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private JPanel createBottomButtonPanel() {
         final JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(VERTICAL_PADDING, 0, VERTICAL_PADDING, 0));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(ViewConstants.VERTICAL_PADDING, 0,
+                ViewConstants.VERTICAL_PADDING, 0));
 
         configureButton(analyzeNutritionButton);
         configureButton(saveRecipeButton);
 
         buttonPanel.add(Box.createHorizontalGlue());
         buttonPanel.add(analyzeNutritionButton);
-        buttonPanel.add(Box.createHorizontalStrut(10));
+        buttonPanel.add(Box.createHorizontalStrut(ViewConstants.VERTICAL_PADDING));
         buttonPanel.add(saveRecipeButton);
-        buttonPanel.add(Box.createHorizontalStrut(10));
+        buttonPanel.add(Box.createHorizontalStrut(ViewConstants.VERTICAL_PADDING));
         buttonPanel.add(servingAdjustView);
         buttonPanel.add(Box.createHorizontalGlue());
 
@@ -582,7 +587,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     }
 
     private void configureButton(JButton button) {
-        button.setBackground(BUTTON_BACKGROUND_COLOR);
+        button.setBackground(ViewConstants.BUTTON_BACKGROUND_COLOR);
     }
 
     @Override
