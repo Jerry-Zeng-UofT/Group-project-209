@@ -1,164 +1,171 @@
 package use_caseTest;
 
-import data_access.*;
-import data_access.SavedRecipesDataAccessObject;
+import data_access.SavedRecipesDataAccessInterface;
 import entity.MealPlanEntry;
 import entity.Recipe;
-import use_case.meal_planning.MealPlanningDataAccessInterface;
-import use_case.meal_planning.MealPlanningInteractor;
-import use_case.meal_planning.MealPlanningOutputBoundary;
-import data_access.SavedRecipesDataAccessInterface;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import use_case.meal_planning.MealPlanningDataAccessInterface;
+import use_case.meal_planning.MealPlanningException;
+import use_case.meal_planning.MealPlanningInteractor;
+import use_case.meal_planning.MealPlanningOutputBoundary;
 
-public class MealPlanningInteractorTest {
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-    private MealPlanningDataAccessInterface dataAccess;
-    private SavedRecipesDataAccessInterface savedRecipesDataAccessInterface;
-    private MealPlanningOutputBoundary outputBoundary;
+class MealPlanningInteractorTest {
+    private MealPlanningDataAccessInterface mockDataAccess;
+    private SavedRecipesDataAccessInterface mockSavedRecipesAccess;
+    private MealPlanningOutputBoundary mockOutputBoundary;
     private MealPlanningInteractor interactor;
 
-    @Before
-    public void setUp() {
-        // Simple in-memory implementations of dependencies
-        dataAccess = new MealPlanningDataAccessObject(new SavedRecipesDataAccessObject());
-        savedRecipesDataAccessInterface = new SavedRecipesDataAccessObject();
-        outputBoundary = new MealPlanningOutputBoundary() {
-            @Override
-            public void presentSavedRecipes(List<Recipe> recipes) {
-                // Do nothing (or log, if needed)
-            }
-
-            @Override
-            public void presentError(String message) {
-                System.out.println("Error: " + message);
-            }
-
-            @Override
-            public void presentStatusUpdateSuccess(String message) {
-                System.out.println("Status Update: " + message);
-            }
-
-            @Override
-            public void presentAddSuccess(String message) {
-                System.out.println("Add Success: " + message);
-            }
-
-            @Override
-            public void presentRemoveSuccess(String message) {
-                System.out.println("Remove Success: " + message);
-            }
-
-            @Override
-            public void presentCalendarWeek(List<MealPlanEntry> mealPlanEntries) {
-                // Do nothing (or log, if needed)
-            }
-        };
-
-        // Create the interactor
-        interactor = new MealPlanningInteractor(dataAccess, savedRecipesDataAccessInterface, outputBoundary);
+    @BeforeEach
+    void setUp() {
+        mockDataAccess = Mockito.mock(MealPlanningDataAccessInterface.class);
+        mockSavedRecipesAccess = Mockito.mock(SavedRecipesDataAccessInterface.class);
+        mockOutputBoundary = Mockito.mock(MealPlanningOutputBoundary.class);
+        interactor = new MealPlanningInteractor(mockDataAccess, mockSavedRecipesAccess, mockOutputBoundary);
     }
 
     @Test
-    public void testAddToCalendar() {
-        // Create a dummy recipe
-        Recipe recipe = new Recipe(1, "Spaghetti Bolognese", "Delicious pasta with meat sauce", new ArrayList<>(), "Boil pasta, cook meat sauce", null, new ArrayList<>(), null, 4);
-        savedRecipesDataAccessInterface.saveRecipe(1, recipe);
+    void testGetSavedRecipesSuccess() {
+        int userId = 1;
+        Recipe mockRecipe = mock(Recipe.class);
+        List<Recipe> recipes = List.of(mockRecipe);
 
-        // Add recipe to calendar for user 1
+        when(mockSavedRecipesAccess.getSavedRecipes(userId)).thenReturn(recipes);
+
+        List<Recipe> result = interactor.getSavedRecipes(userId);
+
+        assertEquals(recipes, result);
+        verify(mockOutputBoundary).presentSavedRecipes(recipes);
+    }
+
+    @Test
+    void testGetSavedRecipesInvalidUser() {
+        int userId = -1;
+
+        MealPlanningException exception = assertThrows(MealPlanningException.class, () -> interactor.getSavedRecipes(userId));
+
+        assertEquals("Invalid user ID", exception.getMessage());
+        verify(mockOutputBoundary).presentError("Invalid user ID");
+    }
+
+    @Test
+    void testUpdateMealStatusSuccess() {
+        int userId = 1;
+        int entryId = 10;
+        String status = "Completed";
+
+        interactor.updateMealStatus(userId, entryId, status);
+
+        verify(mockDataAccess).updateMealStatus(userId, entryId, status);
+        verify(mockOutputBoundary).presentStatusUpdateSuccess("Meal status updated");
+    }
+
+    @Test
+    void testUpdateMealStatusInvalidStatus() {
+        int userId = 1;
+        int entryId = 10;
+        String status = "";
+
+        MealPlanningException exception = assertThrows(MealPlanningException.class, () -> interactor.updateMealStatus(userId, entryId, status));
+
+        assertEquals("Status cannot be empty", exception.getMessage());
+        verify(mockOutputBoundary).presentError("Status cannot be empty");
+    }
+
+    @Test
+    void testAddToCalendarSuccess() {
+        int userId = 1;
+        int recipeId = 2;
         LocalDate date = LocalDate.now();
-        interactor.addToCalendar(1, 1, date, "Dinner");
+        String mealType = "Lunch";
 
-        // Verify that the recipe was added (check for its existence in the meal plan entries)
-        List<MealPlanEntry> weeklyPlan = dataAccess.getWeeklyPlan(1, date.withDayOfMonth(1));  // Using the start of the current month as an example
-        assertTrue(weeklyPlan.size() > 0);
-        assertEquals("Spaghetti Bolognese", weeklyPlan.get(0).getRecipe().getTitle());
+        interactor.addToCalendar(userId, recipeId, date, mealType);
+
+        verify(mockDataAccess).addMealPlanEntry(userId, recipeId, date, mealType);
+        verify(mockOutputBoundary).presentAddSuccess("Recipe added to calendar");
     }
 
     @Test
-    public void testUpdateMealStatus() {
-        // Create a dummy recipe
-        Recipe recipe = new Recipe(1, "Chicken Salad", "Healthy salad with chicken", new ArrayList<>(), "Mix ingredients", null, new ArrayList<>(), null, 2);
-        savedRecipesDataAccessInterface.saveRecipe(1, recipe);
+    void testAddToCalendarInvalidDate() {
+        int userId = 1;
+        int recipeId = 2;
+        LocalDate date = null;
+        String mealType = "Lunch";
 
-        // Add recipe to calendar
+        MealPlanningException exception = assertThrows(MealPlanningException.class, () -> interactor.addToCalendar(userId, recipeId, date, mealType));
+
+        assertEquals("Date cannot be null", exception.getMessage());
+        verify(mockOutputBoundary).presentError("Date cannot be null");
+    }
+
+    @Test
+    void testAddToCalendarInvalidMealType() {
+        int userId = 1;
+        int recipeId = 2;
         LocalDate date = LocalDate.now();
-        interactor.addToCalendar(1, 1, date, "Lunch");
+        String mealType = ""; // Invalid meal type
 
-        // Update meal status
-        List<MealPlanEntry> weeklyPlan = dataAccess.getWeeklyPlan(1, date.withDayOfMonth(1));
-        int entryId = weeklyPlan.get(0).getEntryId();
-        interactor.updateMealStatus(1, entryId, "Completed");
+        MealPlanningException exception = assertThrows(MealPlanningException.class, () -> interactor.addToCalendar(userId, recipeId, date, mealType));
 
-        // Verify the status is updated
-        MealPlanEntry updatedEntry = dataAccess.getMealPlanEntry(1, entryId);
-        assertNotNull(updatedEntry);
-        assertEquals("Completed", updatedEntry.getStatus());
+        assertEquals("Meal type cannot be empty", exception.getMessage());
+        verify(mockOutputBoundary).presentError("Meal type cannot be empty");
     }
 
     @Test
-    public void testRemoveFromCalendar() {
-        // Create a dummy recipe
-        Recipe recipe = new Recipe(1, "Grilled Cheese", "Classic grilled cheese sandwich", new ArrayList<>(), "Grill bread and cheese", null, new ArrayList<>(), null, 1);
-        savedRecipesDataAccessInterface.saveRecipe(1, recipe);
+    void testRemoveFromCalendarSuccess() {
+        int userId = 1;
+        int mealPlanEntryId = 5;
 
-        // Add recipe to calendar
-        LocalDate date = LocalDate.now();
-        interactor.addToCalendar(1, 1, date, "Snack");
+        interactor.removeFromCalendar(userId, mealPlanEntryId);
 
-        // Remove the recipe
-        List<MealPlanEntry> weeklyPlan = dataAccess.getWeeklyPlan(1, date.withDayOfMonth(1));
-        int entryId = weeklyPlan.get(0).getEntryId();
-        interactor.removeFromCalendar(1, entryId);
-
-        // Verify the recipe is removed
-        MealPlanEntry removedEntry = dataAccess.getMealPlanEntry(1, entryId);
-        assertNull(removedEntry);
+        verify(mockDataAccess).removeMealPlanEntry(userId, mealPlanEntryId);
+        verify(mockOutputBoundary).presentRemoveSuccess("Recipe removed from calendar");
     }
 
     @Test
-    public void testGetCalendarWeek() {
-        // Create and add multiple recipes
-        Recipe recipe1 = new Recipe(1, "Pancakes", "Fluffy pancakes", new ArrayList<>(), "Cook pancakes", null, new ArrayList<>(), null, 2);
-        savedRecipesDataAccessInterface.saveRecipe(1, recipe1);
+    void testGetCalendarWeekSuccess() {
+        int userId = 1;
+        LocalDate weekStart = LocalDate.now();
+        List<MealPlanEntry> entries = Collections.emptyList();
 
-        Recipe recipe2 = new Recipe(2, "Omelette", "Cheese omelette", new ArrayList<>(), "Whisk eggs and cook", null, new ArrayList<>(), null, 1);
-        savedRecipesDataAccessInterface.saveRecipe(1, recipe2);
+        when(mockDataAccess.getWeeklyPlan(userId, weekStart)).thenReturn(entries);
 
-        LocalDate weekStart = LocalDate.now().with(java.time.DayOfWeek.MONDAY);
-        interactor.addToCalendar(1, 1, weekStart, "Breakfast");
-        interactor.addToCalendar(1, 2, weekStart.plusDays(1), "Breakfast");
+        interactor.getCalendarWeek(userId, weekStart);
 
-        // Get the weekly plan
-        List<MealPlanEntry> weeklyPlan = dataAccess.getWeeklyPlan(1, weekStart);
-
-        // Verify that the correct recipes are in the weekly plan
-        assertEquals(2, weeklyPlan.size());
-        assertTrue(weeklyPlan.stream().anyMatch(entry -> entry.getRecipe().getTitle().equals("Pancakes")));
-        assertTrue(weeklyPlan.stream().anyMatch(entry -> entry.getRecipe().getTitle().equals("Omelette")));
+        verify(mockDataAccess).getWeeklyPlan(userId, weekStart);
+        verify(mockOutputBoundary).presentCalendarWeek(entries);
     }
 
     @Test
-    public void testInitializeMealPlanning() {
-        // Test the initialization of the meal planning for a user
-        Recipe recipe = new Recipe(1, "Salad", "Fresh salad", new ArrayList<>(), "Mix ingredients", null, new ArrayList<>(), null, 1);
-        savedRecipesDataAccessInterface.saveRecipe(1, recipe);
+    void testInitializeMealPlanningSuccess() {
+        int userId = 1;
+        LocalDate currentWeekStart = LocalDate.now().with(java.time.DayOfWeek.MONDAY);
+        List<MealPlanEntry> entries = Collections.emptyList();
 
-        LocalDate weekStart = LocalDate.now().with(java.time.DayOfWeek.MONDAY);
-        interactor.addToCalendar(1, 1, weekStart, "Lunch");
+        when(mockDataAccess.getWeeklyPlan(userId, currentWeekStart)).thenReturn(entries);
 
-        // Initialize meal planning
-        interactor.initializeMealPlanning(1);
+        interactor.initializeMealPlanning(userId);
 
-        // Verify that the meal plan for the current week is loaded
-        List<MealPlanEntry> weeklyPlan = dataAccess.getWeeklyPlan(1, weekStart);
-        assertFalse(weeklyPlan.isEmpty());
-        assertEquals("Salad", weeklyPlan.get(0).getRecipe().getTitle());
+        verify(mockDataAccess).getWeeklyPlan(userId, currentWeekStart);
+        verify(mockOutputBoundary).presentCalendarWeek(entries);
+    }
+
+    @Test
+    void testInitializeMealPlanningInvalidUser() {
+        int userId = -1;
+
+        MealPlanningException exception = assertThrows(MealPlanningException.class, () -> interactor.initializeMealPlanning(userId));
+
+        assertEquals("Invalid user ID", exception.getMessage());
+        verify(mockOutputBoundary).presentError("Invalid user ID");
     }
 }

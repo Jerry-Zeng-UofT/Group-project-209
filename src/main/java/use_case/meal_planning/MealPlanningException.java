@@ -46,6 +46,4 @@ public class MealPlanningException extends RuntimeException {
     public static final String INVALID_DATE = "MP003";
     public static final String INVALID_MEAL_TYPE = "MP004";
     public static final String INVALID_ENTRY = "MP005";
-    public static final String DATA_ACCESS_ERROR = "MP006";
-    public static final String INITIALIZATION_ERROR = "MP007";
 }
