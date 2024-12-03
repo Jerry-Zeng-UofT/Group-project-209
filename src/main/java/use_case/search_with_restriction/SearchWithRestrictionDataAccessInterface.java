@@ -1,10 +1,10 @@
-package data_access;
-
-import java.util.List;
+package use_case.search_with_restriction;
 
 import entity.Recipe;
 
-public interface SearchWithRestrictionDataAccess {
+import java.util.List;
+
+public interface SearchWithRestrictionDataAccessInterface {
     /**
      * Get searchedRecipe name from a POST request from the API.
      *

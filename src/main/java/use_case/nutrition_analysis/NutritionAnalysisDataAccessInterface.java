@@ -1,10 +1,10 @@
-package data_access;
-
-import java.io.IOException;
-import java.util.List;
+package use_case.nutrition_analysis;
 
 import entity.Nutrient;
 import entity.Recipe;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Interface for accessing nutritional analysis data from an external API.
@@ -13,7 +13,7 @@ import entity.Recipe;
  * and return a list of Nutrient.
  * </p>
  */
-public interface NutritionAnalysisDataAccess {
+public interface NutritionAnalysisDataAccessInterface {
     /**
      * Get totalNutrients from a POST request from the API.
      *

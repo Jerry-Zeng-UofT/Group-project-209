@@ -18,24 +18,25 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import entity.MealPlanEntry;
 import entity.Recipe;
+import use_case.meal_planning.MealPlanningDataAccessInterface;
 
 /**
- * Implementation of MealPlanningDataAccess that manages meal plan entries using JSON file storage.
+ * Implementation of MealPlanningDataAccessInterface that manages meal plan entries using JSON file storage.
  */
-public class MealPlanningDataAccessObject implements MealPlanningDataAccess {
+public class MealPlanningDataAccessObject implements MealPlanningDataAccessInterface {
 
     private final Map<Integer, MealPlanEntry> mealPlanEntries = new HashMap<>();
     private final String filePath = "meal_plan.json";
-    private final SavedRecipesDataAccess savedRecipesDataAccess;
+    private final SavedRecipesDataAccessInterface savedRecipesDataAccessInterface;
     private int nextEntryId = 1;
 
     /**
      * Constructs a new MealPlanningDataAccessObject.
      *
-     * @param savedRecipesDataAccess the data access object for saved recipes
+     * @param savedRecipesDataAccessInterface the data access object for saved recipes
      */
-    public MealPlanningDataAccessObject(SavedRecipesDataAccess savedRecipesDataAccess) {
-        this.savedRecipesDataAccess = savedRecipesDataAccess;
+    public MealPlanningDataAccessObject(SavedRecipesDataAccessInterface savedRecipesDataAccessInterface) {
+        this.savedRecipesDataAccessInterface = savedRecipesDataAccessInterface;
         loadFromJsonFile();
     }
 
@@ -66,7 +67,7 @@ public class MealPlanningDataAccessObject implements MealPlanningDataAccess {
 
     @Override
     public void addMealPlanEntry(int userId, int recipeId, LocalDate date, String mealType) {
-        final Recipe recipe = savedRecipesDataAccess.getSavedRecipe(userId, recipeId);
+        final Recipe recipe = savedRecipesDataAccessInterface.getSavedRecipe(userId, recipeId);
         if (recipe == null) {
             throw new IllegalArgumentException("Recipe not found in saved recipes");
         }

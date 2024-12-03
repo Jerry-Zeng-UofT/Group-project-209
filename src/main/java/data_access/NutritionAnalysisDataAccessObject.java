@@ -16,6 +16,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import use_case.nutrition_analysis.NutritionAnalysisDataAccessInterface;
 import use_case.nutrition_analysis.NutritionAnalysisException;
 
 /**
@@ -25,7 +26,7 @@ import use_case.nutrition_analysis.NutritionAnalysisException;
  * Contains several helper methods.
  * </p>
  */
-public class NutritionAnalysisDataAccessObject implements NutritionAnalysisDataAccess {
+public class NutritionAnalysisDataAccessObject implements NutritionAnalysisDataAccessInterface {
     private static final String APP_ID = "6ec3d1f4";
     private static final String APP_KEY = "0bae38670d4f3777d686730b59f0e707";
     private static final String NA_URL = "https://api.edamam.com/api/nutrition-details";
