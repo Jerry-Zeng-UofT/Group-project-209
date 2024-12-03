@@ -1,23 +1,23 @@
 package use_case.nutrition_analysis;
 
-import data_access.NutritionAnalysisDataAccessObject;
+import java.util.List;
+
+import data_access.NutritionAnalysisDataAccess;
+import entity.Nutrient;
 import entity.Recipe;
 import use_case.recipe_search.RecipeSearchException;
-import entity.Nutrient;
-
-import java.util.List;
 
 /**
  * Implementation of the Nutrition Analysis use case.
  */
 public class NutritionAnalysisImpl implements NutritionAnalysis {
 
-    private final NutritionAnalysisDataAccessObject NutritionAnalysisDAO;
+    private final NutritionAnalysisDataAccess nutritionAnalysisDAO;
     private final NutritionAnalysisOutputBoundary outputBoundary;
 
-    public NutritionAnalysisImpl(NutritionAnalysisDataAccessObject NutritionAnalysisDAO,
+    public NutritionAnalysisImpl(NutritionAnalysisDataAccess NutritionAnalysisDAO,
                                  NutritionAnalysisOutputBoundary outputBoundary) {
-        this.NutritionAnalysisDAO = NutritionAnalysisDAO;
+        this.nutritionAnalysisDAO = NutritionAnalysisDAO;
         this.outputBoundary = outputBoundary;
     }
 
@@ -25,15 +25,15 @@ public class NutritionAnalysisImpl implements NutritionAnalysis {
     public void analyzeNutrition(Recipe recipe) throws NutritionAnalysisException {
         try {
             // Get NutritionInfo from Edamam API by the RecipeName.
-            List<Nutrient> nutritionInfo = NutritionAnalysisDAO.analyzeNutrition(recipe);
+            final List<Nutrient> nutritionInfo = nutritionAnalysisDAO.analyzeNutrition(recipe);
 
             // Present success
             outputBoundary.presentNutritionInfo(nutritionInfo);
         }
-        catch (Exception e) {
+        catch (Exception exception) {
             // Present error
-            outputBoundary.presentError("Failed to analyze the recipe: " + e.getMessage());
-            throw new RecipeSearchException("Analysis failed", e);
+            outputBoundary.presentError("Failed to analyze the recipe: " + exception.getMessage());
+            throw new RecipeSearchException("Analysis failed", exception);
         }
     }
 }

@@ -168,7 +168,6 @@ public class RecipeAppBuilder {
                 presenter
         );
         NutritionAnalysisController controller = new NutritionAnalysisController(nutritionAnalysisUseCase);
-        nutritionAnalysisView.setController(controller);
         recipeSearchView.setNutritionAnalysisController(controller);
 
         return this;

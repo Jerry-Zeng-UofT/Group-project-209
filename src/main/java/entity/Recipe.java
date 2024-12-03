@@ -1,8 +1,9 @@
 package entity;
 
-import org.json.JSONArray;
 import java.util.List;
 import java.util.Objects;
+
+import org.json.JSONArray;
 
 /**
  * The unified Recipe entity containing all necessary details.
@@ -16,11 +17,20 @@ public class Recipe {
     private String instructions;
     private Nutrition nutrition;
     private List<Food> food;
-    private JSONArray jsonIngredient;
+    private final JSONArray jsonIngredient;
     private int servings;
 
     /**
      * Constructor for Recipe with all fields.
+     * @param recipeId the Id of the recipe in the api.
+     * @param title the name of the recipe.
+     * @param description a brief description of this recipe.
+     * @param ingredients a list of all ingredients of this recipe.
+     * @param instructions the instruction of making this meal.
+     * @param nutrition the nutrition information of this recipe given by the api.
+     * @param food a list of all food required for this meal.
+     * @param jsonIngredient the list of ingredients in JSONArray form.
+     * @param servings the number of people this meal is serving.
      */
     public Recipe(int recipeId, String title, String description, List<Ingredient> ingredients,
                   String instructions, Nutrition nutrition, List<Food> food, JSONArray jsonIngredient, int servings) {

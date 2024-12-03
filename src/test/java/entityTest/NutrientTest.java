@@ -19,33 +19,33 @@ public class NutrientTest {
     public void testConstructor() {
         // Verify that the constructor correctly sets the nutrientInfo field
         assertNotNull(nutrient);
-        assertEquals("Vitamin A", nutrient.getNutrients());
+        assertEquals("Vitamin A", nutrient.getNutrientInfo());
     }
 
     @Test
-    public void testGetNutrients() {
+    public void testGetNutrientInfo() {
         // Verify that the getter returns the correct nutrientInfo
-        assertEquals("Vitamin A", nutrient.getNutrients());
+        assertEquals("Vitamin A", nutrient.getNutrientInfo());
     }
 
     @Test
-    public void testSetNutrients() {
+    public void testSetNutrientInfo() {
         // Set a new nutrientInfo value and verify that it's updated
-        nutrient.setNutrients("Vitamin C");
-        assertEquals("Vitamin C", nutrient.getNutrients());
+        nutrient.setNutrientInfo("Vitamin C");
+        assertEquals("Vitamin C", nutrient.getNutrientInfo());
     }
 
     @Test
-    public void testSetNutrients_emptyString() {
+    public void testSetNutrientInfo_emptyString() {
         // Set an empty string and verify that the setter works correctly
-        nutrient.setNutrients("");
-        assertEquals("", nutrient.getNutrients());
+        nutrient.setNutrientInfo("");
+        assertEquals("", nutrient.getNutrientInfo());
     }
 
     @Test
-    public void testSetNutrients_nullValue() {
+    public void testSetNutrientInfo_nullValue() {
         // Set null and verify that the setter allows null values
-        nutrient.setNutrients(null);
-        assertNull(nutrient.getNutrients());
+        nutrient.setNutrientInfo(null);
+        assertNull(nutrient.getNutrientInfo());
     }
 }

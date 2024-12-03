@@ -1,20 +1,32 @@
 package data_access;
 
-import entity.Nutrient;
-import entity.Recipe;
-import okhttp3.*;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class NutritionAnalysisDataAccessObject implements NutritionAnalysisDataAccess{
+import org.json.JSONObject;
+
+import entity.Nutrient;
+import entity.Recipe;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+/**
+ * The DAO that implements the interface.
+ * <p>
+ * Contains the main method of the interface, which extract information from an api.
+ * Contains several helper methods.
+ * </p>
+ */
+public class NutritionAnalysisDataAccessObject implements NutritionAnalysisDataAccess {
     private static final String APP_ID = "6ec3d1f4";
     private static final String APP_KEY = "0bae38670d4f3777d686730b59f0e707";
     private static final String NA_URL = "https://api.edamam.com/api/nutrition-details";
-    private static final String BASE_URL = "https://api.edamam.com/api/recipes/v2";
     private final OkHttpClient httpClient = new OkHttpClient();
 
     public NutritionAnalysisDataAccessObject() {
@@ -26,27 +38,28 @@ public class NutritionAnalysisDataAccessObject implements NutritionAnalysisDataA
         List<Nutrient> nutrientsList = new ArrayList<>();
 
         // Build the HTTP request
-        Request request = buildNutritionRequest(recipe);
+        final Request request = buildNutritionRequest(recipe);
 
         // Process the response
         try (Response response = httpClient.newCall(request).execute()) {
             if (response.body() != null) {
                 nutrientsList = parseNutrientsResponse(response.body().string());
             }
-        } catch (IOException e) {
-            throw new IOException("Error processing nutrition analysis", e);
+        }
+        catch (IOException exception) {
+            throw new IOException("Error processing nutrition analysis", exception);
         }
 
         return nutrientsList;
     }
 
     private Request buildNutritionRequest(Recipe recipe) {
-        HttpUrl urlBuilder = HttpUrl.parse(NA_URL).newBuilder()
+        final HttpUrl urlBuilder = Objects.requireNonNull(HttpUrl.parse(NA_URL)).newBuilder()
                 .addQueryParameter("app_id", APP_ID)
                 .addQueryParameter("app_key", APP_KEY)
                 .build();
 
-        JSONObject requestBody = new JSONObject();
+        final JSONObject requestBody = new JSONObject();
         requestBody.put("title", recipe.getTitle());
         requestBody.put("ingr", recipe.getJsonIngredient());
 
@@ -60,13 +73,13 @@ public class NutritionAnalysisDataAccessObject implements NutritionAnalysisDataA
     }
 
     private List<Nutrient> parseNutrientsResponse(String jsonData) {
-        List<Nutrient> nutrientsList = new ArrayList<>();
-        JSONObject jsonObject = new JSONObject(jsonData);
-        JSONObject totalNutrients = jsonObject.getJSONObject("totalNutrients");
+        final List<Nutrient> nutrientsList = new ArrayList<>();
+        final JSONObject jsonObject = new JSONObject(jsonData);
+        final JSONObject totalNutrients = jsonObject.getJSONObject("totalNutrients");
 
         for (String key : totalNutrients.keySet()) {
-            JSONObject nutrient = totalNutrients.getJSONObject(key);
-            String aNutrient = nutrient.getString("label")
+            final JSONObject nutrient = totalNutrients.getJSONObject(key);
+            final String aNutrient = nutrient.getString("label")
                     + ": "
                     + nutrient.getInt("quantity")
                     + nutrient.getString("unit");

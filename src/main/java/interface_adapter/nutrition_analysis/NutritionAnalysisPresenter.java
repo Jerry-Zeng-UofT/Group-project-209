@@ -1,11 +1,10 @@
 package interface_adapter.nutrition_analysis;
 
-import entity.Nutrient;
-import use_case.nutrition_analysis.NutritionAnalysis;
-import use_case.nutrition_analysis.NutritionAnalysisOutputBoundary;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import entity.Nutrient;
+import use_case.nutrition_analysis.NutritionAnalysisOutputBoundary;
 
 /**
  * Presenter for the Nutrition Analysis functionality.
@@ -19,11 +18,11 @@ public class NutritionAnalysisPresenter implements NutritionAnalysisOutputBounda
 
     @Override
     public void presentNutritionInfo(List<Nutrient> NutritionInfo) {
-        NutritionAnalysisState state = new NutritionAnalysisState();
-        List<String> nutritionResults = new ArrayList<>();
+        final NutritionAnalysisState state = new NutritionAnalysisState();
+        final List<String> nutritionResults = new ArrayList<>();
 
         for (Nutrient nutrient : NutritionInfo) {
-            nutritionResults.add(nutrient.getNutrients());
+            nutritionResults.add(nutrient.getNutrientInfo());
         }
         state.setNutritionResults(nutritionResults);
         viewModel.setState(state);

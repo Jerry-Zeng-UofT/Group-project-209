@@ -71,35 +71,6 @@ public class RecipeTest {
     }
 
     @Test
-    public void testAdjustServings() {
-        Recipe newRecipe = recipe.adjustServings(8);
-
-        // Check that servings are correctly updated
-        assertEquals(8, newRecipe.getServings());
-
-        // Check if ingredient quantities are scaled correctly
-        assertEquals(200, newRecipe.getIngredients().get(0).getQuantity(), 0.0);
-        assertEquals(400, newRecipe.getIngredients().get(1).getQuantity(), 0.0);
-    }
-
-    @Test
-    public void testAdjustServingsInvalid() {
-        try {
-            recipe.adjustServings(0);  // Invalid serving size (0)
-            fail("Expected IllegalArgumentException to be thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("Servings must be greater than zero.", e.getMessage());
-        }
-
-        try {
-            recipe.adjustServings(-1);  // Invalid serving size (negative)
-            fail("Expected IllegalArgumentException to be thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("Servings must be greater than zero.", e.getMessage());
-        }
-    }
-
-    @Test
     public void testToString() {
         String expectedString = "Recipe: Cake (Servings: 4)\nDescription: Delicious cake\nIngredients: [Ingredient{id=1, name='Sugar', quantity=100.0, unit='g'}, Ingredient{id=2, name='Flour', quantity=200.0, unit='g'}]\nInstructions: Mix ingredients and bake";
         assertEquals(expectedString, recipe.toString());

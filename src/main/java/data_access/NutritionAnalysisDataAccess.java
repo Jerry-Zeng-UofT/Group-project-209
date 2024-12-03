@@ -1,12 +1,18 @@
 package data_access;
 
-import entity.Nutrient;
-import entity.Recipe;
-import okhttp3.Request;
-
 import java.io.IOException;
 import java.util.List;
 
+import entity.Nutrient;
+import entity.Recipe;
+
+/**
+ * Interface for accessing nutritional analysis data from an external API.
+ * <p>
+ * Provides a method to analyze the nutritional content of a given recipe
+ * and return a list of Nutrient.
+ * </p>
+ */
 public interface NutritionAnalysisDataAccess {
     /**
      * Get totalNutrients from a POST request from the API.

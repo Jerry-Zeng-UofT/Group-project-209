@@ -11,11 +11,11 @@ public class Nutrient {
         this.nutrientInfo = nutrients;
     }
 
-    public String getNutrients() {
+    public String getNutrientInfo() {
         return nutrientInfo;
     }
 
-    public void setNutrients(String nutrients) {
+    public void setNutrientInfo(String nutrients) {
         this.nutrientInfo = nutrients;
     }
 }

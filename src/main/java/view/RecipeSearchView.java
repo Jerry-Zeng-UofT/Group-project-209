@@ -242,7 +242,6 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
         if (recipeSearchController != null && servingAdjustController != null) {
             Object state = recipeSearchViewModel.getState();
-
             if (state == null) {
                 state = restrictionViewModel.getState();
             }
@@ -600,7 +599,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
             if (recipeState.getError() != null) {
                 JOptionPane.showMessageDialog(this,
                         recipeState.getError(),
-                        "Error",
+                        ERROR_MESSAGE,
                         JOptionPane.ERROR_MESSAGE);
             }
             else if (recipeState.getMessage() != null) {
@@ -619,7 +618,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
             if (restrictionState.getError() != null) {
                 JOptionPane.showMessageDialog(this,
                         restrictionState.getError(),
-                        "Error",
+                        ERROR_MESSAGE,
                         JOptionPane.ERROR_MESSAGE);
             }
             else if (restrictionState.getMessage() != null) {
