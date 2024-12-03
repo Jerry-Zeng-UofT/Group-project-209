@@ -2,8 +2,6 @@ package use_case.nutrition_analysis;
 
 import entity.Recipe;
 
-import java.util.List;
-
 /**
  * Interface for the Nutrition Analysis use case.
  */
