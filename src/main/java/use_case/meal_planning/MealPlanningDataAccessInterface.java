@@ -1,4 +1,4 @@
-package data_access;
+package use_case.meal_planning;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,7 +9,7 @@ import entity.MealPlanEntry;
  * Interface for managing meal planning data access operations.
  * Provides methods to create, retrieve, update, and delete meal plan entries.
  */
-public interface MealPlanningDataAccess {
+public interface MealPlanningDataAccessInterface {
 
     /**
      * Adds a new meal plan entry for a specific user.

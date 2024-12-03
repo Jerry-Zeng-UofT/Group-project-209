@@ -3,29 +3,28 @@ package use_case.recipe_search;
 import java.util.ArrayList;
 import java.util.List;
 
-import data_access.RecipeSearchDataAccessObject;
-import data_access.SavedRecipesDataAccess;
+import data_access.SavedRecipesDataAccessInterface;
 import entity.Food;
 import entity.Nutrition;
 import entity.Recipe;
 
 public class RecipeSearchInteractor implements RecipeSearchInputBoundary {
-    private final RecipeSearchDataAccessObject recipeSearchDataAccessObject;
+    private final RecipeSearchDataAccessInterface recipeSearchDataAccessInterface;
     private final RecipeSearchOutputBoundary outputBoundary;
-    private final SavedRecipesDataAccess savedRecipesDataAccess;
+    private final SavedRecipesDataAccessInterface savedRecipesDataAccessInterface;
 
-    public RecipeSearchInteractor(RecipeSearchDataAccessObject recipeSearchDataAccessObject,
-                                  SavedRecipesDataAccess savedRecipesDataAccess,
+    public RecipeSearchInteractor(RecipeSearchDataAccessInterface recipeSearchDataAccessInterface,
+                                  SavedRecipesDataAccessInterface savedRecipesDataAccessInterface,
                                   RecipeSearchOutputBoundary outputBoundary) {
-        this.recipeSearchDataAccessObject = recipeSearchDataAccessObject;
-        this.savedRecipesDataAccess = savedRecipesDataAccess;
+        this.recipeSearchDataAccessInterface = recipeSearchDataAccessInterface;
+        this.savedRecipesDataAccessInterface = savedRecipesDataAccessInterface;
         this.outputBoundary = outputBoundary;
     }
 
     @Override
     public void saveRecipe(int userId, Recipe recipe) throws RecipeSearchException {
         try {
-            savedRecipesDataAccess.saveRecipe(userId, recipe);
+            savedRecipesDataAccessInterface.saveRecipe(userId, recipe);
             outputBoundary.presentSaveSuccess(recipe);
         }
         catch (Exception exception) {
@@ -38,7 +37,7 @@ public class RecipeSearchInteractor implements RecipeSearchInputBoundary {
     public void searchRecipes(List<String> ingredients) throws RecipeSearchException {
         try {
             final String searchQuery = String.join(",", ingredients);
-            final List<Recipe> searchResults = recipeSearchDataAccessObject.searchRecipesByFoodName(searchQuery);
+            final List<Recipe> searchResults = recipeSearchDataAccessInterface.searchRecipesByFoodName(searchQuery);
             final List<Recipe> recipes = convertToRecipes(searchResults);
             outputBoundary.presentRecipes(recipes);
         }

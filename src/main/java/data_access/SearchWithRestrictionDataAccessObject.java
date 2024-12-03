@@ -11,8 +11,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import use_case.search_with_restriction.SearchWithRestrictionDataAccessInterface;
 
-public class SearchWithRestrictionDataAccessObject implements SearchWithRestrictionDataAccess {
+public class SearchWithRestrictionDataAccessObject implements SearchWithRestrictionDataAccessInterface {
     private static final String APP_ID = "aaac3ad0";
     private static final String APP_KEY = "3862f2800864a629947f0f79f4da280d";
     private static final String BASE_URL = "https://api.edamam.com/api/recipes/v2";

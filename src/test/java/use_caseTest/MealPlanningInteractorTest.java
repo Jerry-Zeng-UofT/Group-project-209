@@ -1,13 +1,12 @@
 package use_caseTest;
 
-import data_access.MealPlanningDataAccessObject;
+import data_access.*;
 import data_access.SavedRecipesDataAccessObject;
 import entity.MealPlanEntry;
 import entity.Recipe;
 import use_case.meal_planning.MealPlanningInteractor;
 import use_case.meal_planning.MealPlanningOutputBoundary;
-import data_access.MealPlanningDataAccess;
-import data_access.SavedRecipesDataAccess;
+import data_access.SavedRecipesDataAccessInterface;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,8 +18,8 @@ import static org.junit.Assert.*;
 
 public class MealPlanningInteractorTest {
 
-    private MealPlanningDataAccess dataAccess;
-    private SavedRecipesDataAccess savedRecipesDataAccess;
+    private MealPlanningDataAccessInterface dataAccess;
+    private SavedRecipesDataAccessInterface savedRecipesDataAccessInterface;
     private MealPlanningOutputBoundary outputBoundary;
     private MealPlanningInteractor interactor;
 
@@ -28,7 +27,7 @@ public class MealPlanningInteractorTest {
     public void setUp() {
         // Simple in-memory implementations of dependencies
         dataAccess = new MealPlanningDataAccessObject(new SavedRecipesDataAccessObject());
-        savedRecipesDataAccess = new SavedRecipesDataAccessObject();
+        savedRecipesDataAccessInterface = new SavedRecipesDataAccessObject();
         outputBoundary = new MealPlanningOutputBoundary() {
             @Override
             public void presentSavedRecipes(List<Recipe> recipes) {
@@ -62,14 +61,14 @@ public class MealPlanningInteractorTest {
         };
 
         // Create the interactor
-        interactor = new MealPlanningInteractor(dataAccess, savedRecipesDataAccess, outputBoundary);
+        interactor = new MealPlanningInteractor(dataAccess, savedRecipesDataAccessInterface, outputBoundary);
     }
 
     @Test
     public void testAddToCalendar() {
         // Create a dummy recipe
         Recipe recipe = new Recipe(1, "Spaghetti Bolognese", "Delicious pasta with meat sauce", new ArrayList<>(), "Boil pasta, cook meat sauce", null, new ArrayList<>(), null, 4);
-        savedRecipesDataAccess.saveRecipe(1, recipe);
+        savedRecipesDataAccessInterface.saveRecipe(1, recipe);
 
         // Add recipe to calendar for user 1
         LocalDate date = LocalDate.now();
@@ -85,7 +84,7 @@ public class MealPlanningInteractorTest {
     public void testUpdateMealStatus() {
         // Create a dummy recipe
         Recipe recipe = new Recipe(1, "Chicken Salad", "Healthy salad with chicken", new ArrayList<>(), "Mix ingredients", null, new ArrayList<>(), null, 2);
-        savedRecipesDataAccess.saveRecipe(1, recipe);
+        savedRecipesDataAccessInterface.saveRecipe(1, recipe);
 
         // Add recipe to calendar
         LocalDate date = LocalDate.now();
@@ -106,7 +105,7 @@ public class MealPlanningInteractorTest {
     public void testRemoveFromCalendar() {
         // Create a dummy recipe
         Recipe recipe = new Recipe(1, "Grilled Cheese", "Classic grilled cheese sandwich", new ArrayList<>(), "Grill bread and cheese", null, new ArrayList<>(), null, 1);
-        savedRecipesDataAccess.saveRecipe(1, recipe);
+        savedRecipesDataAccessInterface.saveRecipe(1, recipe);
 
         // Add recipe to calendar
         LocalDate date = LocalDate.now();
@@ -126,10 +125,10 @@ public class MealPlanningInteractorTest {
     public void testGetCalendarWeek() {
         // Create and add multiple recipes
         Recipe recipe1 = new Recipe(1, "Pancakes", "Fluffy pancakes", new ArrayList<>(), "Cook pancakes", null, new ArrayList<>(), null, 2);
-        savedRecipesDataAccess.saveRecipe(1, recipe1);
+        savedRecipesDataAccessInterface.saveRecipe(1, recipe1);
 
         Recipe recipe2 = new Recipe(2, "Omelette", "Cheese omelette", new ArrayList<>(), "Whisk eggs and cook", null, new ArrayList<>(), null, 1);
-        savedRecipesDataAccess.saveRecipe(1, recipe2);
+        savedRecipesDataAccessInterface.saveRecipe(1, recipe2);
 
         LocalDate weekStart = LocalDate.now().with(java.time.DayOfWeek.MONDAY);
         interactor.addToCalendar(1, 1, weekStart, "Breakfast");
@@ -148,7 +147,7 @@ public class MealPlanningInteractorTest {
     public void testInitializeMealPlanning() {
         // Test the initialization of the meal planning for a user
         Recipe recipe = new Recipe(1, "Salad", "Fresh salad", new ArrayList<>(), "Mix ingredients", null, new ArrayList<>(), null, 1);
-        savedRecipesDataAccess.saveRecipe(1, recipe);
+        savedRecipesDataAccessInterface.saveRecipe(1, recipe);
 
         LocalDate weekStart = LocalDate.now().with(java.time.DayOfWeek.MONDAY);
         interactor.addToCalendar(1, 1, weekStart, "Lunch");

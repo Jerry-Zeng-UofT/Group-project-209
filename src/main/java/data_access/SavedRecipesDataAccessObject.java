@@ -3,7 +3,7 @@ package data_access;
 import entity.Recipe;
 import java.util.*;
 
-public class SavedRecipesDataAccessObject implements SavedRecipesDataAccess {
+public class SavedRecipesDataAccessObject implements SavedRecipesDataAccessInterface {
     private final Map<Integer, Map<Integer, Recipe>> userRecipes = new HashMap<>();
 
     public SavedRecipesDataAccessObject() {

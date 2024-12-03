@@ -4,8 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 
-import data_access.MealPlanningDataAccess;
-import data_access.SavedRecipesDataAccess;
+import data_access.SavedRecipesDataAccessInterface;
 import entity.MealPlanEntry;
 import entity.Recipe;
 
@@ -14,15 +13,15 @@ import entity.Recipe;
  * Coordinates between data access layer and output boundary for meal planning operations.
  */
 public class MealPlanningInteractor implements MealPlanningInputBoundary {
-    private final MealPlanningDataAccess dataAccess;
-    private final SavedRecipesDataAccess savedRecipesDataAccess;
+    private final MealPlanningDataAccessInterface dataAccessInterface;
+    private final SavedRecipesDataAccessInterface savedRecipesDataAccessInterface;
     private final MealPlanningOutputBoundary outputBoundary;
 
-    public MealPlanningInteractor(MealPlanningDataAccess dataAccess,
-                                  SavedRecipesDataAccess savedRecipesDataAccess,
+    public MealPlanningInteractor(MealPlanningDataAccessInterface dataAccessInterface,
+                                  SavedRecipesDataAccessInterface savedRecipesDataAccessInterface,
                                   MealPlanningOutputBoundary outputBoundary) {
-        this.dataAccess = dataAccess;
-        this.savedRecipesDataAccess = savedRecipesDataAccess;
+        this.dataAccessInterface = dataAccessInterface;
+        this.savedRecipesDataAccessInterface = savedRecipesDataAccessInterface;
         this.outputBoundary = outputBoundary;
     }
 
@@ -31,7 +30,7 @@ public class MealPlanningInteractor implements MealPlanningInputBoundary {
         List<Recipe> recipes = List.of();
         try {
             validateUserId(userId);
-            recipes = savedRecipesDataAccess.getSavedRecipes(userId);
+            recipes = savedRecipesDataAccessInterface.getSavedRecipes(userId);
             outputBoundary.presentSavedRecipes(recipes);
         }
         catch (MealPlanningException e) {
@@ -47,7 +46,7 @@ public class MealPlanningInteractor implements MealPlanningInputBoundary {
             validateEntryId(entryId);
             validateStatus(status);
 
-            dataAccess.updateMealStatus(userId, entryId, status);
+            dataAccessInterface.updateMealStatus(userId, entryId, status);
             outputBoundary.presentStatusUpdateSuccess("Meal status updated");
         }
         catch (MealPlanningException e) {
@@ -63,7 +62,7 @@ public class MealPlanningInteractor implements MealPlanningInputBoundary {
             validateDate(date);
             validateMealType(mealType);
 
-            dataAccess.addMealPlanEntry(userId, recipeId, date, mealType);
+            dataAccessInterface.addMealPlanEntry(userId, recipeId, date, mealType);
             outputBoundary.presentAddSuccess("Recipe added to calendar");
         }
         catch (MealPlanningException e) {
@@ -77,7 +76,7 @@ public class MealPlanningInteractor implements MealPlanningInputBoundary {
             validateUserId(userId);
             validateEntryId(mealPlanEntryId);
 
-            dataAccess.removeMealPlanEntry(userId, mealPlanEntryId);
+            dataAccessInterface.removeMealPlanEntry(userId, mealPlanEntryId);
             outputBoundary.presentRemoveSuccess("Recipe removed from calendar");
         }
         catch (MealPlanningException e) {
@@ -91,7 +90,7 @@ public class MealPlanningInteractor implements MealPlanningInputBoundary {
             validateUserId(userId);
             validateDate(weekStart);
 
-            List<MealPlanEntry> entries = dataAccess.getWeeklyPlan(userId, weekStart);
+            List<MealPlanEntry> entries = dataAccessInterface.getWeeklyPlan(userId, weekStart);
             outputBoundary.presentCalendarWeek(entries);
         }
         catch (MealPlanningException e) {
@@ -104,7 +103,7 @@ public class MealPlanningInteractor implements MealPlanningInputBoundary {
         try {
             validateUserId(userId);
             LocalDate currentWeekStart = LocalDate.now().with(DayOfWeek.MONDAY);
-            List<MealPlanEntry> entries = dataAccess.getWeeklyPlan(userId, currentWeekStart);
+            List<MealPlanEntry> entries = dataAccessInterface.getWeeklyPlan(userId, currentWeekStart);
             outputBoundary.presentCalendarWeek(entries);
         }
         catch (MealPlanningException e) {
