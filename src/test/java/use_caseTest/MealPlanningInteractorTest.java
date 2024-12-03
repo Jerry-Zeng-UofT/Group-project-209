@@ -4,6 +4,7 @@ import data_access.*;
 import data_access.SavedRecipesDataAccessObject;
 import entity.MealPlanEntry;
 import entity.Recipe;
+import use_case.meal_planning.MealPlanningDataAccessInterface;
 import use_case.meal_planning.MealPlanningInteractor;
 import use_case.meal_planning.MealPlanningOutputBoundary;
 import data_access.SavedRecipesDataAccessInterface;
