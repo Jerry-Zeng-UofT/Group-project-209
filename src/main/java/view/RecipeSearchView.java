@@ -47,7 +47,24 @@ import interface_adapter.serving_adjust.ServingAdjustViewModel;
  * View for recipe search.
  */
 public class RecipeSearchView extends JPanel implements ActionListener, PropertyChangeListener {
-    private static final String ERROR_MESSAGE = "error";
+
+    private static final int TEXTFIELD_WIDTH = 20;
+    private static final int VERTICAL_SPACING = 10;
+    private static final int INGREDIENT_LIST_HEIGHT = 100;
+    private static final int INGREDIENT_LIST_WIDTH = 300;
+    private static final int RESULTS_LIST_HEIGHT = 200;
+    private static final int RESULTS_LIST_WIDTH = 300;
+    private static final int TITLE_FONT_SIZE = 16;
+    private static final int HORIZONTAL_STRUT_SMALL = 30;
+    private static final int HORIZONTAL_STRUT_LARGE = 80;
+    private static final int VERTICAL_PADDING = 10;
+    private static final int BORDER_PADDING = 5;
+    private static final int RESULTS_LABEL_FONT_SIZE = 14;
+    private static final int RESULTS_LIST_FONT_SIZE = 12;
+    private static final String ERROR_MESSAGE = "Error";
+    private static final Color SELECTED_BACKGROUND_COLOR = new Color(200, 220, 240);
+    private static final Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
+    private static final Color BUTTON_BACKGROUND_COLOR = new Color(240, 240, 240);
 
     // Panels
     private final JPanel inputPanel;
