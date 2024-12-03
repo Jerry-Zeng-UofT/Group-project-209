@@ -47,6 +47,7 @@ import interface_adapter.serving_adjust.ServingAdjustViewModel;
  * View for recipe search.
  */
 public class RecipeSearchView extends JPanel implements ActionListener, PropertyChangeListener {
+    private static final String ERROR_MESSAGE = "error";
 
     // Panels
     private final JPanel inputPanel;
@@ -221,21 +222,45 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     private void handleServingAdjustment() {
         final int servings = servingAdjustView.getServings();
+
         if (recipeSearchController != null && servingAdjustController != null) {
-            RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
-            if (state != null) {
-                servingAdjustController.updateServingsForAll(servings, state.getRecipes());
+            Object state = recipeSearchViewModel.getState();
 
-                servingAdjustViewModel.updateRecipes(state.getRecipes());
+            if (state == null) {
+                state = restrictionViewModel.getState();
+            }
 
-                RecipeSearchPresenter presenter = new RecipeSearchPresenter(recipeSearchViewModel);
-                presenter.presentRecipes(state.getRecipes());
+            if (state instanceof RecipeSearchState recipeState) {
+                final List<Recipe> recipes = recipeState.getRecipes();
+                servingAdjustController.updateServingsForAll(servings, recipes);
+                servingAdjustViewModel.updateRecipes(recipes);
 
-                JOptionPane.showMessageDialog(this, "All recipes updated to " + servings + " servings.", "Update Successful", JOptionPane.INFORMATION_MESSAGE);
+                final RecipeSearchPresenter presenter = new RecipeSearchPresenter(recipeSearchViewModel);
+                presenter.presentRecipes(recipes);
+
+                showMessage("All recipes updated to " + servings + " servings.", "Update Successful",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+            }
+            else if (state instanceof RestrictionState restrictionState) {
+                final List<Recipe> recipes = restrictionState.getRecipes();
+
+                servingAdjustController.updateServingsForAll(servings, recipes);
+                servingAdjustViewModel.updateRecipes(recipes);
+
+                final RecipeSearchPresenter presenter = new RecipeSearchPresenter(recipeSearchViewModel);
+                presenter.presentRecipes(recipes);
+
+                showMessage("All restricted recipes updated to " + servings + " servings.",
+                        "Update Successful", JOptionPane.INFORMATION_MESSAGE);
+
+            }
+            else {
+                showMessage("Unknown state type for serving adjustment.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
             }
         }
         else {
-            JOptionPane.showMessageDialog(this, "Serving adjustment is not configured properly.", ViewConstants.ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
+            showMessage("Serving adjustment is not configured properly.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
         }
     }
 
