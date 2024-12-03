@@ -3,7 +3,6 @@ package use_case.nutrition_analysis;
 import java.io.IOException;
 import java.util.List;
 
-import data_access.NutritionAnalysisDataAccess;
 import entity.Nutrient;
 import entity.Recipe;
 
@@ -12,10 +11,10 @@ import entity.Recipe;
  */
 public class NutritionAnalysisInteractor implements NutritionAnalysis {
 
-    private final NutritionAnalysisDataAccess nutritionAnalysisDAO;
+    private final NutritionAnalysisDataAccessInterface nutritionAnalysisDAO;
     private final NutritionAnalysisOutputBoundary outputBoundary;
 
-    public NutritionAnalysisInteractor(NutritionAnalysisDataAccess NutritionAnalysisDAO,
+    public NutritionAnalysisInteractor(NutritionAnalysisDataAccessInterface NutritionAnalysisDAO,
                                        NutritionAnalysisOutputBoundary outputBoundary) {
         this.nutritionAnalysisDAO = NutritionAnalysisDAO;
         this.outputBoundary = outputBoundary;

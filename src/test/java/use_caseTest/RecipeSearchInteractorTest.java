@@ -1,5 +1,6 @@
 package use_caseTest;
 
+import data_access.RecipeSearchDataAccessObject;
 import data_access.SavedRecipesDataAccessObject;
 import entity.Nutrition;
 import entity.Recipe;
@@ -7,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import use_case.recipe_search.RecipeSearchInteractor;
 import use_case.recipe_search.RecipeSearchOutputBoundary;
 import use_case.recipe_search.RecipeSearchException;
-import data_access.RecipeSearchDataAccessObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +93,7 @@ class RecipeSearchInteractorTest {
         );
     }
 
-    // Stub for SavedRecipesDataAccess
+    // Stub for SavedRecipesDataAccessInterface
     private static class InMemorySavedRecipesDataAccess extends SavedRecipesDataAccessObject {
         private final List<Recipe> savedRecipes = new ArrayList<>();
 
