@@ -61,6 +61,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private static final int BORDER_PADDING = 5;
     private static final int RESULTS_LABEL_FONT_SIZE = 14;
     private static final int RESULTS_LIST_FONT_SIZE = 12;
+    private static final String ERROR_MESSAGE = "Error";
     private static final Color SELECTED_BACKGROUND_COLOR = new Color(200, 220, 240);
     private static final Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
     private static final Color BUTTON_BACKGROUND_COLOR = new Color(240, 240, 240);
@@ -238,27 +239,46 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     private void handleServingAdjustment() {
         final int servings = servingAdjustView.getServings();
+
         if (recipeSearchController != null && servingAdjustController != null) {
-            RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
-            if (state != null) {
-                servingAdjustController.updateServingsForAll(servings, state.getRecipes());
+            Object state = recipeSearchViewModel.getState();
 
-                servingAdjustViewModel.updateRecipes(state.getRecipes());
+            if (state == null) {
+                state = restrictionViewModel.getState();
+            }
 
-                RecipeSearchPresenter presenter = new RecipeSearchPresenter(recipeSearchViewModel);
-                presenter.presentRecipes(state.getRecipes());
+            if (state instanceof RecipeSearchState recipeState) {
+                final List<Recipe> recipes = recipeState.getRecipes();
 
-                JOptionPane.showMessageDialog(this,
-                        "All recipes updated to " + servings + " servings.",
-                        "Update Successful",
+                servingAdjustController.updateServingsForAll(servings, recipes);
+                servingAdjustViewModel.updateRecipes(recipes);
+
+                final RecipeSearchPresenter presenter = new RecipeSearchPresenter(recipeSearchViewModel);
+                presenter.presentRecipes(recipes);
+
+                showMessage("All recipes updated to " + servings + " servings.", "Update Successful",
                         JOptionPane.INFORMATION_MESSAGE);
+
+            }
+            else if (state instanceof RestrictionState restrictionState) {
+                final List<Recipe> recipes = restrictionState.getRecipes();
+
+                servingAdjustController.updateServingsForAll(servings, recipes);
+                servingAdjustViewModel.updateRecipes(recipes);
+
+                final RecipeSearchPresenter presenter = new RecipeSearchPresenter(recipeSearchViewModel);
+                presenter.presentRecipes(recipes);
+
+                showMessage("All restricted recipes updated to " + servings + " servings.",
+                        "Update Successful", JOptionPane.INFORMATION_MESSAGE);
+
+            }
+            else {
+                showMessage("Unknown state type for serving adjustment.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
             }
         }
         else {
-            JOptionPane.showMessageDialog(this,
-                    "Serving adjustment is not configured properly.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
+            showMessage("Serving adjustment is not configured properly.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -340,7 +360,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                 }
             }
             else {
-                showMessage("Unknown state type.", "Error", JOptionPane.ERROR_MESSAGE);
+                showMessage("Unknown state type.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -574,7 +594,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
             if (recipeState.getError() != null) {
                 JOptionPane.showMessageDialog(this,
                         recipeState.getError(),
-                        "Error",
+                        ERROR_MESSAGE,
                         JOptionPane.ERROR_MESSAGE);
             }
             else if (recipeState.getMessage() != null) {
@@ -593,7 +613,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
             if (restrictionState.getError() != null) {
                 JOptionPane.showMessageDialog(this,
                         restrictionState.getError(),
-                        "Error",
+                        ERROR_MESSAGE,
                         JOptionPane.ERROR_MESSAGE);
             }
             else if (restrictionState.getMessage() != null) {
