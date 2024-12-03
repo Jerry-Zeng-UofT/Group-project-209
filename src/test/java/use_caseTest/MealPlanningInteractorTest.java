@@ -1,38 +1,39 @@
 package use_caseTest;
 
 import data_access.*;
+import data_access.SavedRecipesDataAccessObject;
 import entity.MealPlanEntry;
 import entity.Recipe;
-import interface_adapter.recipe_search.RecipeSearchPresenter;
-import interface_adapter.recipe_search.RecipeSearchViewModel;
+import use_case.meal_planning.MealPlanningDataAccessInterface;
 import use_case.meal_planning.MealPlanningInteractor;
 import use_case.meal_planning.MealPlanningOutputBoundary;
+import data_access.SavedRecipesDataAccessInterface;
 import org.junit.Before;
 import org.junit.Test;
-import use_case.recipe_search.RecipeSearchInteractor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class MealPlanningInteractorTest {
 
-    private MealPlanningDataAccess dataAccess;
-    private SavedRecipesDataAccess savedRecipesDataAccess;
+    private MealPlanningDataAccessInterface dataAccess;
+    private SavedRecipesDataAccessInterface savedRecipesDataAccessInterface;
     private MealPlanningOutputBoundary outputBoundary;
     private MealPlanningInteractor interactor;
-    private Recipe recipe1;
-    private Recipe recipe2;
 
     @Before
     public void setUp() {
         // Simple in-memory implementations of dependencies
         dataAccess = new MealPlanningDataAccessObject(new SavedRecipesDataAccessObject());
-        savedRecipesDataAccess = new SavedRecipesDataAccessObject();
+        savedRecipesDataAccessInterface = new SavedRecipesDataAccessObject();
         outputBoundary = new MealPlanningOutputBoundary() {
             @Override
-            public void presentSavedRecipes(List<Recipe> recipes) { }
+            public void presentSavedRecipes(List<Recipe> recipes) {
+                // Do nothing (or log, if needed)
+            }
 
             @Override
             public void presentError(String message) {
@@ -55,35 +56,20 @@ public class MealPlanningInteractorTest {
             }
 
             @Override
-            public void presentCalendarWeek(List<MealPlanEntry> mealPlanEntries) { }
+            public void presentCalendarWeek(List<MealPlanEntry> mealPlanEntries) {
+                // Do nothing (or log, if needed)
+            }
         };
 
         // Create the interactor
-        interactor = new MealPlanningInteractor(dataAccess, savedRecipesDataAccess, outputBoundary);
-
-        // Establishment of a system that produces valid Recipe Object
-        SavedRecipesDataAccessObject savedRecipesDataAccess = new SavedRecipesDataAccessObject();
-        RecipeSearchViewModel recipeSearchViewModel = new RecipeSearchViewModel();
-        RecipeSearchPresenter recipeSearchPresenter = new RecipeSearchPresenter(recipeSearchViewModel);
-        RecipeSearchDataAccessObject recipeSearchDataAccessObject = new RecipeSearchDataAccessObject();
-
-        RecipeSearchInteractor recipeSearchInputBoundaryUseCase = new RecipeSearchInteractor(
-                recipeSearchDataAccessObject,
-                savedRecipesDataAccess,
-                recipeSearchPresenter
-        );
-
-        // Assume RecipeSearch use case (RecipeSearchInteractor) is well tested (independence principle).
-        final String exampleFoodName = "egg";
-        List<String> exampleIngredients = List.of(exampleFoodName);
-        recipeSearchInputBoundaryUseCase.searchRecipes(exampleIngredients);
-        recipe1 = recipeSearchViewModel.getState().getRecipes().get(1);
-        recipe2 = recipeSearchViewModel.getState().getRecipes().get(2);
+        interactor = new MealPlanningInteractor(dataAccess, savedRecipesDataAccessInterface, outputBoundary);
     }
 
     @Test
     public void testAddToCalendar() {
-        savedRecipesDataAccess.saveRecipe(1, recipe1);
+        // Create a dummy recipe
+        Recipe recipe = new Recipe(1, "Spaghetti Bolognese", "Delicious pasta with meat sauce", new ArrayList<>(), "Boil pasta, cook meat sauce", null, new ArrayList<>(), null, 4);
+        savedRecipesDataAccessInterface.saveRecipe(1, recipe);
 
         // Add recipe to calendar for user 1
         LocalDate date = LocalDate.now();
@@ -91,13 +77,15 @@ public class MealPlanningInteractorTest {
 
         // Verify that the recipe was added (check for its existence in the meal plan entries)
         List<MealPlanEntry> weeklyPlan = dataAccess.getWeeklyPlan(1, date.withDayOfMonth(1));  // Using the start of the current month as an example
-        assertTrue("The recipe should be added to the meal plan", weeklyPlan.size() > 0);
+        assertTrue(weeklyPlan.size() > 0);
         assertEquals("Spaghetti Bolognese", weeklyPlan.get(0).getRecipe().getTitle());
     }
 
     @Test
     public void testUpdateMealStatus() {
-        savedRecipesDataAccess.saveRecipe(1, recipe1);
+        // Create a dummy recipe
+        Recipe recipe = new Recipe(1, "Chicken Salad", "Healthy salad with chicken", new ArrayList<>(), "Mix ingredients", null, new ArrayList<>(), null, 2);
+        savedRecipesDataAccessInterface.saveRecipe(1, recipe);
 
         // Add recipe to calendar
         LocalDate date = LocalDate.now();
@@ -110,13 +98,15 @@ public class MealPlanningInteractorTest {
 
         // Verify the status is updated
         MealPlanEntry updatedEntry = dataAccess.getMealPlanEntry(1, entryId);
-        assertNotNull("Updated entry should not be null", updatedEntry);
+        assertNotNull(updatedEntry);
         assertEquals("Completed", updatedEntry.getStatus());
     }
 
     @Test
     public void testRemoveFromCalendar() {
-        savedRecipesDataAccess.saveRecipe(1, recipe1);
+        // Create a dummy recipe
+        Recipe recipe = new Recipe(1, "Grilled Cheese", "Classic grilled cheese sandwich", new ArrayList<>(), "Grill bread and cheese", null, new ArrayList<>(), null, 1);
+        savedRecipesDataAccessInterface.saveRecipe(1, recipe);
 
         // Add recipe to calendar
         LocalDate date = LocalDate.now();
@@ -124,36 +114,41 @@ public class MealPlanningInteractorTest {
 
         // Remove the recipe
         List<MealPlanEntry> weeklyPlan = dataAccess.getWeeklyPlan(1, date.withDayOfMonth(1));
-        int entryId = weeklyPlan.get(1).getEntryId();
+        int entryId = weeklyPlan.get(0).getEntryId();
         interactor.removeFromCalendar(1, entryId);
 
         // Verify the recipe is removed
         MealPlanEntry removedEntry = dataAccess.getMealPlanEntry(1, entryId);
-        assertNull("The meal plan entry should be removed", removedEntry);
+        assertNull(removedEntry);
     }
 
     @Test
     public void testGetCalendarWeek() {
-        savedRecipesDataAccess.saveRecipe(1, recipe1);
-        savedRecipesDataAccess.saveRecipe(1, recipe2);
+        // Create and add multiple recipes
+        Recipe recipe1 = new Recipe(1, "Pancakes", "Fluffy pancakes", new ArrayList<>(), "Cook pancakes", null, new ArrayList<>(), null, 2);
+        savedRecipesDataAccessInterface.saveRecipe(1, recipe1);
+
+        Recipe recipe2 = new Recipe(2, "Omelette", "Cheese omelette", new ArrayList<>(), "Whisk eggs and cook", null, new ArrayList<>(), null, 1);
+        savedRecipesDataAccessInterface.saveRecipe(1, recipe2);
 
         LocalDate weekStart = LocalDate.now().with(java.time.DayOfWeek.MONDAY);
         interactor.addToCalendar(1, 1, weekStart, "Breakfast");
-        interactor.addToCalendar(1, 2, weekStart.plusDays(1), "Lunch");
+        interactor.addToCalendar(1, 2, weekStart.plusDays(1), "Breakfast");
 
         // Get the weekly plan
         List<MealPlanEntry> weeklyPlan = dataAccess.getWeeklyPlan(1, weekStart);
 
         // Verify that the correct recipes are in the weekly plan
-        assertEquals("There should be two meal plan entries", 2, weeklyPlan.size());
-        assertTrue("Weekly plan should contain Spaghetti Bolognese", weeklyPlan.stream().anyMatch(entry -> entry.getRecipe().getTitle().equals("Spaghetti Bolognese")));
-        assertTrue("Weekly plan should contain Omelette", weeklyPlan.stream().anyMatch(entry -> entry.getRecipe().getTitle().equals("Omelette")));
+        assertEquals(2, weeklyPlan.size());
+        assertTrue(weeklyPlan.stream().anyMatch(entry -> entry.getRecipe().getTitle().equals("Pancakes")));
+        assertTrue(weeklyPlan.stream().anyMatch(entry -> entry.getRecipe().getTitle().equals("Omelette")));
     }
 
     @Test
     public void testInitializeMealPlanning() {
         // Test the initialization of the meal planning for a user
-        savedRecipesDataAccess.saveRecipe(1, recipe2);
+        Recipe recipe = new Recipe(1, "Salad", "Fresh salad", new ArrayList<>(), "Mix ingredients", null, new ArrayList<>(), null, 1);
+        savedRecipesDataAccessInterface.saveRecipe(1, recipe);
 
         LocalDate weekStart = LocalDate.now().with(java.time.DayOfWeek.MONDAY);
         interactor.addToCalendar(1, 1, weekStart, "Lunch");
@@ -163,7 +158,7 @@ public class MealPlanningInteractorTest {
 
         // Verify that the meal plan for the current week is loaded
         List<MealPlanEntry> weeklyPlan = dataAccess.getWeeklyPlan(1, weekStart);
-        assertFalse("The weekly meal plan should not be empty", weeklyPlan.isEmpty());
-        assertEquals("The meal plan should contain the correct recipe", "Omelette", weeklyPlan.get(0).getRecipe().getTitle());
+        assertFalse(weeklyPlan.isEmpty());
+        assertEquals("Salad", weeklyPlan.get(0).getRecipe().getTitle());
     }
 }
