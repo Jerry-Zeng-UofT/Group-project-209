@@ -231,17 +231,11 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                 RecipeSearchPresenter presenter = new RecipeSearchPresenter(recipeSearchViewModel);
                 presenter.presentRecipes(state.getRecipes());
 
-                JOptionPane.showMessageDialog(this,
-                        "All recipes updated to " + servings + " servings.",
-                        "Update Successful",
-                        JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "All recipes updated to " + servings + " servings.", "Update Successful", JOptionPane.INFORMATION_MESSAGE);
             }
         }
         else {
-            JOptionPane.showMessageDialog(this,
-                    "Serving adjustment is not configured properly.",
-                    ViewConstants.ERROR_MESSAGE,
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Serving adjustment is not configured properly.", ViewConstants.ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -323,7 +317,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                 }
             }
             else {
-                showMessage("Unknown state type.", ViewConstants.ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
+                showMessage("Unknown state type.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
             }
         }
     }
