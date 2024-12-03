@@ -249,6 +249,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
             if (state instanceof RecipeSearchState recipeState) {
                 final List<Recipe> recipes = recipeState.getRecipes();
+                
                 servingAdjustController.updateServingsForAll(servings, recipes);
                 servingAdjustViewModel.updateRecipes(recipes);
 
