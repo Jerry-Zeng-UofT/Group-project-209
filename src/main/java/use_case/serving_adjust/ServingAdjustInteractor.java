@@ -1,7 +1,8 @@
 package use_case.serving_adjust;
 
-import entity.Recipe;
 import java.util.List;
+
+import entity.Recipe;
 
 /**
  * Interactor class for the serving adjustment use case.
@@ -31,18 +32,22 @@ public class ServingAdjustInteractor implements ServingAdjustInputBoundary {
      */
     @Override
     public void adjustServings(ServingAdjustInputData inputData) throws ServingAdjustException {
-        int newServings = inputData.getNewServings();
-        List<Recipe> recipes = inputData.getRecipes();
+        final int newServings = inputData.getNewServings();
+        final List<Recipe> recipes = inputData.getRecipes();
 
         for (Recipe recipe : recipes) {
             adjustServingsForRecipe(newServings, recipe);
         }
 
-        // Save the updated recipes
-        dataAccess.saveUpdatedRecipes(recipes);
+        try {
+            dataAccess.saveUpdatedRecipes(recipes);
+        }
+        catch (Exception exc) {
+            throw new ServingAdjustException("Failed to save updated recipes.", exc);
+        }
 
         // Prepare output data and present it
-        ServingAdjustOutputData outputData = new ServingAdjustOutputData(recipes);
+        final ServingAdjustOutputData outputData = new ServingAdjustOutputData(recipes);
         outputBoundary.presentUpdatedRecipes(outputData);
     }
 
@@ -58,12 +63,12 @@ public class ServingAdjustInteractor implements ServingAdjustInputBoundary {
             throw new ServingAdjustException("Recipe cannot be null.");
         }
 
-        int currentServings = recipe.getServings();
+        final int currentServings = recipe.getServings();
         if (currentServings <= 0) {
             throw new ServingAdjustException("Current servings must be greater than zero.");
         }
 
-        double factor = (double) newServings / currentServings;
+        final double factor = (double) newServings / currentServings;
 
         recipe.getIngredients().forEach(ingredient -> {
             ingredient.setQuantity(ingredient.getQuantity() * factor);

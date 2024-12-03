@@ -1,9 +1,10 @@
 package interface_adapter.serving_adjust;
 
+import java.util.List;
+
 import entity.Recipe;
 import use_case.serving_adjust.ServingAdjustOutputBoundary;
 import use_case.serving_adjust.ServingAdjustOutputData;
-import java.util.List;
 
 /**
  * Presenter class for serving adjustment functionality.
@@ -28,12 +29,14 @@ public class ServingAdjustPresenter implements ServingAdjustOutputBoundary {
      */
     @Override
     public void presentUpdatedRecipes(ServingAdjustOutputData outputData) {
-        List<Recipe> updatedRecipes = outputData.getUpdatedRecipes();
+        final List<Recipe> updatedRecipes = outputData.getUpdatedRecipes();
         try {
             viewModel.updateRecipes(updatedRecipes);
-        } catch (IllegalArgumentException exIllegalArgument) {
+        }
+        catch (IllegalArgumentException exIllegalArgument) {
             viewModel.setError("Invalid argument while updating recipes: " + exIllegalArgument.getMessage());
-        } catch (IllegalStateException exIllegalState) {
+        }
+        catch (IllegalStateException exIllegalState) {
             viewModel.setError("Illegal state encountered while updating recipes: " + exIllegalState.getMessage());
         }
     }
