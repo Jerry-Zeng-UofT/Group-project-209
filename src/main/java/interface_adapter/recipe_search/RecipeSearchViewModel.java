@@ -5,7 +5,7 @@ import interface_adapter.ViewModel;
 /**
  * The ViewModel for the RecipeSearchView.
  */
-public class RecipeSearchViewModel extends ViewModel {
+public class RecipeSearchViewModel extends ViewModel<RecipeSearchState> {
     // Attributes are created base on the components in RecipeSearchView class
     public static final String TITLE_LABEL = "Search For Recipes";
     public static final String ADD_INGREDIENT_BUTTON_LABEL = "Add Ingredient";

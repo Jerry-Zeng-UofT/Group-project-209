@@ -15,7 +15,7 @@ import interface_adapter.serving_adjust.ServingAdjustController;
 import interface_adapter.serving_adjust.ServingAdjustPresenter;
 import interface_adapter.serving_adjust.ServingAdjustViewModel;
 import use_case.nutrition_analysis.NutritionAnalysis;
-import use_case.nutrition_analysis.NutritionAnalysisImpl;
+import use_case.nutrition_analysis.NutritionAnalysisInteractor;
 import use_case.recipe_search.*;
 import use_case.meal_planning.*;
 import use_case.search_with_restriction.RecipeSearchWithRestrictionInteractor;
@@ -50,7 +50,7 @@ public class RecipeAppBuilder {
 
     private RecipeSearchInputBoundary recipeSearchInputBoundaryUseCase;
     private SearchWithRestrictionInputBoundary searchWithRestrictionInputBoundaryUseCase;
-    private MealPlanning mealPlanningUseCase;
+    private MealPlanningInputBoundary mealPlanningInputBoundaryUseCase;
     private NutritionAnalysis nutritionAnalysisUseCase;
 
     /**
@@ -142,12 +142,12 @@ public class RecipeAppBuilder {
         }
 
         MealPlanningPresenter presenter = new MealPlanningPresenter(mealPlanningViewModel);
-        mealPlanningUseCase = new MealPlanningInteractor(
+        mealPlanningInputBoundaryUseCase = new MealPlanningInteractor(
                 mealPlanningDataAccess,
                 savedRecipesDataAccess,
                 presenter
         );
-        MealPlanningController controller = new MealPlanningController(mealPlanningUseCase);
+        MealPlanningController controller = new MealPlanningController(mealPlanningInputBoundaryUseCase);
         mealPlanningView.setController(controller);
 
         return this;
@@ -163,7 +163,7 @@ public class RecipeAppBuilder {
         }
 
         NutritionAnalysisPresenter presenter = new NutritionAnalysisPresenter(nutritionAnalysisViewModel);
-        nutritionAnalysisUseCase = new NutritionAnalysisImpl(
+        nutritionAnalysisUseCase = new NutritionAnalysisInteractor(
                 nutritionAnalysisDataAccess,
                 presenter
         );

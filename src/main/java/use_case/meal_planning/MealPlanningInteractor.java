@@ -10,21 +10,14 @@ import entity.MealPlanEntry;
 import entity.Recipe;
 
 /**
- * Implements the MealPlanning interface to handle meal planning business logic.
+ * Implements the MealPlanningInputBoundary interface to handle meal planning business logic.
  * Coordinates between data access layer and output boundary for meal planning operations.
  */
-public class MealPlanningInteractor implements MealPlanning {
+public class MealPlanningInteractor implements MealPlanningInputBoundary {
     private final MealPlanningDataAccess dataAccess;
     private final SavedRecipesDataAccess savedRecipesDataAccess;
     private final MealPlanningOutputBoundary outputBoundary;
 
-    /**
-     * Constructs a new MealPlanningInteractor.
-     *
-     * @param dataAccess data access for meal planning operations
-     * @param savedRecipesDataAccess data access for saved recipes
-     * @param outputBoundary output boundary for presenting results
-     */
     public MealPlanningInteractor(MealPlanningDataAccess dataAccess,
                                   SavedRecipesDataAccess savedRecipesDataAccess,
                                   MealPlanningOutputBoundary outputBoundary) {
@@ -37,11 +30,12 @@ public class MealPlanningInteractor implements MealPlanning {
     public List<Recipe> getSavedRecipes(int userId) {
         List<Recipe> recipes = List.of();
         try {
+            validateUserId(userId);
             recipes = savedRecipesDataAccess.getSavedRecipes(userId);
             outputBoundary.presentSavedRecipes(recipes);
         }
-        catch (IllegalArgumentException exception) {
-            outputBoundary.presentError("Failed to load saved recipes: " + exception.getMessage());
+        catch (MealPlanningException e) {
+            outputBoundary.presentError(e.getMessage());
         }
         return recipes;
     }
@@ -49,56 +43,109 @@ public class MealPlanningInteractor implements MealPlanning {
     @Override
     public void updateMealStatus(int userId, int entryId, String status) {
         try {
+            validateUserId(userId);
+            validateEntryId(entryId);
+            validateStatus(status);
+
             dataAccess.updateMealStatus(userId, entryId, status);
             outputBoundary.presentStatusUpdateSuccess("Meal status updated");
         }
-        catch (IllegalArgumentException exception) {
-            outputBoundary.presentError("Failed to update meal status: " + exception.getMessage());
+        catch (MealPlanningException e) {
+            outputBoundary.presentError(e.getMessage());
         }
     }
 
     @Override
     public void addToCalendar(int userId, int recipeId, LocalDate date, String mealType) {
         try {
+            validateUserId(userId);
+            validateRecipeId(recipeId);
+            validateDate(date);
+            validateMealType(mealType);
+
             dataAccess.addMealPlanEntry(userId, recipeId, date, mealType);
             outputBoundary.presentAddSuccess("Recipe added to calendar");
         }
-        catch (IllegalArgumentException exception) {
-            outputBoundary.presentError("Failed to add recipe to calendar: " + exception.getMessage());
+        catch (MealPlanningException e) {
+            outputBoundary.presentError(e.getMessage());
         }
     }
 
     @Override
     public void removeFromCalendar(int userId, int mealPlanEntryId) {
         try {
+            validateUserId(userId);
+            validateEntryId(mealPlanEntryId);
+
             dataAccess.removeMealPlanEntry(userId, mealPlanEntryId);
             outputBoundary.presentRemoveSuccess("Recipe removed from calendar");
         }
-        catch (IllegalArgumentException exception) {
-            outputBoundary.presentError("Failed to remove recipe from calendar: " + exception.getMessage());
+        catch (MealPlanningException e) {
+            outputBoundary.presentError(e.getMessage());
         }
     }
 
     @Override
     public void getCalendarWeek(int userId, LocalDate weekStart) {
         try {
-            final List<MealPlanEntry> entries = dataAccess.getWeeklyPlan(userId, weekStart);
+            validateUserId(userId);
+            validateDate(weekStart);
+
+            List<MealPlanEntry> entries = dataAccess.getWeeklyPlan(userId, weekStart);
             outputBoundary.presentCalendarWeek(entries);
         }
-        catch (IllegalArgumentException exception) {
-            outputBoundary.presentError("Failed to load calendar: " + exception.getMessage());
+        catch (MealPlanningException e) {
+            outputBoundary.presentError(e.getMessage());
         }
     }
 
     @Override
     public void initializeMealPlanning(int userId) {
         try {
-            final LocalDate currentWeekStart = LocalDate.now().with(DayOfWeek.MONDAY);
-            final List<MealPlanEntry> entries = dataAccess.getWeeklyPlan(userId, currentWeekStart);
+            validateUserId(userId);
+            LocalDate currentWeekStart = LocalDate.now().with(DayOfWeek.MONDAY);
+            List<MealPlanEntry> entries = dataAccess.getWeeklyPlan(userId, currentWeekStart);
             outputBoundary.presentCalendarWeek(entries);
         }
-        catch (IllegalArgumentException exception) {
-            outputBoundary.presentError("Failed to initialize meal planning: " + exception.getMessage());
+        catch (MealPlanningException e) {
+            outputBoundary.presentError(e.getMessage());
+        }
+    }
+
+    // Validation methods
+    private void validateUserId(int userId) {
+        if (userId <= 0) {
+            throw new MealPlanningException("Invalid user ID", MealPlanningException.INVALID_USER);
+        }
+    }
+
+    private void validateRecipeId(int recipeId) {
+        if (recipeId <= 0) {
+            throw new MealPlanningException("Invalid recipe ID", MealPlanningException.INVALID_RECIPE);
+        }
+    }
+
+    private void validateEntryId(int entryId) {
+        if (entryId <= 0) {
+            throw new MealPlanningException("Invalid entry ID", MealPlanningException.INVALID_ENTRY);
+        }
+    }
+
+    private void validateDate(LocalDate date) {
+        if (date == null) {
+            throw new MealPlanningException("Date cannot be null", MealPlanningException.INVALID_DATE);
+        }
+    }
+
+    private void validateMealType(String mealType) {
+        if (mealType == null || mealType.trim().isEmpty()) {
+            throw new MealPlanningException("Meal type cannot be empty", MealPlanningException.INVALID_MEAL_TYPE);
+        }
+    }
+
+    private void validateStatus(String status) {
+        if (status == null || status.trim().isEmpty()) {
+            throw new MealPlanningException("Status cannot be empty", MealPlanningException.INVALID_ENTRY);
         }
     }
 }
