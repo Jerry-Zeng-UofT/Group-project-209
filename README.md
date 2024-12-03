@@ -13,7 +13,7 @@ Recipe Wiz is an innovative meal planning and recipe management application desi
 4. [License](#License)
 5. [Support and Feedback](#support-and-feedback)
 6. [How to Contribute](#how-to-contribute)
-7. [Credits](#credits)
+7. [API USAGE](#API-USAGE)
 
 ## Authors and contributors
 - Haris Anjum 
@@ -145,6 +145,71 @@ We value your input and encourage you to provide feedback to help us improve Rec
 
 ## How to Contribute
 
+We welcome contributions from the community to improve Recipe Wiz!
 
+### Contribution Steps
+
+1. **Fork the Repository**
+    
+    - Click the Fork button on the top-right corner of the repository page.
+
+2. **Clone Your Fork**
+
+    ```bash
+   git clone https://github.com/your-username/Group-project-209.git
+3. **Create a New Branch**
+
+    - Create a branch where you make fixes.
+
+4. **Implement your changes**
+
+    - Fix bugs, create new features, or contribute code in your created branch from the previous step.
+
+5. **Commit Your Changes**
+
+    - After any changes, commit your changes with meaningful commit message.
+
+6. **Push Your Changes**
+
+7. **Submit a Pull Request**
+
+   - Go to the original repository and click on New Pull Request. 
+   - Provide a clear and detailed description of your changes.
+
+## API Usage
+
+In Recipe Wiz, we leverage the powerful **Edamam API** to enhance the user experience by providing comprehensive recipe search and nutritional analysis capabilities. Below is an overview of the APIs used and their functionality:
+
+### 1. Recipe Search API
+
+The **Recipe Search API** from Edamam is utilized to enable users to:
+
+- Search for recipes based on ingredients, dietary restrictions, and meal types.
+- Retrieve a rich dataset for each recipe, including:
+    - Recipe title, image, and preparation steps.
+    - Ingredients list with quantities.
+    - Dietary labels (e.g., gluten-free, vegetarian).
+    - Health labels (e.g., low-carb, keto-friendly).
+
+This API ensures that Recipe Wiz provides tailored and diverse recipe suggestions for users with varying preferences and dietary needs.
+
+### 2. Nutritional Analysis API
+
+The **Nutritional Analysis API** from Edamam powers the nutritional information feature in Recipe Wiz. This API is used to:
+
+- Analyze recipes to calculate detailed nutritional data, including:
+    - Calories.
+    - Macronutrients (protein, fat, carbohydrates).
+    - Micronutrients (fiber, sugar, vitamins).
+- Display easy-to-understand nutritional breakdowns for each recipe, helping users make informed dietary choices.
+
+### API Documentation
+
+For more details about the APIs used, refer to the official Edamam API documentation:
+
+- [Recipe Search API Documentation](https://developer.edamam.com/edamam-recipe-api)
+- [Nutritional Analysis API Documentation](https://developer.edamam.com/edamam-nutrition-api)
+
+   
 
 
