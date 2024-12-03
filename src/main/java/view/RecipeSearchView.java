@@ -48,23 +48,6 @@ import interface_adapter.serving_adjust.ServingAdjustViewModel;
  */
 public class RecipeSearchView extends JPanel implements ActionListener, PropertyChangeListener {
 
-    private static final int TEXTFIELD_WIDTH = 20;
-    private static final int VERTICAL_SPACING = 10;
-    private static final int INGREDIENT_LIST_HEIGHT = 100;
-    private static final int INGREDIENT_LIST_WIDTH = 300;
-    private static final int RESULTS_LIST_HEIGHT = 200;
-    private static final int RESULTS_LIST_WIDTH = 300;
-    private static final int TITLE_FONT_SIZE = 16;
-    private static final int HORIZONTAL_STRUT_SMALL = 30;
-    private static final int HORIZONTAL_STRUT_LARGE = 80;
-    private static final int VERTICAL_PADDING = 10;
-    private static final int BORDER_PADDING = 5;
-    private static final int RESULTS_LABEL_FONT_SIZE = 14;
-    private static final int RESULTS_LIST_FONT_SIZE = 12;
-    private static final Color SELECTED_BACKGROUND_COLOR = new Color(200, 220, 240);
-    private static final Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
-    private static final Color BUTTON_BACKGROUND_COLOR = new Color(240, 240, 240);
-
     // Panels
     private final JPanel inputPanel;
     private final JPanel resultsPanel;
@@ -143,7 +126,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         resultsPanel = new JPanel();
 
         // Text Fields
-        ingredientField = new JTextField(TEXTFIELD_WIDTH);
+        ingredientField = new JTextField(ViewConstants.TEXTFIELD_WIDTH);
 
         // Buttons
         addIngredientButton = new JButton(RecipeSearchViewModel.ADD_INGREDIENT_BUTTON_LABEL);
@@ -172,7 +155,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
         this.setLayout(new BorderLayout());
 
-        title.setFont(new Font(title.getFont().getName(), Font.BOLD, TITLE_FONT_SIZE));
+        title.setFont(new Font(title.getFont().getName(), Font.BOLD, ViewConstants.TITLE_FONT_SIZE));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         setupInputPanel();
@@ -188,16 +171,16 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
         final JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        mainPanel.add(Box.createVerticalStrut(ViewConstants.VERTICAL_SPACING));
         mainPanel.add(title);
-        mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        mainPanel.add(Box.createVerticalStrut(ViewConstants.VERTICAL_SPACING));
         mainPanel.add(inputPanel);
-        mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        mainPanel.add(Box.createVerticalStrut(ViewConstants.VERTICAL_SPACING));
         mainPanel.add(restrictionPanel);
-        mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        mainPanel.add(Box.createVerticalStrut(ViewConstants.VERTICAL_SPACING));
         searchButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         mainPanel.add(searchButton);
-        mainPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        mainPanel.add(Box.createVerticalStrut(ViewConstants.VERTICAL_SPACING));
         mainPanel.add(resultsPanel);
 
         this.add(mainPanel, BorderLayout.CENTER);
@@ -422,7 +405,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
         inputPanel.add(addIngredientPanel);
         inputPanel.add(labelPanel);
-        inputPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        inputPanel.add(Box.createVerticalStrut(ViewConstants.VERTICAL_SPACING));
         inputPanel.add(displayPanel);
         inputPanel.add(buttonPanel);
     }
@@ -457,11 +440,11 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
         buttonPanel.add(addIngredientButton);
-        buttonPanel.add(Box.createHorizontalStrut(HORIZONTAL_STRUT_SMALL));
+        buttonPanel.add(Box.createHorizontalStrut(ViewConstants.HORIZONTAL_STRUT_SMALL));
         buttonPanel.add(removeIngredientButton);
-        buttonPanel.add(Box.createHorizontalStrut(HORIZONTAL_STRUT_LARGE));
+        buttonPanel.add(Box.createHorizontalStrut(ViewConstants.HORIZONTAL_STRUT_LARGE));
         buttonPanel.add(addRestrictionButton);
-        buttonPanel.add(Box.createHorizontalStrut(HORIZONTAL_STRUT_SMALL));
+        buttonPanel.add(Box.createHorizontalStrut(ViewConstants.HORIZONTAL_STRUT_SMALL));
         buttonPanel.add(removeRestrictionsButton);
 
         return buttonPanel;
@@ -473,11 +456,11 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
         final JScrollPane ingredientScrollPane = new JScrollPane(ingredientList);
         ingredientScrollPane.setPreferredSize(
-                new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
+                new Dimension(ViewConstants.INGREDIENT_LIST_WIDTH, ViewConstants.INGREDIENT_LIST_HEIGHT));
 
         final JScrollPane restrictionScrollPane = new JScrollPane(restrictionList);
         restrictionScrollPane.setPreferredSize(
-                new Dimension(INGREDIENT_LIST_WIDTH, INGREDIENT_LIST_HEIGHT));
+                new Dimension(ViewConstants.INGREDIENT_LIST_WIDTH, ViewConstants.INGREDIENT_LIST_HEIGHT));
 
         displayPanel.add(ingredientScrollPane);
         displayPanel.add(restrictionScrollPane);
@@ -487,31 +470,32 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     private void setupResultsPanel() {
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
-        resultsPanel.setBorder(BorderFactory.createEmptyBorder(VERTICAL_PADDING, VERTICAL_PADDING,
-                VERTICAL_PADDING, VERTICAL_PADDING));
+        resultsPanel.setBorder(BorderFactory.createEmptyBorder(ViewConstants.VERTICAL_PADDING, ViewConstants.VERTICAL_PADDING,
+                ViewConstants.VERTICAL_PADDING, ViewConstants.VERTICAL_PADDING));
 
         resultsPanel.add(createResultsLabel());
-        resultsPanel.add(Box.createVerticalStrut(VERTICAL_SPACING));
+        resultsPanel.add(Box.createVerticalStrut(ViewConstants.VERTICAL_SPACING));
         resultsPanel.add(createResultsScrollPane());
         resultsPanel.add(createBottomButtonPanel());
     }
 
     private JLabel createResultsLabel() {
         final JLabel resultsLabel = new JLabel(RecipeSearchViewModel.RECIPE_RESULT_LABEL);
-        resultsLabel.setFont(new Font("Arial", Font.BOLD, RESULTS_LABEL_FONT_SIZE));
+        resultsLabel.setFont(new Font("Arial", Font.BOLD, ViewConstants.RESULTS_LABEL_FONT_SIZE));
         resultsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         return resultsLabel;
     }
 
     private JScrollPane createResultsScrollPane() {
-        recipeResults.setFont(new Font("Monospaced", Font.PLAIN, RESULTS_LIST_FONT_SIZE));
-        recipeResults.setBorder(BorderFactory.createEmptyBorder(BORDER_PADDING, BORDER_PADDING,
-                BORDER_PADDING, BORDER_PADDING));
+        recipeResults.setFont(new Font("Monospaced", Font.PLAIN, ViewConstants.RESULTS_LIST_FONT_SIZE));
+        recipeResults.setBorder(BorderFactory.createEmptyBorder(ViewConstants.SEARCHING_BORDER_PADDING,
+                ViewConstants.SEARCHING_BORDER_PADDING, ViewConstants.SEARCHING_BORDER_PADDING,
+                ViewConstants.SEARCHING_BORDER_PADDING));
         recipeResults.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         recipeResults.setCellRenderer(createCustomCellRenderer());
 
         final JScrollPane resultsScrollPane = new JScrollPane(recipeResults);
-        resultsScrollPane.setPreferredSize(new Dimension(RESULTS_LIST_WIDTH, RESULTS_LIST_HEIGHT));
+        resultsScrollPane.setPreferredSize(new Dimension(ViewConstants.RESULTS_LIST_WIDTH, ViewConstants.RESULTS_LIST_HEIGHT));
         resultsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         resultsScrollPane.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(5, 5, 5, 5),
@@ -529,14 +513,14 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                         list, value, index, isSelected, cellHasFocus);
 
                 if (isSelected) {
-                    label.setBackground(SELECTED_BACKGROUND_COLOR);
+                    label.setBackground(ViewConstants.SELECTED_BACKGROUND_COLOR);
                     label.setForeground(Color.BLACK);
                 }
                 else {
-                    label.setBackground(DEFAULT_BACKGROUND_COLOR);
+                    label.setBackground(ViewConstants.DEFAULT_BACKGROUND_COLOR);
                 }
-                label.setBorder(BorderFactory.createEmptyBorder(BORDER_PADDING, VERTICAL_PADDING,
-                        BORDER_PADDING, VERTICAL_PADDING));
+                label.setBorder(BorderFactory.createEmptyBorder(ViewConstants.SEARCHING_BORDER_PADDING, ViewConstants.VERTICAL_PADDING,
+                        ViewConstants.SEARCHING_BORDER_PADDING, ViewConstants.VERTICAL_PADDING));
                 return label;
             }
         };
@@ -545,7 +529,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private JPanel createBottomButtonPanel() {
         final JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(VERTICAL_PADDING, 0, VERTICAL_PADDING, 0));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(ViewConstants.VERTICAL_PADDING, 0, ViewConstants.VERTICAL_PADDING, 0));
 
         configureButton(analyzeNutritionButton);
         configureButton(saveRecipeButton);
@@ -562,7 +546,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     }
 
     private void configureButton(JButton button) {
-        button.setBackground(BUTTON_BACKGROUND_COLOR);
+        button.setBackground(ViewConstants.BUTTON_BACKGROUND_COLOR);
     }
 
     @Override

@@ -38,8 +38,8 @@ public class MealPlanningView extends JPanel implements ActionListener, Property
         this.viewModel.addPropertyChangeListener(this);
 
         setLayout(new BorderLayout(ViewConstants.HORIZONTAL_GAP, ViewConstants.VERTICAL_GAP));
-        setBorder(new EmptyBorder(ViewConstants.BORDER_PADDING, ViewConstants.BORDER_PADDING,
-                ViewConstants.BORDER_PADDING, ViewConstants.BORDER_PADDING));
+        setBorder(new EmptyBorder(ViewConstants.PLANNING_BORDER_PADDING, ViewConstants.PLANNING_BORDER_PADDING,
+                ViewConstants.PLANNING_BORDER_PADDING, ViewConstants.PLANNING_BORDER_PADDING));
 
         this.navigationPanel = new WeekNavigationPanel(this);
         this.savedRecipesPanel = new SavedRecipesPanel();
