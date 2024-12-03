@@ -4,12 +4,12 @@ import java.util.List;
 
 import entity.Ingredient;
 import entity.Recipe;
-import use_case.search_with_restriction.SearchWithRestrictionOutputBoundry;
+import use_case.search_with_restriction.SearchWithRestrictionOutputBoundary;
 
 /**
  * Presenter for the recipe search with restriction use case.
  */
-public class RestrictionPresenter implements SearchWithRestrictionOutputBoundry {
+public class RestrictionPresenter implements SearchWithRestrictionOutputBoundary {
     private final RestrictionViewModel restrictionViewModel;
 
     public RestrictionPresenter(RestrictionViewModel restrictionViewModel) {

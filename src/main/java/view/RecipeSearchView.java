@@ -401,7 +401,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                     nutritionAnalysisView.setVisible(true);
                 }
                 else {
-                    showMessage("Selected recipe index is out of bounds.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
+                    showMessage("Selected recipe index is out of bounds.", ViewConstants.ERROR_MESSAGE,
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
             else if (state instanceof RestrictionState restrictionState) {
@@ -412,15 +413,18 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                     nutritionAnalysisView.setVisible(true);
                 }
                 else {
-                    showMessage("Selected recipe index is out of bounds.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
+                    showMessage("Selected recipe index is out of bounds.", ViewConstants.ERROR_MESSAGE,
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
             else {
-                showMessage("Unknown state type for nutrition analysis.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
+                showMessage("Unknown state type for nutrition analysis.", ViewConstants.ERROR_MESSAGE,
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
         else {
-            showMessage("Nutrition analysis is not configured properly.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
+            showMessage("Nutrition analysis is not configured properly.", ViewConstants.ERROR_MESSAGE,
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
     // Utility method for showing messages
