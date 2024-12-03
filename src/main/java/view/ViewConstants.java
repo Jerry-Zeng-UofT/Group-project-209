@@ -43,6 +43,7 @@ public final class ViewConstants {
     public static final Color SELECTED_BACKGROUND_COLOR = new Color(200, 220, 240);
     public static final Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
     public static final Color BUTTON_BACKGROUND_COLOR = new Color(240, 240, 240);
+    public static final String ERROR_MESSAGE = "Error";
 
     private ViewConstants() {
     }

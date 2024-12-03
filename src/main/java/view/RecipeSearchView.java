@@ -240,7 +240,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         else {
             JOptionPane.showMessageDialog(this,
                     "Serving adjustment is not configured properly.",
-                    "Error",
+                    ViewConstants.ERROR_MESSAGE,
                     JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -323,7 +323,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                 }
             }
             else {
-                showMessage("Unknown state type.", "Error", JOptionPane.ERROR_MESSAGE);
+                showMessage("Unknown state type.", ViewConstants.ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -495,10 +495,13 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
         recipeResults.setCellRenderer(createCustomCellRenderer());
 
         final JScrollPane resultsScrollPane = new JScrollPane(recipeResults);
-        resultsScrollPane.setPreferredSize(new Dimension(ViewConstants.RESULTS_LIST_WIDTH, ViewConstants.RESULTS_LIST_HEIGHT));
+        resultsScrollPane.setPreferredSize(new Dimension(ViewConstants.RESULTS_LIST_WIDTH,
+                ViewConstants.RESULTS_LIST_HEIGHT));
         resultsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         resultsScrollPane.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                BorderFactory.createEmptyBorder(ViewConstants.SEARCHING_BORDER_PADDING,
+                        ViewConstants.SEARCHING_BORDER_PADDING, ViewConstants.SEARCHING_BORDER_PADDING,
+                        ViewConstants.SEARCHING_BORDER_PADDING),
                 BorderFactory.createLineBorder(Color.GRAY)
         ));
         return resultsScrollPane;
@@ -519,7 +522,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                 else {
                     label.setBackground(ViewConstants.DEFAULT_BACKGROUND_COLOR);
                 }
-                label.setBorder(BorderFactory.createEmptyBorder(ViewConstants.SEARCHING_BORDER_PADDING, ViewConstants.VERTICAL_PADDING,
+                label.setBorder(BorderFactory.createEmptyBorder(ViewConstants.SEARCHING_BORDER_PADDING,
+                        ViewConstants.VERTICAL_PADDING,
                         ViewConstants.SEARCHING_BORDER_PADDING, ViewConstants.VERTICAL_PADDING));
                 return label;
             }
@@ -529,16 +533,17 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private JPanel createBottomButtonPanel() {
         final JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(ViewConstants.VERTICAL_PADDING, 0, ViewConstants.VERTICAL_PADDING, 0));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(ViewConstants.VERTICAL_PADDING, 0,
+                ViewConstants.VERTICAL_PADDING, 0));
 
         configureButton(analyzeNutritionButton);
         configureButton(saveRecipeButton);
 
         buttonPanel.add(Box.createHorizontalGlue());
         buttonPanel.add(analyzeNutritionButton);
-        buttonPanel.add(Box.createHorizontalStrut(10));
+        buttonPanel.add(Box.createHorizontalStrut(ViewConstants.VERTICAL_PADDING));
         buttonPanel.add(saveRecipeButton);
-        buttonPanel.add(Box.createHorizontalStrut(10));
+        buttonPanel.add(Box.createHorizontalStrut(ViewConstants.VERTICAL_PADDING));
         buttonPanel.add(servingAdjustView);
         buttonPanel.add(Box.createHorizontalGlue());
 
