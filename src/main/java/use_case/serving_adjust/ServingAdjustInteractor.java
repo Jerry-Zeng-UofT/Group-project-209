@@ -25,7 +25,7 @@ public class ServingAdjustInteractor implements ServingAdjust, ServingAdjustInpu
      *
      * @param newServings The new number of servings. Must be greater than zero.
      * @param recipe The recipe to adjust. Must not be null.
-     * @throws IllegalArgumentException if {@code newServings} is less than or equal to zero.
+     * @throws IllegalArgumentException if {@code newServings} is less than or equal to zero.i
      */
     @Override
     public void adjustServings(int newServings, Recipe recipe) {
