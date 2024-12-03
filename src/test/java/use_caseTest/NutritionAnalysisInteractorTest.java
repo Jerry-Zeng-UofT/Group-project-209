@@ -11,16 +11,16 @@ import org.json.JSONArray;
 import org.junit.Before;
 import org.junit.Test;
 import use_case.nutrition_analysis.NutritionAnalysisException;
-import use_case.nutrition_analysis.NutritionAnalysisInputBoundaryInteractor;
+import use_case.nutrition_analysis.NutritionAnalysisInteractor;
 import use_case.recipe_search.RecipeSearchInteractor;
 
 import static org.junit.Assert.*;
 
 import java.util.List;
 
-public class NutritionAnalysisInputBoundaryInteractorTest {
+public class NutritionAnalysisInteractorTest {
 
-    private NutritionAnalysisInputBoundaryInteractor nutritionAnalysis;
+    private NutritionAnalysisInteractor nutritionAnalysis;
     private NutritionAnalysisViewModel viewModel;
     private Recipe recipe;
 
@@ -31,7 +31,7 @@ public class NutritionAnalysisInputBoundaryInteractorTest {
         NutritionAnalysisDataAccessObject mockDAO = new NutritionAnalysisDataAccessObject(); // Custom implementation
         viewModel = new NutritionAnalysisViewModel();
         NutritionAnalysisPresenter presenter = new NutritionAnalysisPresenter(viewModel);
-        nutritionAnalysis = new NutritionAnalysisInputBoundaryInteractor(mockDAO, presenter);
+        nutritionAnalysis = new NutritionAnalysisInteractor(mockDAO, presenter);
 
         // Establishment of a system that produce a valid Recipe Object
         SavedRecipesDataAccessObject savedRecipesDataAccess = new SavedRecipesDataAccessObject();

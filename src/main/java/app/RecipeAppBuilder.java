@@ -15,7 +15,7 @@ import interface_adapter.serving_adjust.ServingAdjustController;
 import interface_adapter.serving_adjust.ServingAdjustPresenter;
 import interface_adapter.serving_adjust.ServingAdjustViewModel;
 import use_case.nutrition_analysis.NutritionAnalysisInputBoundary;
-import use_case.nutrition_analysis.NutritionAnalysisInputBoundaryInteractor;
+import use_case.nutrition_analysis.NutritionAnalysisInteractor;
 import use_case.recipe_search.*;
 import use_case.meal_planning.*;
 import use_case.search_with_restriction.RecipeSearchWithRestrictionInteractor;
@@ -160,7 +160,7 @@ public class RecipeAppBuilder {
         }
 
         NutritionAnalysisPresenter presenter = new NutritionAnalysisPresenter(nutritionAnalysisViewModel);
-        nutritionAnalysisInputBoundaryUseCase = new NutritionAnalysisInputBoundaryInteractor(
+        nutritionAnalysisInputBoundaryUseCase = new NutritionAnalysisInteractor(
                 nutritionAnalysisDataAccess,
                 presenter
         );
