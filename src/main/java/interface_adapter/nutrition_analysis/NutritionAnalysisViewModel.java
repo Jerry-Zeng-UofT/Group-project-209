@@ -5,8 +5,7 @@ import interface_adapter.ViewModel;
 /**
  * The ViewModel for the NutritionAnalysis View.
  */
-public class NutritionAnalysisViewModel extends ViewModel {
-    private static final String TITLE_LABEL = "Nutrition Analysis";
+public class NutritionAnalysisViewModel extends ViewModel<NutritionAnalysisState> {
 
     public NutritionAnalysisViewModel() {
         super("Nutrition Analysis");

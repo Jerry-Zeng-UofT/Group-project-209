@@ -8,7 +8,8 @@ public class MealPlanEntry {
     private LocalDate date;
     private int userId;
     private String mealType;
-    private String status;  // Added to track state like "planned", "completed", etc.
+    private String status;
+    // Added to track state like "planned", "completed", etc.
 
     public MealPlanEntry(int entryId, Recipe recipe, LocalDate date, int userId, String mealType) {
         this.entryId = entryId;
@@ -16,7 +17,8 @@ public class MealPlanEntry {
         this.date = date;
         this.userId = userId;
         this.mealType = mealType;
-        this.status = "planned";  // Default status
+        this.status = "planned";
+        // Default status
     }
 
     // Getters and setters
