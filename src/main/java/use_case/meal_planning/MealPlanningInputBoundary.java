@@ -9,7 +9,7 @@ import entity.Recipe;
  * Interface defining the core meal planning use case operations.
  * Provides methods for managing meal plans, recipes, and calendar operations.
  */
-public interface MealPlanning {
+public interface MealPlanningInputBoundary {
 
     /**
      * Adds a meal for the calendar for a specific user.
