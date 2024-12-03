@@ -386,20 +386,43 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
             showMessage("Please select a recipe to analyze first.", "No Recipe Selected",
                     JOptionPane.WARNING_MESSAGE);
         }
+        else if (nutritionAnalysisController != null) {
+            Object state = recipeSearchViewModel.getState();
 
-        if (nutritionAnalysisController != null) {
-            final RecipeSearchState state = (RecipeSearchState) recipeSearchViewModel.getState();
-            if (state != null) {
-                final List<Recipe> recipes = state.getRecipes();
+            if (state == null) {
+                state = restrictionViewModel.getState();
+            }
+
+            if (state instanceof RecipeSearchState recipeState) {
+                final List<Recipe> recipes = recipeState.getRecipes();
                 if (selectedIndex < recipes.size()) {
                     final Recipe selectedRecipe = recipes.get(selectedIndex);
                     nutritionAnalysisController.executeAnalysis(selectedRecipe);
                     nutritionAnalysisView.setVisible(true);
                 }
+                else {
+                    showMessage("Selected recipe index is out of bounds.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            else if (state instanceof RestrictionState restrictionState) {
+                final List<Recipe> recipes = restrictionState.getRecipes();
+                if (selectedIndex < recipes.size()) {
+                    final Recipe selectedRecipe = recipes.get(selectedIndex);
+                    nutritionAnalysisController.executeAnalysis(selectedRecipe);
+                    nutritionAnalysisView.setVisible(true);
+                }
+                else {
+                    showMessage("Selected recipe index is out of bounds.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            else {
+                showMessage("Unknown state type for nutrition analysis.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
             }
         }
+        else {
+            showMessage("Nutrition analysis is not configured properly.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
+        }
     }
-
     // Utility method for showing messages
     private void showMessage(String message, String title, int messageType) {
         JOptionPane.showMessageDialog(this, message, title, messageType);
