@@ -43,6 +43,8 @@ import interface_adapter.search_with_restriction.RestrictionViewModel;
 import interface_adapter.serving_adjust.ServingAdjustController;
 import interface_adapter.serving_adjust.ServingAdjustViewModel;
 
+import static view.ViewConstants.ERROR_MESSAGE;
+
 /**
  * View for recipe search.
  */
@@ -101,18 +103,15 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
      * @param restrictionModel view model for restriction view model.
      * @param controller controller for recipe search.
      * @param restrictionController controller for restriction search.
-     * @param servingAdjustController controller for servingAdjust.
      */
     public RecipeSearchView(RecipeSearchViewModel viewModel, RestrictionViewModel restrictionModel,
-                            RecipeSearchController controller, RestrictionController restrictionController,
-                            ServingAdjustController servingAdjustController) {
+                            RecipeSearchController controller, RestrictionController restrictionController) {
         this.recipeSearchViewModel = viewModel;
         this.recipeSearchViewModel.addPropertyChangeListener(this);
         this.restrictionViewModel = restrictionModel;
         this.restrictionViewModel.addPropertyChangeListener(this);
         this.recipeSearchController = controller;
         this.restrictionController = restrictionController;
-        this.servingAdjustController = servingAdjustController;
 
         // Initialize components
         // UI Components - Labels
@@ -255,12 +254,12 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
             }
             else {
-                showMessage("Unknown state type for serving adjustment.", ViewConstants.ERROR_MESSAGE,
+                showMessage("Unknown state type for serving adjustment.", ERROR_MESSAGE,
                         JOptionPane.ERROR_MESSAGE);
             }
         }
         else {
-            showMessage("Serving adjustment is not configured properly.", ViewConstants.ERROR_MESSAGE,
+            showMessage("Serving adjustment is not configured properly.", ERROR_MESSAGE,
                     JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -343,7 +342,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                 }
             }
             else {
-                showMessage("Unknown state type.", ViewConstants.ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
+                showMessage("Unknown state type.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -612,7 +611,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
             if (recipeState.getError() != null) {
                 JOptionPane.showMessageDialog(this,
                         recipeState.getError(),
-                        ViewConstants.ERROR_MESSAGE,
+                        ERROR_MESSAGE,
                         JOptionPane.ERROR_MESSAGE);
             }
             else if (recipeState.getMessage() != null) {
@@ -631,7 +630,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
             if (restrictionState.getError() != null) {
                 JOptionPane.showMessageDialog(this,
                         restrictionState.getError(),
-                        ViewConstants.ERROR_MESSAGE,
+                        ERROR_MESSAGE,
                         JOptionPane.ERROR_MESSAGE);
             }
             else if (restrictionState.getMessage() != null) {
