@@ -4,22 +4,22 @@ import java.time.LocalDate;
 import java.util.List;
 
 import entity.Recipe;
-import use_case.meal_planning.MealPlanning;
+import use_case.meal_planning.MealPlanningInputBoundary;
 
 /**
  * Controller class for managing meal planning operations.
  * Acts as an interface between the UI and the meal planning use case.
  */
 public class MealPlanningController {
-    private final MealPlanning mealPlanningUseCase;
+    private final MealPlanningInputBoundary mealPlanningInputBoundaryUseCase;
 
     /**
      * Constructs a new MealPlanningController.
      *
-     * @param mealPlanningUseCase the meal planning use case to be controlled
+     * @param mealPlanningInputBoundaryUseCase the meal planning use case to be controlled
      */
-    public MealPlanningController(MealPlanning mealPlanningUseCase) {
-        this.mealPlanningUseCase = mealPlanningUseCase;
+    public MealPlanningController(MealPlanningInputBoundary mealPlanningInputBoundaryUseCase) {
+        this.mealPlanningInputBoundaryUseCase = mealPlanningInputBoundaryUseCase;
     }
 
     /**
@@ -29,7 +29,7 @@ public class MealPlanningController {
      * @return list of saved recipes
      */
     public List<Recipe> getSavedRecipes(int userId) {
-        return mealPlanningUseCase.getSavedRecipes(userId);
+        return mealPlanningInputBoundaryUseCase.getSavedRecipes(userId);
     }
 
     /**
@@ -40,7 +40,7 @@ public class MealPlanningController {
      * @param status the new status to set
      */
     public void updateMealStatus(int userId, int entryId, String status) {
-        mealPlanningUseCase.updateMealStatus(userId, entryId, status);
+        mealPlanningInputBoundaryUseCase.updateMealStatus(userId, entryId, status);
     }
 
     /**
@@ -52,7 +52,7 @@ public class MealPlanningController {
      * @param mealType the type of meal (e.g., breakfast, lunch, dinner)
      */
     public void addToCalendar(int userId, int recipeId, LocalDate date, String mealType) {
-        mealPlanningUseCase.addToCalendar(userId, recipeId, date, mealType);
+        mealPlanningInputBoundaryUseCase.addToCalendar(userId, recipeId, date, mealType);
     }
 
     /**
@@ -62,7 +62,7 @@ public class MealPlanningController {
      * @param mealPlanEntryId the ID of the meal plan entry to remove
      */
     public void removeFromCalendar(int userId, int mealPlanEntryId) {
-        mealPlanningUseCase.removeFromCalendar(userId, mealPlanEntryId);
+        mealPlanningInputBoundaryUseCase.removeFromCalendar(userId, mealPlanEntryId);
     }
 
     /**
@@ -72,7 +72,7 @@ public class MealPlanningController {
      * @param weekStart the start date of the week
      */
     public void viewCalendarWeek(int userId, LocalDate weekStart) {
-        mealPlanningUseCase.getCalendarWeek(userId, weekStart);
+        mealPlanningInputBoundaryUseCase.getCalendarWeek(userId, weekStart);
     }
 
     /**
@@ -81,6 +81,6 @@ public class MealPlanningController {
      * @param userId the ID of the user
      */
     public void initializeMealPlanning(int userId) {
-        mealPlanningUseCase.initializeMealPlanning(userId);
+        mealPlanningInputBoundaryUseCase.initializeMealPlanning(userId);
     }
 }

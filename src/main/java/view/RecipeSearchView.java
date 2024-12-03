@@ -48,24 +48,6 @@ import interface_adapter.serving_adjust.ServingAdjustViewModel;
  */
 public class RecipeSearchView extends JPanel implements ActionListener, PropertyChangeListener {
 
-    private static final int TEXTFIELD_WIDTH = 20;
-    private static final int VERTICAL_SPACING = 10;
-    private static final int INGREDIENT_LIST_HEIGHT = 100;
-    private static final int INGREDIENT_LIST_WIDTH = 300;
-    private static final int RESULTS_LIST_HEIGHT = 200;
-    private static final int RESULTS_LIST_WIDTH = 300;
-    private static final int TITLE_FONT_SIZE = 16;
-    private static final int HORIZONTAL_STRUT_SMALL = 30;
-    private static final int HORIZONTAL_STRUT_LARGE = 80;
-    private static final int VERTICAL_PADDING = 10;
-    private static final int BORDER_PADDING = 5;
-    private static final int RESULTS_LABEL_FONT_SIZE = 14;
-    private static final int RESULTS_LIST_FONT_SIZE = 12;
-    private static final String ERROR_MESSAGE = "Error";
-    private static final Color SELECTED_BACKGROUND_COLOR = new Color(200, 220, 240);
-    private static final Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
-    private static final Color BUTTON_BACKGROUND_COLOR = new Color(240, 240, 240);
-
     // Panels
     private final JPanel inputPanel;
     private final JPanel resultsPanel;
@@ -273,11 +255,13 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
             }
             else {
-                showMessage("Unknown state type for serving adjustment.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
+                showMessage("Unknown state type for serving adjustment.", ViewConstants.ERROR_MESSAGE,
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
         else {
-            showMessage("Serving adjustment is not configured properly.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
+            showMessage("Serving adjustment is not configured properly.", ViewConstants.ERROR_MESSAGE,
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -359,7 +343,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
                 }
             }
             else {
-                showMessage("Unknown state type.", ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
+                showMessage("Unknown state type.", ViewConstants.ERROR_MESSAGE, JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -380,7 +364,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
             removeByJList(restrictionList.getModel().getElementAt(selectedIndex));
         }
         else {
-            showMessage("Please select restrictions to remove.", "No Restrictions Selected", JOptionPane.WARNING_MESSAGE);
+            showMessage("Please select restrictions to remove.", "No Restrictions Selected",
+                    JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -398,7 +383,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
     private void handleAnalyzeNutrition() {
         final int selectedIndex = recipeResults.getSelectedIndex();
         if (selectedIndex == -1) {
-            showMessage("Please select a recipe to analyze first.", "No Recipe Selected", JOptionPane.WARNING_MESSAGE);
+            showMessage("Please select a recipe to analyze first.", "No Recipe Selected",
+                    JOptionPane.WARNING_MESSAGE);
         }
 
         if (nutritionAnalysisController != null) {
@@ -506,8 +492,8 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
 
     private void setupResultsPanel() {
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
-        resultsPanel.setBorder(BorderFactory.createEmptyBorder(ViewConstants.VERTICAL_PADDING, ViewConstants.VERTICAL_PADDING,
-                ViewConstants.VERTICAL_PADDING, ViewConstants.VERTICAL_PADDING));
+        resultsPanel.setBorder(BorderFactory.createEmptyBorder(ViewConstants.VERTICAL_PADDING,
+                ViewConstants.VERTICAL_PADDING, ViewConstants.VERTICAL_PADDING, ViewConstants.VERTICAL_PADDING));
 
         resultsPanel.add(createResultsLabel());
         resultsPanel.add(Box.createVerticalStrut(ViewConstants.VERTICAL_SPACING));
@@ -599,7 +585,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
             if (recipeState.getError() != null) {
                 JOptionPane.showMessageDialog(this,
                         recipeState.getError(),
-                        ERROR_MESSAGE,
+                        ViewConstants.ERROR_MESSAGE,
                         JOptionPane.ERROR_MESSAGE);
             }
             else if (recipeState.getMessage() != null) {
@@ -618,7 +604,7 @@ public class RecipeSearchView extends JPanel implements ActionListener, Property
             if (restrictionState.getError() != null) {
                 JOptionPane.showMessageDialog(this,
                         restrictionState.getError(),
-                        ERROR_MESSAGE,
+                        ViewConstants.ERROR_MESSAGE,
                         JOptionPane.ERROR_MESSAGE);
             }
             else if (restrictionState.getMessage() != null) {
