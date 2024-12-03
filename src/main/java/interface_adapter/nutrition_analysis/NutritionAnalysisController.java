@@ -1,16 +1,16 @@
 package interface_adapter.nutrition_analysis;
 
 import entity.Recipe;
-import use_case.nutrition_analysis.NutritionAnalysis;
+import use_case.nutrition_analysis.NutritionAnalysisInputBoundary;
 
 /**
  * Controller for the Nutrition Analysis functionality.
  */
 public class NutritionAnalysisController {
-    private final NutritionAnalysis nutritionAnalysisUseCase;
+    private final NutritionAnalysisInputBoundary nutritionAnalysisInputBoundaryUseCase;
 
-    public NutritionAnalysisController(NutritionAnalysis nutritionAnalysisUsecase) {
-        this.nutritionAnalysisUseCase = nutritionAnalysisUsecase;
+    public NutritionAnalysisController(NutritionAnalysisInputBoundary nutritionAnalysisInputBoundaryUsecase) {
+        this.nutritionAnalysisInputBoundaryUseCase = nutritionAnalysisInputBoundaryUsecase;
     }
 
     /**
@@ -18,7 +18,7 @@ public class NutritionAnalysisController {
      * @param recipe the recipe the user wants to analyze.
      */
     public void executeAnalysis(Recipe recipe) {
-        nutritionAnalysisUseCase.analyzeNutrition(recipe);
+        nutritionAnalysisInputBoundaryUseCase.analyzeNutrition(recipe);
     }
 }
 
