@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import entity.Nutrient;
@@ -15,6 +16,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import use_case.nutrition_analysis.NutritionAnalysisException;
 
 /**
  * The DAO that implements the interface.
@@ -72,19 +74,24 @@ public class NutritionAnalysisDataAccessObject implements NutritionAnalysisDataA
                 .build();
     }
 
-    private List<Nutrient> parseNutrientsResponse(String jsonData) {
+    private List<Nutrient> parseNutrientsResponse(String jsonData) throws NutritionAnalysisException {
         final List<Nutrient> nutrientsList = new ArrayList<>();
-        final JSONObject jsonObject = new JSONObject(jsonData);
-        final JSONObject totalNutrients = jsonObject.getJSONObject("totalNutrients");
+        try {
+            final JSONObject jsonObject = new JSONObject(jsonData);
+            final JSONObject totalNutrients = jsonObject.getJSONObject("totalNutrients");
 
-        for (String key : totalNutrients.keySet()) {
-            final JSONObject nutrient = totalNutrients.getJSONObject(key);
-            final String aNutrient = nutrient.getString("label")
-                    + ": "
-                    + nutrient.getInt("quantity")
-                    + nutrient.getString("unit");
+            for (String key : totalNutrients.keySet()) {
+                final JSONObject nutrient = totalNutrients.getJSONObject(key);
+                final String aNutrient = nutrient.getString("label")
+                        + ": "
+                        + nutrient.getInt("quantity")
+                        + nutrient.getString("unit");
 
-            nutrientsList.add(new Nutrient(aNutrient));
+                nutrientsList.add(new Nutrient(aNutrient));
+            }
+        }
+        catch (JSONException exception) {
+            throw new NutritionAnalysisException("Error processing nutrition analysis", exception);
         }
         return nutrientsList;
     }

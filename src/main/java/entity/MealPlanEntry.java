@@ -2,6 +2,9 @@ package entity;
 
 import java.time.LocalDate;
 
+/**
+ * The class represents meal plan object.
+ */
 public class MealPlanEntry {
     private int entryId;
     private Recipe recipe;

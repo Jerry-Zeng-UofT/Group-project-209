@@ -1,22 +1,22 @@
 package use_case.nutrition_analysis;
 
+import java.io.IOException;
 import java.util.List;
 
 import data_access.NutritionAnalysisDataAccess;
 import entity.Nutrient;
 import entity.Recipe;
-import use_case.recipe_search.RecipeSearchException;
 
 /**
  * Implementation of the Nutrition Analysis use case.
  */
-public class NutritionAnalysisImpl implements NutritionAnalysis {
+public class NutritionAnalysisInteractor implements NutritionAnalysis {
 
     private final NutritionAnalysisDataAccess nutritionAnalysisDAO;
     private final NutritionAnalysisOutputBoundary outputBoundary;
 
-    public NutritionAnalysisImpl(NutritionAnalysisDataAccess NutritionAnalysisDAO,
-                                 NutritionAnalysisOutputBoundary outputBoundary) {
+    public NutritionAnalysisInteractor(NutritionAnalysisDataAccess NutritionAnalysisDAO,
+                                       NutritionAnalysisOutputBoundary outputBoundary) {
         this.nutritionAnalysisDAO = NutritionAnalysisDAO;
         this.outputBoundary = outputBoundary;
     }
@@ -30,10 +30,10 @@ public class NutritionAnalysisImpl implements NutritionAnalysis {
             // Present success
             outputBoundary.presentNutritionInfo(nutritionInfo);
         }
-        catch (Exception exception) {
+        catch (IOException exception) {
             // Present error
             outputBoundary.presentError("Failed to analyze the recipe: " + exception.getMessage());
-            throw new RecipeSearchException("Analysis failed", exception);
+            throw new NutritionAnalysisException("Analysis failed", exception);
         }
     }
 }

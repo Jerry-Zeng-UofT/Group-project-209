@@ -17,7 +17,7 @@ public class Recipe {
     private String instructions;
     private Nutrition nutrition;
     private List<Food> food;
-    private final JSONArray jsonIngredient;
+    private JSONArray jsonIngredient;
     private int servings;
 
     /**
@@ -104,6 +104,10 @@ public class Recipe {
 
     public JSONArray getJsonIngredient() {
         return jsonIngredient;
+    }
+
+    public void setJsonIngredient(JSONArray jsonIngredient) {
+        this.jsonIngredient = jsonIngredient;
     }
 
     public int getServings() {
