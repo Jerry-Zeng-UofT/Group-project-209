@@ -90,7 +90,7 @@ public class MealPlanningInteractor implements MealPlanningInputBoundary {
             validateUserId(userId);
             validateDate(weekStart);
 
-            List<MealPlanEntry> entries = dataAccessInterface.getWeeklyPlan(userId, weekStart);
+            final List<MealPlanEntry> entries = dataAccessInterface.getWeeklyPlan(userId, weekStart);
             outputBoundary.presentCalendarWeek(entries);
         }
         catch (MealPlanningException e) {
@@ -102,8 +102,8 @@ public class MealPlanningInteractor implements MealPlanningInputBoundary {
     public void initializeMealPlanning(int userId) {
         try {
             validateUserId(userId);
-            LocalDate currentWeekStart = LocalDate.now().with(DayOfWeek.MONDAY);
-            List<MealPlanEntry> entries = dataAccessInterface.getWeeklyPlan(userId, currentWeekStart);
+            final LocalDate currentWeekStart = LocalDate.now().with(DayOfWeek.MONDAY);
+            final List<MealPlanEntry> entries = dataAccessInterface.getWeeklyPlan(userId, currentWeekStart);
             outputBoundary.presentCalendarWeek(entries);
         }
         catch (MealPlanningException e) {
