@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import data_access.SearchWithRestrictionDataAccessObject;
 import entity.Food;
 import entity.Nutrition;
 import entity.Recipe;
@@ -18,12 +17,12 @@ public class RecipeSearchWithRestrictionInteractor implements SearchWithRestrict
     private static final String CUISINE_TYPE = "Cuisine Type";
     private static final String DELIMETER = ",";
 
-    private final SearchWithRestrictionDataAccessObject searchWithRestrictionDataAccessObject;
-    private final SearchWithRestrictionOutputBoundry outputBoundary;
+    private final SearchWithRestrictionDataAccessInterface searchWithRestrictionDataAccessInterface;
+    private final SearchWithRestrictionOutputBoundary outputBoundary;
 
-    public RecipeSearchWithRestrictionInteractor(SearchWithRestrictionDataAccessObject searchWithRestrictionDataAccessObject,
-                                                 SearchWithRestrictionOutputBoundry outputBoundary) {
-        this.searchWithRestrictionDataAccessObject = searchWithRestrictionDataAccessObject;
+    public RecipeSearchWithRestrictionInteractor(SearchWithRestrictionDataAccessInterface searchWithRestrictionDataAccessInterface,
+                                                 SearchWithRestrictionOutputBoundary outputBoundary) {
+        this.searchWithRestrictionDataAccessInterface = searchWithRestrictionDataAccessInterface;
         this.outputBoundary = outputBoundary;
     }
 
@@ -46,7 +45,7 @@ public class RecipeSearchWithRestrictionInteractor implements SearchWithRestrict
             if (restrictions.get(CUISINE_TYPE) != null && !restrictions.get(CUISINE_TYPE).isEmpty()) {
                 searchCuisineQuery = String.join(DELIMETER, restrictions.get(CUISINE_TYPE));
             }
-            final List<Recipe> searchResults = searchWithRestrictionDataAccessObject.searchRecipesByRestriction(
+            final List<Recipe> searchResults = searchWithRestrictionDataAccessInterface.searchRecipesByRestriction(
                     searchFoodQuery, searchDietQuery, searchHealthQuery, searchCuisineQuery);
             final List<Recipe> recipes = convertToRecipes(searchResults);
             outputBoundary.presentRecipes(recipes);

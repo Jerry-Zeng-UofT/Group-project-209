@@ -7,7 +7,7 @@ import entity.Recipe;
 /**
  * The outputBoundary for SearchWithRestriction.
  */
-public interface SearchWithRestrictionOutputBoundry {
+public interface SearchWithRestrictionOutputBoundary {
     /**
      * Present the recipes to the user.
      * @param recipes List of recipes to present
