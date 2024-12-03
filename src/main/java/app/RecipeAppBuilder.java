@@ -50,7 +50,7 @@ public class RecipeAppBuilder {
 
     private RecipeSearchInputBoundary recipeSearchInputBoundaryUseCase;
     private SearchWithRestrictionInputBoundary searchWithRestrictionInputBoundaryUseCase;
-    private MealPlanning mealPlanningUseCase;
+    private MealPlanningInputBoundary mealPlanningInputBoundaryUseCase;
     private NutritionAnalysis nutritionAnalysisUseCase;
 
     /**
@@ -142,12 +142,12 @@ public class RecipeAppBuilder {
         }
 
         MealPlanningPresenter presenter = new MealPlanningPresenter(mealPlanningViewModel);
-        mealPlanningUseCase = new MealPlanningInteractor(
+        mealPlanningInputBoundaryUseCase = new MealPlanningInputBoundaryInteractor(
                 mealPlanningDataAccess,
                 savedRecipesDataAccess,
                 presenter
         );
-        MealPlanningController controller = new MealPlanningController(mealPlanningUseCase);
+        MealPlanningController controller = new MealPlanningController(mealPlanningInputBoundaryUseCase);
         mealPlanningView.setController(controller);
 
         return this;

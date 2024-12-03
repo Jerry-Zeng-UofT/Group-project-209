@@ -2,7 +2,7 @@ import data_access.MealPlanningDataAccessObject;
 import data_access.SavedRecipesDataAccessObject;
 import entity.MealPlanEntry;
 import entity.Recipe;
-import use_case.meal_planning.MealPlanningInteractor;
+import use_case.meal_planning.MealPlanningInputBoundaryInteractor;
 import use_case.meal_planning.MealPlanningOutputBoundary;
 import data_access.MealPlanningDataAccess;
 import data_access.SavedRecipesDataAccess;
@@ -15,12 +15,12 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class MealPlanningInteractorTest {
+public class MealPlanningInputBoundaryInteractorTest {
 
     private MealPlanningDataAccess dataAccess;
     private SavedRecipesDataAccess savedRecipesDataAccess;
     private MealPlanningOutputBoundary outputBoundary;
-    private MealPlanningInteractor interactor;
+    private MealPlanningInputBoundaryInteractor interactor;
 
     @Before
     public void setUp() {
@@ -60,7 +60,7 @@ public class MealPlanningInteractorTest {
         };
 
         // Create the interactor
-        interactor = new MealPlanningInteractor(dataAccess, savedRecipesDataAccess, outputBoundary);
+        interactor = new MealPlanningInputBoundaryInteractor(dataAccess, savedRecipesDataAccess, outputBoundary);
     }
 
     @Test

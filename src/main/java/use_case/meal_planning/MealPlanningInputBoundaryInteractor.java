@@ -10,24 +10,24 @@ import entity.MealPlanEntry;
 import entity.Recipe;
 
 /**
- * Implements the MealPlanning interface to handle meal planning business logic.
+ * Implements the MealPlanningInputBoundary interface to handle meal planning business logic.
  * Coordinates between data access layer and output boundary for meal planning operations.
  */
-public class MealPlanningInteractor implements MealPlanning {
+public class MealPlanningInputBoundaryInteractor implements MealPlanningInputBoundary {
     private final MealPlanningDataAccess dataAccess;
     private final SavedRecipesDataAccess savedRecipesDataAccess;
     private final MealPlanningOutputBoundary outputBoundary;
 
     /**
-     * Constructs a new MealPlanningInteractor.
+     * Constructs a new MealPlanningInputBoundaryInteractor.
      *
      * @param dataAccess data access for meal planning operations
      * @param savedRecipesDataAccess data access for saved recipes
      * @param outputBoundary output boundary for presenting results
      */
-    public MealPlanningInteractor(MealPlanningDataAccess dataAccess,
-                                  SavedRecipesDataAccess savedRecipesDataAccess,
-                                  MealPlanningOutputBoundary outputBoundary) {
+    public MealPlanningInputBoundaryInteractor(MealPlanningDataAccess dataAccess,
+                                               SavedRecipesDataAccess savedRecipesDataAccess,
+                                               MealPlanningOutputBoundary outputBoundary) {
         this.dataAccess = dataAccess;
         this.savedRecipesDataAccess = savedRecipesDataAccess;
         this.outputBoundary = outputBoundary;
