@@ -1,17 +1,13 @@
 package use_case.serving_adjust;
 
-import java.util.List;
-
-import entity.Recipe;
-
 /**
- * Interface for presenting the output of serving adjustments.
+ * Output boundary interface for the serving adjustment use case.
  */
 public interface ServingAdjustOutputBoundary {
     /**
-     * Present the updated recipes after servings are adjusted.
+     * Presents the updated recipes after servings adjustment.
      *
-     * @param updatedRecipes The list of updated recipes.
+     * @param outputData The output data containing updated recipes.
      */
-    void presentUpdatedRecipes(List<Recipe> updatedRecipes);
+    void presentUpdatedRecipes(ServingAdjustOutputData outputData);
 }
