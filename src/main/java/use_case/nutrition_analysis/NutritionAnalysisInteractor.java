@@ -9,7 +9,7 @@ import entity.Recipe;
 /**
  * Implementation of the Nutrition Analysis use case.
  */
-public class NutritionAnalysisInteractor implements NutritionAnalysis {
+public class NutritionAnalysisInteractor implements NutritionAnalysisInputBoundary {
 
     private final NutritionAnalysisDataAccessInterface nutritionAnalysisDAO;
     private final NutritionAnalysisOutputBoundary outputBoundary;

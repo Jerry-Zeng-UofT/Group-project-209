@@ -2,41 +2,41 @@
 
 ## 1. **Principle of Universal Design**
 
-### 1.1 **Equitable Use:**
+### 1 **Equitable Use:**
 
 The program is completely text-based and doesn’t support text-to-speech or audio notifications. It is friendly to people with hearing difficulties, but it fails to meet the needs of people with visual difficulties.
 
 In the future, to adhere to the principle and increase the accessibility of the program, the feature of text-to-speech or audio notification of button clicking could be added.
 
-### 1.2 **Flexibility in Use:**
+### 2 **Flexibility in Use:**
 
 The app provides flexibility in adjusting the serving size based on the number of people a user wants to serve, allowing users to control the ingredient amounts based on different situations (e.g., family meal, party, individual servings).
 
 Users can search for recipes based on one or multiple ingredients, providing flexibility in searching for desired combinations of foods.
 
-### 1.3 **Simple and Intuitive Use:**
+### 3 **Simple and Intuitive Use:**
 
 The app is designed in a clean and straightforward way, allowing users to easily access and use any of the features they want.
 
 Instead of requiring flexibility in entering ingredients and serving size, all other functionalities (e.g., search recipe, nutrition analysis, modifying restrictions, and meal planning) are controlled by simple buttons.
 
-### 1.4 **Perceptible Information:**
+### 4 **Perceptible Information:**
 
 The app provides clear text labels for all buttons and input fields, helping users understand their functionality directly through labels.
 
 Nutrition information is presented in an easy-to-read format with visible labels. Different nutrients are classified by types, so even for uncommon chemicals, users can at least understand what kind of nutrient it is.
 
-### 1.5 **Tolerance for Error:**
+### 5 **Tolerance for Error:**
 
 Notifications will pop up whenever a user makes unnecessary or mistaken commands, advising the user on the correct action. For example, "Please select a recipe to save first" will appear if the user clicks the save recipe button without selecting a recipe.
 
 Moreover, each added ingredient can be deleted individually, and each added recipe to the meal planner can be modified. The app allows users to undo or modify their actions and notifies users of any illegal actions.
 
-### 1.6 **Low Physical Effort:**
+### 6 **Low Physical Effort:**
 
 Only customized features like ingredient combinations and serving size require the user to enter simple words and numbers. Most of the functionalities are controlled with clicks of buttons, minimizing the physical effort required to use the app.
 
-### 1.7 **Size and Space for Approach to Use:**
+### 7 **Size and Space for Approach to Use:**
 
 The size of the window is fully editable, ensuring that the UI is responsive and appropriately sized for different screen sizes and devices.
 

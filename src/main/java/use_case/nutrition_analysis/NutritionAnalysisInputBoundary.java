@@ -5,7 +5,7 @@ import entity.Recipe;
 /**
  * Interface for the Nutrition Analysis use case.
  */
-public interface NutritionAnalysis {
+public interface NutritionAnalysisInputBoundary {
 
     /**
      * Searches for recipes based on a list of ingredients.
