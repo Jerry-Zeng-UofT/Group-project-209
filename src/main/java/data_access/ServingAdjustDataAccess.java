@@ -12,8 +12,7 @@ public class ServingAdjustDataAccess implements ServingAdjustDataAccessInterface
     @Override
     public void saveUpdatedRecipes(List<Recipe> recipes) throws ServingAdjustException {
         try {
-            // Implement your data saving logic here
-            // For demonstration, we'll just print the recipes
+            
             for (Recipe recipe : recipes) {
                 System.out.println("Saving updated recipe: " + recipe.getTitle());
             }
